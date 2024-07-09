@@ -1,2 +1,3 @@
 # Agenda manager docs
-# aganeda-manager-docs
+
+<https://mermaid.js.org/syntax/classDiagram.html>
