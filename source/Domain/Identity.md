@@ -15,7 +15,7 @@ classDiagram
         +PasswordHash string
         +RefreshToken RefreshToken?
 
-        +Create(UserId, EmailAddress, UserName, PasswordHash, FirstName?, LastName?) User
+        +Create(UserId userId, EmailAddress email, UserName userName, PasswordHash passwordHash, FirstName? firstName, LastName? lastName) User
         +UpdatePasswordHash(string passwordHash) User
         +UpdateEmail(EmailAddress) User
         +UpdateRefreshToken(RefreshToken refreshToken) User
@@ -25,11 +25,15 @@ classDiagram
     class Role {
         +Id RoleId
         +Name string
+
+        +Create(RoleId id, string name) Role
     }
 
     class Permission {
         +Id PermissionId
         +Name string
+
+        +Create(PermissionId id, string name) Permission
     }
 
 
@@ -38,6 +42,8 @@ classDiagram
         +User User
         +Guid RoleId
         +Role Role
+
+        +Create(UserId userId, RoleId roleId) UserRole
     }
 
     class UserPermission {
@@ -45,6 +51,8 @@ classDiagram
         +User User
         +Guid PermissionId
         +Permission Permission
+
+        +Create(UserId userId, PermissionId permissionId) UserPermission
     }
 
     User --|> UserRole : Has
