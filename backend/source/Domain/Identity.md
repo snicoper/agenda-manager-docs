@@ -72,9 +72,7 @@ classDiagram
 - `UserRole` `src/Domain/Authorization/UserRole.cs`
 - `UserPermission` `src/Domain/Authorization/UserPermission.cs`
 
-## Authorization
-
-## Application
+## Authentication
 
 ```mermaid
 classDiagram
@@ -84,9 +82,6 @@ classDiagram
         +RefreshTokenAsync(string refreshToken) Result~TokenResponse~
     }
 
-    class AuthenticationManager {
-    }
-
     IAuthenticationManager <|-- AuthenticationManager : implements
     IAuthenticationManager --> Result~TokenResponse~ : Association
 ```
@@ -94,21 +89,7 @@ classDiagram
 - `IAuthenticationManager` `src/Application/Common/Interfaces/Users/IAuthenticationManager.cs`
 - `AuthenticationManager` `src/Infrastructure/Common/Authentication/AuthenticationManager.cs`
 
-```mermaid
-classDiagram
-    class ICurrentUserProvider{
-        <<interface>>
-        +GetCurrentUser() CurrentUser
-    }
-
-    class CurrentUserProvider{
-    }
-
-    ICurrentUserProvider <|-- CurrentUserProvider : implements
-```
-
-- `ICurrentUserProvider` `src/Application/Common/Interfaces/Users/ICurrentUserProvider.cs`
-- `CurrentUserProvider` `src/WebApi/Services/CurrentUserProvider.cs`
+## JwtTokenGenerator
 
 ```mermaid
 classDiagram
@@ -118,16 +99,28 @@ classDiagram
         +GenerateRefreshToken() string
     }
 
-    class JwtTokenGenerator {
-    }
-
     IJwtTokenGenerator <|-- JwtTokenGenerator : implements
 ```
 
 - `IJwtTokenGenerator` `src/Application/Common/Interfaces/Users/IJwtTokenGenerator.cs`
 - `JwtTokenGenerator` `src/Infrastructure/Common/Authentication/JwtTokenGenerator.cs`
 
-## Domain
+## CurrentUserProvider
+
+```mermaid
+classDiagram
+    class ICurrentUserProvider{
+        <<interface>>
+        +GetCurrentUser() CurrentUser
+    }
+
+    ICurrentUserProvider <|-- CurrentUserProvider : implements
+```
+
+- `ICurrentUserProvider` `src/Application/Common/Interfaces/Users/ICurrentUserProvider.cs`
+- `CurrentUserProvider` `src/WebApi/Services/CurrentUserProvider.cs`
+
+## IAuthorizationManager
 
 ```mermaid
 classDiagram
@@ -141,35 +134,32 @@ classDiagram
         +RemovePermissionAsync(UserId userId, PermissionId permissionId, CancellationToken cancellationToken = default) void
     }
 
-    class AuthorizationManager {
-    }
-
     IAuthorizationManager <|-- AuthorizationManager : implements
 ```
 
 - `IAuthorizationManager` `src/Domain/Authorization/Persistence/IAuthorizationManager.cs`
-- `AuthorizationManager` `src/Infrastructure/Common/Authentication/AuthorizationManager.cs`
+- `AuthorizationManager` `src/Infrastructure/Authorization/AuthorizationManager.cs`
 
 ```mermaid
 classDiagram
-    class PasswordHasher {
+    class IPasswordHasher {
+        <<Interface>>
         +HashPassword(string password) Result~string~$
         +VerifyPassword(string password, string hashedPassword) bool$
     }
 
-    class Result {
-    }
-
-    PasswordHasher --> Result~string~ : Association
+    IPasswordHasher <|-- PasswordHasher : implements
+    IPasswordHasher --> Result~string~ : Association
 ```
 
-- `PasswordManager` `src/Domain/Users/PasswordManager.cs`
+- `IPasswordHasher` `src/Domain/Common/Interfaces/IPasswordHasher.cs`
+- `PasswordHasher` `src/Infrastructure/Common/Authentication/PasswordHasher.cs`
 
 ## Repositories
 
 ```mermaid
 classDiagram
-    class IUsersRepository {
+    class IUserRepository {
         <<interface>>
         +GetQueryable() IQeuryable~User~
         +GetByIdAsync(UserId id, CancellationToken cancellationToken = default) User
@@ -179,10 +169,7 @@ classDiagram
         +Update(User user) void
     }
 
-    class UserRepository {
-    }
-
-    IUsersRepository <|-- UserRepository : implements
+    IUserRepository <|-- UserRepository : implements
 ```
 
 - `IUsersRepository` `src/Domain/Users/Persistence/IUsersRepository.cs`
