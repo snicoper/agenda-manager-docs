@@ -130,6 +130,7 @@ classDiagram
     }
 
     ICurrentUserProvider <|-- CurrentUserProvider : implements
+    ICurrentUserProvider --> CurrentUser : Association
 ```
 
 - `ICurrentUserProvider` `src/Application/Common/Interfaces/Users/ICurrentUserProvider.cs`
