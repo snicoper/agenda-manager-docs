@@ -89,17 +89,30 @@ classDiagram
 - `IAuthenticationManager` `src/Application/Common/Interfaces/Users/IAuthenticationManager.cs`
 - `AuthenticationManager` `src/Infrastructure/Common/Authentication/AuthenticationManager.cs`
 
+## TokenResponse
+
+```mermaid
+classDiagram
+    class IAuthenticationManager {
+        +AccessToken string
+        +RefreshToken string
+        +Expires DateTimeOffset
+    }
+```
+
+- `TokenResponse` `src/Application/Common/Models/Users/TokenResponse.cs`
+
 ## JwtTokenGenerator
 
 ```mermaid
 classDiagram
     class IJwtTokenGenerator {
         <<interface>>
-        +GenerateAccessTokenAsync(User user) string
-        +GenerateRefreshToken() string
+        +GenerateAccessTokenAsync(User user) Task~TokenResponse~
     }
 
     IJwtTokenGenerator <|-- JwtTokenGenerator : implements
+    IJwtTokenGenerator --> Task~TokenResponse~ : Association
 ```
 
 - `IJwtTokenGenerator` `src/Application/Common/Interfaces/Users/IJwtTokenGenerator.cs`
@@ -111,6 +124,8 @@ classDiagram
 classDiagram
     class ICurrentUserProvider{
         <<interface>>
+        +IsAuthenticated bool
+
         +GetCurrentUser() CurrentUser
     }
 
@@ -118,7 +133,7 @@ classDiagram
 ```
 
 - `ICurrentUserProvider` `src/Application/Common/Interfaces/Users/ICurrentUserProvider.cs`
-- `CurrentUserProvider` `src/WebApi/Services/CurrentUserProvider.cs`
+- `CurrentUserProvider` `src/WebApi/Infrastructure/CurrentUserProvider.cs`
 
 ## IAuthorizationManager
 
@@ -128,6 +143,8 @@ classDiagram
         <<interface>>
         +HasRole(UserId userId, string role) bool
         +HasPermission(UserId userId, string permissionName) bool
+        +GetRolesByUserIdAsync(UserId userId, CancellationToken cancellationToken = default) Task~List~Role~~
+        +GetPermissionsByUserIdAsync(UserId userId, CancellationToken cancellationToken = default) Task~List~Permission~~
         +AddRoleAsync(UserId userId, RoleId roleId, CancellationToken cancellationToken = default) void
         +RemoveRoleAsync(UserId userId, RoleId roleId, CancellationToken cancellationToken = default) void
         +AddPermissionAsync(UserId userId, PermissionId permissionId, CancellationToken cancellationToken = default) void
@@ -172,5 +189,5 @@ classDiagram
     IUserRepository <|-- UserRepository : implements
 ```
 
-- `IUsersRepository` `src/Domain/Users/Persistence/IUsersRepository.cs`
+- `IUserRepository` `src/Domain/Users/Persistence/IUserRepository.cs`
 - `UserRepository` `src/Infrastructure/Users/UserRepository.cs`
