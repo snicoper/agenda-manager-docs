@@ -5,6 +5,7 @@
 ```mermaid
 classDiagram
     class User {
+        -_passwordHash string
         +Id UserId
         +UserName string
         +Email EmailAddress
@@ -12,11 +13,11 @@ classDiagram
         +FirstName string?
         +LastName string?
         +Active bool
-        +PasswordHash string
         +RefreshToken RefreshToken?
 
         +Create(UserId userId, EmailAddress email, UserName userName, PasswordHash passwordHash, FirstName? firstName, LastName? lastName) User$
-        +UpdatePasswordHash(string passwordHash) User
+        +VerifyPassword(string rawPassword) bool
+        +UpdatePassword(string rawPassword) Result
         +UpdateEmail(EmailAddress) User
         +UpdateRefreshToken(RefreshToken refreshToken) User
         +SetActiveState(bool state) User
