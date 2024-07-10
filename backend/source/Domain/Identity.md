@@ -78,18 +78,18 @@ classDiagram
 classDiagram
     class IAuthenticationManager {
         <<interface>>
-        +LoginAsync(string email, string password) Result~TokenResponse~
-        +RefreshTokenAsync(string refreshToken) Result~TokenResponse~
+        +LoginAsync(string email, string password) Result~TokenResult~
+        +RefreshTokenAsync(string refreshToken) Result~TokenResult~
     }
 
     IAuthenticationManager <|-- AuthenticationManager : implements
-    IAuthenticationManager --> Result~TokenResponse~ : Association
+    IAuthenticationManager --> Result~TokenResult~ : Association
 ```
 
 - `IAuthenticationManager` `src/Application/Common/Interfaces/Users/IAuthenticationManager.cs`
 - `AuthenticationManager` `src/Infrastructure/Common/Authentication/AuthenticationManager.cs`
 
-## TokenResponse
+## TokenResult
 
 ```mermaid
 classDiagram
@@ -100,7 +100,7 @@ classDiagram
     }
 ```
 
-- `TokenResponse` `src/Application/Common/Models/Users/TokenResponse.cs`
+- `TokenResult` `src/Application/Common/Models/Users/TokenResult.cs`
 
 ## JwtTokenGenerator
 
@@ -108,11 +108,11 @@ classDiagram
 classDiagram
     class IJwtTokenGenerator {
         <<interface>>
-        +GenerateAccessTokenAsync(User user) Task~TokenResponse~
+        +GenerateAccessTokenAsync(User user) Task~TokenResult~
     }
 
     IJwtTokenGenerator <|-- JwtTokenGenerator : implements
-    IJwtTokenGenerator --> Task~TokenResponse~ : Association
+    IJwtTokenGenerator --> Task~TokenResult~ : Association
 ```
 
 - `IJwtTokenGenerator` `src/Application/Common/Interfaces/Users/IJwtTokenGenerator.cs`
