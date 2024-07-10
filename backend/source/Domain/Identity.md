@@ -87,7 +87,7 @@ classDiagram
     }
 
     IAuthenticationManager <|-- AuthenticationManager : implements
-    IAuthenticationManager --|> Result~TokenResponse~ : returns
+    IAuthenticationManager --> Result~TokenResponse~ : Association
 ```
 
 - `IAuthenticationManager` `src/Application/Common/Interfaces/Users/IAuthenticationManager.cs`
@@ -151,10 +151,15 @@ classDiagram
 
 ```mermaid
 classDiagram
-    class PasswordManager {
-        +HashPassword(string password) Result string
-        +VerifyPassword(string password, string hashedPassword) bool
+    class PasswordHasher {
+        +HashPassword(string password) Result~string~$
+        +VerifyPassword(string password, string hashedPassword) bool$
     }
+
+    class Result {
+    }
+
+    PasswordHasher --> Result~string~ : Association
 ```
 
 - `PasswordManager` `src/Domain/Users/PasswordManager.cs`
@@ -181,35 +186,3 @@ classDiagram
 
 - `IUsersRepository` `src/Domain/Users/Persistence/IUsersRepository.cs`
 - `UserRepository` `src/Infrastructure/Users/UserRepository.cs`
-
-```mermaid
-classDiagram
-    class IRoleRepository {
-        <<interface>>
-
-    }
-
-    class RoleRepository {
-    }
-
-    IRoleRepository <|-- RoleRepository : implements
-```
-
-- `IRoleRepository` `src/Domain/Authorization/Persistence/IRoleRepository.cs`
-- `RoleRepository` `src/Infrastructure/Authorization/RoleRepository.cs`
-
-```mermaid
-classDiagram
-    class IPermissionRepository {
-        <<interface>>
-
-    }
-
-    class PermissionRepository {
-    }
-
-    IPermissionRepository <|-- PermissionRepository : implements
-```
-
-- `IPermissionRepository` `src/Domain/Authorization/Persistence/IPermissionRepository.cs`
-- `PermissionRepository` `src/Infrastructure/Authorization/PermissionRepository.cs`
