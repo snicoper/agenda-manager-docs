@@ -6,7 +6,7 @@ El usuario ha de poder autenticarse con su `Email` y `Password`. En caso de éxi
 
 En caso de error deberá devolver un `Result` con el código de error correspondiente.
 
-En caso de que las credenciales no sean válidas deberá devolver un un error `Error.Conflict` con un simple mensaje de error.
+En caso de que las credenciales no sean válidas deberá devolver un error `Error.Conflict` con un simple mensaje de error.
 
 Crear endpoint `POST` que acepte un **request** con los parámetros `Email` y `Password` para la validación del usuario.
 
