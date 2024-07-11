@@ -55,3 +55,16 @@ Se deberá generar un `AccessToken`, `RefreshToken` y `Expires` con `IJwtTokenGe
 - `Login_ShouldReturnValidationError_WithEmptyPassword`
 - `Login_ShouldReturnConflict_WithInvalidEmailCredentials`
 - `Login_ShouldReturnConflict_WithInvalidPasswordCredentials`
+
+```mermaid
+graph LR
+    A[Inicio] --> B(Realizar login con credenciales válidas)
+    B --> C(Validar la respuesta)
+    C --> D{¿Es éxito?}
+    D -->|Sí| E(Generar token)
+    E --> F(Mostrar token de acceso)
+    D -->|No| G(Mostrar mensaje de error)
+    G --> H[Fin]
+    F --> H[Fin]
+    E --> H[Fin]
+```
