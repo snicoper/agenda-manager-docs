@@ -1,4 +1,4 @@
-# User case Login
+# Use case Login
 
 Autenticación de usuarios.
 
