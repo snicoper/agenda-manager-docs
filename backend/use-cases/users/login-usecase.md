@@ -2,6 +2,8 @@
 
 Autenticación de usuarios.
 
+Endpoint `api/v1/authentication/login`
+
 El usuario ha de poder autenticarse con su `Email` y `Password`. En caso de éxito deberá recibir un `TokenResult` con los datos del token.
 
 En caso de error deberá devolver un `Result` con el código de error correspondiente.
