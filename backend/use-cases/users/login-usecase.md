@@ -35,13 +35,15 @@ Se deberá obtener el usuario por el email dado en el request y comprobar que ex
 
 Si no existe, deberá lanzar un error `Error.Conflict` con el mensaje `Invalid credentials`.
 
-Si existe, se deberá comprobar que la contraseña sea correcta, en caso de que no sea correcta deberá lanzar un error `Error.Conflict` con el mensaje `Invalid credentials`.
+Si existe, se deberá comprobar que la contraseña sea correcta `User.VerifyPassword(string password, IPasswordHasher passwordHasher)`, en caso de que no sea correcta deberá lanzar un error `Error.Conflict` con el mensaje `Invalid credentials`.
+
+El `IPasswordHasher` se requiere inyectar desde el `LoginCommandHandler` para la verificación de la contraseña.
 
 Se deberá comprobar que el usuario este `Active` o deberá lanzar un error `Error.Conflict` con el mensaje `User is not active`.
 
 ## Generar tokens
 
-Se deberá generar un `AccessToken`, `RefreshToken` y `Expires` con `IJwtTokenGenerator.GenerateAccessTokenAsync(user)` y en caso de éxito, deberá actualizar al `User.RefreshToken` y devolver un `TokenResult`.
+Se deberá generar un `AccessToken`, `RefreshToken` y `Expires` con `IJwtTokenGenerator.GenerateAccessTokenAsync(User user)` y en caso de éxito, deberá actualizar al `User.RefreshToken` y devolver un `TokenResult`.
 
 ## Tests
 
