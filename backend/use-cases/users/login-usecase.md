@@ -43,11 +43,11 @@ El `IPasswordHasher` se requiere inyectar desde el `LoginCommandHandler` para la
 
 Se deberá comprobar que el usuario este `Active` o deberá lanzar un error `Error.Conflict` con el mensaje `User is not active`.
 
-## Generar tokens
+## Generar tokens generado
 
-Se deberá generar un `AccessToken`, `RefreshToken` y `Expires` con `IJwtTokenGenerator.GenerateAccessTokenAsync(User user)` y en caso de éxito, deberá actualizar al `User.RefreshToken` y devolver un `TokenResult`.
+Se deberá generar un `AccessToken`, `RefreshToken` y `Expires` con `IJwtTokenGenerator.GenerateAccessTokenAsync(User user)` y en caso de éxito, deberá actualizar el value object `User.RefreshToken` y devolver un `TokenResult`.
 
-## Tests
+## Integration tests
 
 - `Login_ShouldReturnSuccess_WithValidCredentials`
 - `Login_ShouldReturnValidationError_WithInvalidEmail`
