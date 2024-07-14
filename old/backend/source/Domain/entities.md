@@ -1,7 +1,6 @@
 # Entities
 
 ```mermaid
-
 classDiagram
     class User
     class Role
@@ -22,7 +21,7 @@ classDiagram
     class Schedule
     class ScheduleType {
         <<Enumeration>>
-        Event
+        Planned
         Exception
     }
         Schedule --> ScheduleType
@@ -33,7 +32,10 @@ classDiagram
     }
         Appointment --> AppointmentStatus
 
+    class Calendar
     class CalendarEvent
+
+        Calendar --> CalendarEvent
 ```
 
 ## User

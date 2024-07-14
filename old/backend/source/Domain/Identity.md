@@ -5,9 +5,9 @@
 ```mermaid
 classDiagram
     class User {
-        -_passwordHash string
         +Id UserId
         +UserName string
+        +PasswordHash string
         +Email EmailAddress
         +IsEmailConfirmed bool
         +FirstName string?
@@ -16,8 +16,7 @@ classDiagram
         +RefreshToken RefreshToken?
 
         +Create(UserId userId, EmailAddress email, UserName userName, PasswordHash passwordHash, FirstName? firstName, LastName? lastName) User$
-        +VerifyPassword(string rawPassword) bool
-        +UpdatePassword(string rawPassword) Result
+        +UpdatePassword(string passwordHash) Result
         +UpdateEmail(EmailAddress) User
         +UpdateRefreshToken(RefreshToken refreshToken) User
         +SetActiveState(bool state) User
@@ -192,3 +191,64 @@ classDiagram
 
 - `IUserRepository` `src/Domain/Users/Persistence/IUserRepository.cs`
 - `UserRepository` `src/Infrastructure/Users/UserRepository.cs`
+
+## IUserValidator
+
+```mermaid
+classDiagram
+    class IUserValidator {
+        <<interface>>
+        +IsUniqueEmail(EmailAddress email) Result
+    }
+
+    IUserValidator <|-- UserValidator : implements
+```
+
+- `IUserValidator` `src/Domain/Users/Interfaces/IUserValidator.cs`
+- `UserValidator` `src/Infrastructure/Users/UserValidator.cs`
+
+## IPasswordPolicy
+
+```mermaid
+classDiagram
+    class IPasswordPolicy {
+        <<interface>>
+        +IsPasswordValid(string password) Result
+    }
+
+    IPasswordPolicy <|-- StrongPasswordPolicy : implements
+```
+
+- `IPasswordPolicy` `src/Domain/Users/Interfaces/IPasswordPolicy.cs`
+- `StrongPasswordPolicy` `src/Domain/Users/Services/StrongPasswordPolicy.cs`
+
+## UserPasswordService
+
+```mermaid
+classDiagram
+    class UserPasswordService {
+        +CreatePassword(string newPassword) Result~string~
+        +VerifyPassword(string password, string hashedPassword) bool
+    }
+```
+
+- `UserPasswordService` `src/Domain/Users/Services/UserPasswordService.cs`
+
+## UserErrors
+
+```mermaid
+classDiagram
+    class UserErrors {
+        <<static>>
+        +InvalidCredentials Error
+        +UserIsNotActive Error
+        +InvalidFormatPassword Error
+        +EmailAlreadyExists Error
+    }
+```
+
+- `InvalidCredentials` `Error.Conflict` `Invalid credentials`
+- `UserIsNotActive` `Error.Conflict` `User is not active`
+- `InvalidFormatPassword` `Error.Validation` `("Password",
+        "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit and one special character")`
+- `EmailAlreadyExists` `Error.Validation` `("Email", "Email already exists")`
