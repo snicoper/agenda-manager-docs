@@ -1,5 +1,37 @@
 # Notas Agenda
 
+## Descripción Holística del Proyecto "Agenda"
+
+### Visión General
+
+El proyecto "Agenda" es una aplicación de gestión de citas diseñada para facilitar la programación y organización de servicios en una variedad de entornos profesionales. Su objetivo es mejorar la eficiencia en la asignación de recursos, optimizando el tiempo de los profesionales y ofreciendo una experiencia fluida a los usuarios.
+
+### Objetivos del Proyecto
+
+1. **Facilitar la programación de citas**: Permitir a los usuarios reservar citas de manera rápida y sencilla, con la posibilidad de seleccionar servicios y recursos específicos según sus necesidades.
+
+2. **Gestión de recursos y disponibilidad**: Proporcionar una interfaz intuitiva para que los administradores y profesionales puedan gestionar la disponibilidad de los recursos (personal, instalaciones, herramientas, etc.) a través de horarios personalizables y excepciones.
+
+3. **Auditoría y seguimiento de citas**: Implementar un sistema de seguimiento de cambios de estado de las citas, garantizando una trazabilidad completa de cada cita desde su creación hasta su finalización.
+
+4. **Interfaz amigable**: Desarrollar una interfaz que sea accesible y fácil de usar tanto para profesionales como para usuarios finales, asegurando que la programación de citas no sea un proceso complicado.
+
+5. **Integración de roles y permisos**: Crear un sistema robusto de roles y permisos que permita un acceso controlado a diferentes funcionalidades de la aplicación según el tipo de usuario (administrador, profesional, cliente, etc.).
+
+### Público Objetivo
+
+La aplicación está dirigida a diversas industrias y sectores que requieren una gestión eficiente de citas y recursos. Esto incluye, pero no se limita a, profesionales de servicios, consultores, educadores, terapeutas y cualquier organización que necesite coordinar encuentros con sus clientes o usuarios.
+
+### Beneficios Esperados
+
+- **Ahorro de tiempo**: La automatización del proceso de programación de citas reducirá el tiempo dedicado a tareas administrativas, permitiendo a los profesionales enfocarse en su trabajo principal.
+- **Mejora en la satisfacción del usuario**: Al facilitar la programación de citas y ofrecer una gestión transparente de la disponibilidad, los usuarios experimentarán un servicio más fluido y eficiente.
+- **Optimización de recursos**: La gestión efectiva de los recursos permitirá maximizar su uso y minimizar los tiempos de inactividad, mejorando la rentabilidad de las organizaciones.
+
+### Conclusión
+
+El proyecto "Agenda Manager" se posiciona como una solución integral para la gestión de citas en múltiples contextos profesionales, abordando las necesidades tanto de los proveedores de servicios como de sus clientes. A través de una plataforma intuitiva y funcional, se espera que esta herramienta contribuya a una atención más organizada y eficiente en diversos sectores.
+
 ## Diagrama de clases
 
 ```mermaid
@@ -242,12 +274,12 @@ Si elijo un `ResourceType` que `RequiredRole` es null, simplemente relleno campo
 
 Si elijo un `ResourceType` que `RequiredRole` es un `RoleId`, entonces el `Resource` debe tener un `UserId` que sea un `User` que tenga ese `RoleId`.
 
-* Un `ResourceSchedule` tiene asociado un `Resource`.
-* Un `ResourceSchedule` representa la disponibilidad de un `Resource`.
-* Los `ResourceSchedule` tienen dos tipos, `Available` y `Unavailable`.
-* Un `ResourceSchedule` tiene asociado un `Period`.
-* Un `ResourceSchedule` tienen disponibilidad diaria con `WeekDays`.
-* Un `Resource` puede tener uno o varios `ResourceSchedule`.
+- Un `ResourceSchedule` tiene asociado un `Resource`.
+- Un `ResourceSchedule` representa la disponibilidad de un `Resource`.
+- Los `ResourceSchedule` tienen dos tipos, `Available` y `Unavailable`.
+- Un `ResourceSchedule` tiene asociado un `Period`.
+- Un `ResourceSchedule` tienen disponibilidad diaria con `WeekDays`.
+- Un `Resource` puede tener uno o varios `ResourceSchedule`.
 
 Por ejemplo, supongamos que tenemos un `Resource` que es un `Anestesista` y queremos que sea disponible de lunes a viernes de 8:00 a 12:00 y de 14:00 a 18:00.
 
@@ -274,18 +306,18 @@ Los `ResourceScheduleType` -> `Unavailable` tienen prioridad sobre los `Resource
 
 ## Services
 
-* Un `Service` son **servicios** e indica los `ResourceType[]` necesarios para realizar el `Service`.
-* Un `Service` tiene asociado un `Calendar`.
+- Un `Service` son **servicios** e indica los `ResourceType[]` necesarios para realizar el `Service`.
+- Un `Service` tiene asociado un `Calendar`.
 
 Para ver su comportamiento, ver [`Resources`](./#resources)
 
 ## Appointments
 
-* Un `Appointment` representa una cita programada en un `Calendar`.
-* Un `Appointment` tiene asociado un `Service`.
-* Un `Appointment` tiene un `AppointmentStatus` que representa el estado de la cita por defecto `Pending`.
-* Un `AppointmentStatusChange` tiene asociado un `Appointment` y es un registro de auditoría de los cambios de estado de un `Appointment`.
-* Un `AppointmentStatusChange` representa el cambio de estado de un `Appointment`.
+- Un `Appointment` representa una cita programada en un `Calendar`.
+- Un `Appointment` tiene asociado un `Service`.
+- Un `Appointment` tiene un `AppointmentStatus` que representa el estado de la cita por defecto `Pending`.
+- Un `AppointmentStatusChange` tiene asociado un `Appointment` y es un registro de auditoría de los cambios de estado de un `Appointment`.
+- Un `AppointmentStatusChange` representa el cambio de estado de un `Appointment`.
 
 Para la creación de un `Appointment` se debe tener en cuenta que el tipo de cita que se quiere crear, para ello usamos el `Service`.
 
@@ -295,11 +327,11 @@ Por ejemplo, si queremos crear una cita de tipo **Extracción de diente**, se ob
 
 Imaginemos que el servicio de **Extracción de diente** necesita los siguientes `ResourceType[]`:
 
-* Anestesista
-* Cirujano
-* Enfermera
-* Box de cirugía
-* Instrumental quirúrgico X
+- Anestesista
+- Cirujano
+- Enfermera
+- Box de cirugía
+- Instrumental quirúrgico X
 
 Se obtendrán los `Resource[]` que tengan los `ResourceType` que se necesitan para realizar el servicio.
 
