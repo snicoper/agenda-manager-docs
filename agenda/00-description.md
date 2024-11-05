@@ -8,102 +8,31 @@
 
 Crear una Agenda para gestión de citas.
 
-Se necesita gestionar los `Appointment` de los `Clients` (Role) en un `Calendar`.
+Se necesita gestionar los `Appointment` de los `User` en un `Calendar`.
 
-Se debe de contar con unos `Resource` y tipos de recursos `ResourceType` para poder gestionar los recursos de la agenda.
+Se debe de contar con unos `Resource` y tipos de recursos `Resource.ResourceType` para poder gestionar los recursos de la agenda.
 
-Los `Resource` con `especialidad` pueden ser `Users` o generados de manera dinámica.
+`Resource.ResourceType` puede ser (Person, Place, Equipment), si es `Person` deberá tener una relación con un `User`.
 
-`ResourceType` puede ser `Box` o `Equipment` y uno de ellos debe ser de tipo `Person` (inmutable).
+Los `Resource` deberán tener uno o varios `ResourceSchedule` con el tiempo de disponibilidad en un rango de `StartDate` y `EndDate`.
 
-Los `Resource` deberán tener `CalendarEvent` con el tiempo de disponibilidad en un rango de `Start` y `End`.
+Los `ResourceSchedule.ResourceScheduleType` tendrá uno valor de `Available` o `Unavailable` que se aplica a un rango de `Period` y los días de la semana que se aplican `Service.AvailableDays` [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday]
 
-También los `Resource` podrán tener `CalendarEvent` con un `Unavailable` que se aplica a un rango de `Start` y `End` y los días de la semana que se aplican (Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday).
+Las `ResourceSchedule.ResourceScheduleType` de tipo `Unavailable` tendrán precedencia a los de tipo `Available`.
 
-Para los diferentes tipos de `CalendarEvent`, se deberá tener un `ScheduleType` que indica si es un evento `Available` o un evento `Unavailable`.
+Un `Service` indicará los `Resource[]` y el `Period` necesario para poder crear un `Appointment`.
 
-Las `ScheduleType` de tipo `Unavailable` tendrán precedencia a los de tipo `Available`.
+Los `Appointment` deberán tener seguimiento del estado de la cita tipo (Pending, Accepted, Waiting, Canceled, PendingReschedule, InProgress, Completed) y se vera su estado en `Appointment.AppointmentStatus`.
 
-Se deberá poder añadir `CalendarEvents` indicando los `Resource` y el tiempo necesario para crear un `Appointment`.
+Un `Appointment` tendrá una relación con `AppointmentStatusChange` se tendrá el historial de los cambios de estado de la cita.
 
-Los `Appointment` deberán tener seguimiento del estado de la cita tipo (Pending, Accepted, Rejected, Canceled, Completed) y se vera su estado en `AppointmentStatus`.
-
-`CalendarHoliday` Determinas días festivos que no se podrán programar citas, precedencia mas alta que los `ResourceSchedule`.
-
-## Apuntes y notas que voy recopilando
-
-`CalendarEvent`
-
-* **CalendarEvent**
-  * **Ortodoncia**
-  * **Recursos**
-    * **Ortodoncia** (Seleccionar en base a disponibilidad de los recursos y horarios de una lista de resources categorizados como ortodoncistas)
-    * **Anestesista** (Seleccionar en base a disponibilidad de los recursos y horarios de una lista de resources categorizados como anestesistas)
-    * **Box** (Seleccionar en base a disponibilidad de los recursos y horarios de una lista de resources categorizados como box)
-    * **Instrumental (opcional)** (Seleccionar en base a disponibilidad de los recursos y horarios de una lista de resources categorizados como instrumental)
-  * **Duración** 1 hora
-
-Por lo tanto y desde el punto de vista de administración (back office se podría llamar también?)
-
-* Crear recursos (users, boxes, instrumentals, etc), asignar al recurso la especialidad que se le asigna.
-* Los de tipo users, [mostrar lista de usuarios en el sistema (quiza filtrando por roles)]
-* Los de tipo boxes, instrumental, etc, (a esto se le ha de dar una vuelta)
-* Schedule de tipo Available para asignar a los recursos de tipo users, la disponibilidad de horarios para cada día de la semana entre un rango de fechas.
-* Schedule de tipo Unavailable, simplemente una Exception a un recurso, por ejemplo que se va de vacaciones, etc.
-* CalendarEvent, asignar un conjunto de especialidades necesarias y recursos necesarios (estos mas bien de tipo box o instrumental) y una duración.
-
-De esta manera, para crear un Appointment de tipo CalendarEvent, por ejemplo extracción, ya el sistema sabe que recursos necesita y la duración.
-
-**Back office - Administración:**
-
-1. **Resource:**
-    * **Users:**
-        * **Filtro por roles:**  Permite a los administradores filtrar por roles (Doctor, Anestesista, Higienista,
-etc.) para gestionar usuarios específicos.
-        * **Asigna especialidades:**  Cada usuario puede tener una o varias especialidades asociadas.
-    * **Boxes:**
-        * **Descripción:** Nombre del box, ubicación, capacidad, etc.
-        * **Tipo:**  Podría tener categorías como "Cirugía", "Ortodoncia", "General", etc.
-        * **Disponibilidad:**  Estado actual (Disponible, Ocupado), con posibilidad de programar la disponibilidad
-a largo plazo.
-    * **Equipment:**
-        * **Descripción:** Nombre del instrumental, tipo, categoría.
-        * **Estado:** Disponible, en uso, mantenimiento.
-        * **Ubicación:**  Asociado a un box o categoría específica.
-2. **ResourceSchedule:**
-    * **Available:**
-        * **Recurso:**  Usuario (Doctor, Anestesista, etc.)
-        * **Disponibilidad:**  Horarios disponibles para cada día de la semana dentro de un rango de fechas.
-        * **Notificaciones:** Recordatorios para el usuario y los administradores sobre eventos próximos.
-    * **Unavailable:**
-        * **Recurso:** Usuario
-        * **Fecha y hora:** Periodo de inactividad o ausencia.
-        * **Motivo:** Vacaciones, capacitación, enfermedad, etc.
-3. **CalendarEvent:**
-    * **Nombre:**  Nombre del servicio (extracción, ortodoncia, limpieza, etc.)
-    * **Especialidades necesarias:**  Listado de especialidades requeridas para el servicio.
-    * **Recursos:**
-        * **Boxes:**  Boxes específicos necesarios para el servicio.
-        * **Instrumentals:**  Instrumentales específicos requeridos para el servicio.
-    * **Duración:** Tiempo estimado para realizar el servicio.
-4. **Appointment:** Cita programada con un servicio específico en un horario determinado.
-    * **Estado:**  Estado actual de la cita (Pendiente, Aceptada, Rechazada, Cancelada, Completada).
-    * **Notificaciones:**  Recordatorios para el usuario y los administradores sobre eventos próximos.
-5. **Calendar:**
-
-**Para crear un Appointment:**
-
-1. **Seleccionar CalendarEvent:**  El sistema muestra los servicios disponibles.
-2. **Elegir fecha y hora:**  Se muestra la disponibilidad de los recursos (usuarios, boxes, instrumentals) para la
-fecha y hora elegida.
-3. **Confirmar:**  El sistema genera la cita, asignando los recursos necesarios.
-4. **Notificaciones:**  Se envían notificaciones al usuario (paciente) y al equipo de atención.
+`CalendarHoliday` Determina días festivos que no se podrán programar citas, precedencia mas alta que los `ResourceSchedule`.
 
 ## Domain Model
 
 ### Calendars
 
-* El `Calendar` representa un conjunto de eventos que se pueden programar en un `Calendar`, cada `Calendar` tendrá sus propios `Resource`, `CalendarEvent`, etc.
+* El `Calendar` representa un conjunto de eventos que se pueden programar en un `Calendar`, cada `Calendar` tendrá sus propios `Resource`, `Service`, etc.
 * En `Calendar` comparte todos los `User` del sistema.
 
 ### CalendarHolidays
@@ -112,7 +41,7 @@ fecha y hora elegida.
 
 ### Resources
 
-* Un `Resource` representa un recurso que puede ser utilizado en un `CalendarEvent`.
+* Un `Resource` representa un recurso que puede ser utilizado en un `Service`.
 * Los `Resource` pueden ser de diferentes tipos, como `User`, `Box`, `Instrumental`.
 
 ### ResourceSchedules
@@ -124,16 +53,21 @@ fecha y hora elegida.
 * Un `ResourceSchedule` tienes disponibilidad diaria con `WeekDays`.
 * Un `Resource` puede tener uno o varios `ResourceSchedule`.
 
-### CalendarEvents
+### Services
 
-* Un `CalendarEvent` son **servicios** e indica los `ResourceType` necesarios para realizar el `CalendarEvent`.
-* Un `CalendarEvent` tiene asociado un `Calendar`.
+* Un `Service` son **servicios** e indica los `Resource[]` necesarios para realizar el `Service`.
+* Un `Service` tiene asociado un `Calendar`.
 
 ### Appointments
 
 * Un `Appointment` representa una cita programada en un `Calendar`.
-* Un `Appointment` tiene asociado un `CalendarEvent`.
+* Un `Appointment` tiene asociado un `Service`.
 * Un `Appointment` tiene un `AppointmentStatus` que representa el estado de la cita.
+
+### AppointmentStatusChange
+
+* Un `AppointmentStatusChange` tiene asociado un `Appointment` y es un registro de auditoría de los cambios de estado de un `Appointment`.
+* Un `AppointmentStatusChange` representa el cambio de estado de un `Appointment`.
 
 ### Users
 
@@ -144,7 +78,182 @@ fecha y hora elegida.
 
 Algunos de los **Enums** o **ValueObjects** que se utilizan en el sistema.
 
-* `ResourceType` **Enum** de los tipos de `Resource`.
-* `Period` **ValueObject** que representa un periodo de tiempo.
-* `AppointmentStatus` **Enum** de los estados de un `Appointment`.
-* `WeekDays` **Enum** de los días de la semana.
+* `ResourceType` **Enum** de los tipos de `Resource` (`User`, `Box`, `Instrumental`).
+* `Period` **ValueObject** que representa un periodo de tiempo (`StartDate`, `EndDate`).
+* `AppointmentStatus` **Enum** de los estados de un `Appointment` (`Pending`, `Accepted`, `Waiting`, `Cancelled`, `PendingReschedule`, `InProgress` `Completed`).
+* `WeekDays` **Enum** de los días de la semana (`Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday`, `Saturday`, `Sunday`).
+
+## Diagrama de clases
+
+```mermaid
+classDiagram
+    class Calendar {
+        + Id: CalendarId
+        + Name: string
+        + Description: string
+    }
+
+    class CalendarHoliday {
+        + Id: CalendarHolidayId
+        + CalendarId: CalendarId
+        + Calendar: Calendar
+        + Period: Period
+    }
+
+    class Resource {
+        + Id: ResourceId
+        + UserId?: UserId
+        + CalendarId: CalendarId
+        + Calendar: Calendar
+        + ResourceTypeId: ResourceTypeId
+        + ResourceType: ResourceType
+        + Name: string
+        + Description: string
+        + ColorScheme: ColorScheme
+        + Schedules: ICollection~ResourceSchedule~
+    }
+
+    class ResourceType {
+        + Id: ResourceTypeId
+        + Name: string
+        + Description: string
+    }
+
+    class ResourceSchedule {
+        + Id: ResourceScheduleId
+        + ResourceId: ResourceId
+        + Resource: Resource
+        + CalendarId: CalendarId
+        + Calendar: Calendar
+        + Period: Period
+        + Type: ResourceScheduleType
+        + AvailableDays: List~WeekDays~
+        + Name: string
+        + Description: string
+    }
+
+    class Service {
+        + Id: ServiceId
+        + CalendarId: CalendarId
+        + Calendar: Calendar
+        + Duration: TimeSpan
+        + Name: string
+        + Description: string
+        + ColorScheme: ColorScheme
+        + ResourceRequirements: ICollection~ResourceType~
+    }
+
+    class Appointment {
+        + Id: AppointmentId
+        + ServiceId: ServiceId
+        + Service: Service
+        + CalendarId: CalendarId
+        + Calendar: Calendar
+        + UserId: UserId
+        + User: User
+        + Period: Period
+        + Duration: TimeSpan
+        + Status: AppointmentStatus
+        + StatusChanges: ICollection~AppointmentStatusChange~
+    }
+
+    class AppointmentStatusChange {
+        + Id: AppointmentStatusChangeId
+        + AppointmentId: AppointmentId
+        + Appointment: Appointment
+        + Period: Period
+        + Status: AppointmentStatus
+        + Description?: string
+    }
+
+    class User {
+        + Id: UserId
+        + Resources: ICollection~Resource~
+    }
+
+    class Period {
+        <<ValueObject>>
+        + StartDate: DateTimeOffset
+        + EndDate: DateTimeOffset
+    }
+
+    class ColorScheme {
+        <<ValueObject>>
+        + TextColor: string
+        + BackgroundColor: string
+    }
+
+    class AppointmentStatus {
+        <<enumeration>>
+        Pending
+        Accepted
+        Waiting
+        Cancelled
+        PendingReschedule
+        InProgress
+        Completed
+    }
+
+    class WeekDays {
+        <<enumeration>>
+        Monday
+        Tuesday
+        Wednesday
+        Thursday
+        Friday
+        Saturday
+        Sunday
+    }
+
+    class ResourceScheduleType {
+        <<enumeration>>
+        Available
+        Unavailable
+    }
+
+    %% Relaciones
+    Calendar "1" <--> "0..*" CalendarHoliday : contains
+    Calendar "1" <--> "0..*" Resource : contains
+    Calendar "1" <--> "0..*" Service : contains
+    Calendar "1" <--> "0..*" Appointment : schedules
+
+    Resource "1" <--> "0..*" ResourceSchedule : has
+
+    ResourceType "1" <--> "0..*" Resource : categorizes
+
+    Service "1" <--> "0..*" Appointment : has
+
+    User "1" <--> "0..*" Resource : owns
+
+    Appointment "1" <--> "0..*" AppointmentStatusChange : records
+
+    AppointmentStatus "1" <--> "0..*" AppointmentStatusChange : defines
+
+    Period "1" <--> "0..*" ResourceSchedule : defines
+    Period "1" <--> "0..*" CalendarHoliday : defines
+    Period "1" <--> "0..*" Appointment : schedules
+
+    ColorScheme "1" <--> "0..1" Resource : styles
+    ColorScheme "1" <--> "0..1" Service : styles
+```
+
+### Descripción de las Relaciones
+
+* `Calendar` - `CalendarHoliday`: Un `Calendar` contiene varios `CalendarHoliday`, que representan los días festivos asociados al calendario.
+* `Calendar` - `Resource`: Un `Calendar` es utilizado por múltiples `Resource` para programar su disponibilidad o sus horarios.
+* `Calendar` - `ResourceSchedule`: Un `Calendar` puede contener varios `ResourceSchedule`, que representan los horarios de disponibilidad o indisponibilidad de los recursos.
+* `Calendar` - `Service`: Un `Service` puede estar asociado a un `Calendar` que coordina su programación de citas.
+* `Calendar` - `Appointment`: Un Appointment puede estar vinculado a un `Calendar`, que establece el contexto temporal para dicha cita.
+* `Resource` - `ResourceType`: Un `Resource` se clasifica mediante un `ResourceType`, que define el tipo de recurso (por ejemplo, **Persona**, **Place** o **Instrumental**).
+* `Resource` - `ResourceSchedule`: Un `Resource` tiene múltiples `ResourceSchedule` que indican sus horarios de disponibilidad o excepciones.
+* `Resource` - `User`: Opcionalmente, un `Resource` puede estar asociado a un User si es de tipo **Persona**.
+* `Service` - `ResourceType`: Un `Service` requiere varios `ResourceType`, especificando los tipos de recursos necesarios para realizar el servicio.
+* `Appointment` - `Service`: Una Appointment está basada en un `Service`, que define los requisitos de recursos y la duración.
+* `Appointment` - `AppointmentStatusChange`: Una `Appointment` puede tener múltiples `AppointmentStatusChange` que documentan los cambios de estado.
+* `Appointment` - `Calendar`: Cada Appointment está asociada a un `Calendar` que organiza su horario.
+* `Appointment` - `User`: Una Appointment está vinculada al User que la creó.
+* `Period` - `ResourceSchedule / CalendarHoliday / Appointment`: El `Period` representa el rango de tiempo y es utilizado en `ResourceSchedule`, `CalendarHoliday`, y `Appointment`.
+* `ColorScheme` - `Resource / Service`: ColorScheme se utiliza opcionalmente para definir el estilo visual de `Resource` y `Service`.
+* `AppointmentStatusChange` - `AppointmentStatus`: Cada `AppointmentStatusChange` captura un estado específico definido por `AppointmentStatus`.
+
+---
