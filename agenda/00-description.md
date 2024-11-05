@@ -117,6 +117,7 @@ classDiagram
         + Id: ResourceTypeId
         + Name: string
         + Description: string
+        + Resources: ICollection~Resource~
     }
 
     class ResourceSchedule {
@@ -211,49 +212,61 @@ classDiagram
         Unavailable
     }
 
-    %% Relaciones
-    Calendar "1" <--> "0..*" CalendarHoliday : contains
-    Calendar "1" <--> "0..*" Resource : contains
-    Calendar "1" <--> "0..*" Service : contains
-    Calendar "1" <--> "0..*" Appointment : schedules
+    Calendar "1" --> "*" CalendarHoliday
 
-    Resource "1" <--> "0..*" ResourceSchedule : has
+    Calendar "1" --> "0..*" Resource
+    Calendar "1" --> "0..*" Appointment
+    Calendar "1" --> "0..*" Service
+    Calendar "1" --> "0..*" ResourceSchedule
 
-    ResourceType "1" <--> "0..*" Resource : categorizes
+    ResourceType "1" --> "0..*" Resource
 
-    Service "1" <--> "0..*" Appointment : has
+    User "1" --> "0..*" Resource
+    User "1" --> "0..*" Appointment
 
-    User "1" <--> "0..*" Resource : owns
+    Resource "1" --> "0..*" ResourceSchedule
 
-    Appointment "1" <--> "0..*" AppointmentStatusChange : records
+    Service "1" --> "0..*" Appointment
 
-    AppointmentStatus "1" <--> "0..*" AppointmentStatusChange : defines
+    Appointment "1" --> "0..*" AppointmentStatusChange
 
-    Period "1" <--> "0..*" ResourceSchedule : defines
-    Period "1" <--> "0..*" CalendarHoliday : defines
-    Period "1" <--> "0..*" Appointment : schedules
-
-    ColorScheme "1" <--> "0..1" Resource : styles
-    ColorScheme "1" <--> "0..1" Service : styles
+    %% Relaciones adicionales con enumeraciones y value objects
+    ResourceSchedule --> ResourceScheduleType
+    ResourceSchedule --> WeekDays
+    Appointment --> AppointmentStatus
+    AppointmentStatusChange --> AppointmentStatus
+    CalendarHoliday --> Period
+    ResourceSchedule --> Period
+    Appointment --> Period
+    AppointmentStatusChange --> Period
+    Service --> ColorScheme
+    Resource --> ColorScheme
 ```
 
 ### Descripción de las Relaciones
 
-* `Calendar` - `CalendarHoliday`: Un `Calendar` contiene varios `CalendarHoliday`, que representan los días festivos asociados al calendario.
-* `Calendar` - `Resource`: Un `Calendar` es utilizado por múltiples `Resource` para programar su disponibilidad o sus horarios.
-* `Calendar` - `ResourceSchedule`: Un `Calendar` puede contener varios `ResourceSchedule`, que representan los horarios de disponibilidad o indisponibilidad de los recursos.
-* `Calendar` - `Service`: Un `Service` puede estar asociado a un `Calendar` que coordina su programación de citas.
-* `Calendar` - `Appointment`: Un Appointment puede estar vinculado a un `Calendar`, que establece el contexto temporal para dicha cita.
-* `Resource` - `ResourceType`: Un `Resource` se clasifica mediante un `ResourceType`, que define el tipo de recurso (por ejemplo, **Persona**, **Place** o **Instrumental**).
-* `Resource` - `ResourceSchedule`: Un `Resource` tiene múltiples `ResourceSchedule` que indican sus horarios de disponibilidad o excepciones.
-* `Resource` - `User`: Opcionalmente, un `Resource` puede estar asociado a un User si es de tipo **Persona**.
-* `Service` - `ResourceType`: Un `Service` requiere varios `ResourceType`, especificando los tipos de recursos necesarios para realizar el servicio.
-* `Appointment` - `Service`: Una Appointment está basada en un `Service`, que define los requisitos de recursos y la duración.
-* `Appointment` - `AppointmentStatusChange`: Una `Appointment` puede tener múltiples `AppointmentStatusChange` que documentan los cambios de estado.
-* `Appointment` - `Calendar`: Cada Appointment está asociada a un `Calendar` que organiza su horario.
-* `Appointment` - `User`: Una Appointment está vinculada al User que la creó.
-* `Period` - `ResourceSchedule / CalendarHoliday / Appointment`: El `Period` representa el rango de tiempo y es utilizado en `ResourceSchedule`, `CalendarHoliday`, y `Appointment`.
-* `ColorScheme` - `Resource / Service`: ColorScheme se utiliza opcionalmente para definir el estilo visual de `Resource` y `Service`.
-* `AppointmentStatusChange` - `AppointmentStatus`: Cada `AppointmentStatusChange` captura un estado específico definido por `AppointmentStatus`.
+1. **Calendar - CalendarHoliday (1 a muchos):** Cada calendario puede tener múltiples días festivos (`CalendarHoliday`), y cada día festivo pertenece a un único calendario.
 
----
+2. **Calendar - Resource (1 a muchos):** Cada recurso (`Resource`) está asociado a un solo calendario (`Calendar`), mientras que un calendario puede tener múltiples recursos asignados.
+
+3. **ResourceType - Resource (1 a muchos):** Cada recurso tiene un tipo (`ResourceType`), y un tipo de recurso puede ser compartido entre varios recursos.
+
+4. **User - Resource (1 a muchos):** Un usuario (`User`) puede tener múltiples recursos asignados a él, pero cada recurso puede pertenecer a un solo usuario.
+
+5. **Calendar - ResourceSchedule (1 a muchos):** Un calendario puede tener múltiples horarios de recursos (`ResourceSchedule`), y cada horario pertenece a un solo calendario.
+
+6. **Resource - ResourceSchedule (1 a muchos):** Cada recurso puede tener múltiples horarios (`ResourceSchedule`), mientras que un horario está asociado a un solo recurso.
+
+7. **Calendar - Service (1 a muchos):** Un calendario puede tener varios servicios (`Service`), mientras que cada servicio está vinculado a un solo calendario.
+
+8. **Service - Appointment (1 a muchos):** Un servicio puede estar asociado a múltiples citas (`Appointment`), y cada cita está vinculada a un solo servicio.
+
+9. **Calendar - Appointment (1 a muchos):** Un calendario puede tener varias citas (`Appointment`), y cada cita está asignada a un único calendario.
+
+10. **User - Appointment (1 a muchos):** Un usuario puede tener múltiples citas, pero cada cita está asociada a un solo usuario.
+
+11. **Appointment - AppointmentStatusChange (1 a muchos):** Una cita puede tener múltiples cambios de estado (`AppointmentStatusChange`), mientras que cada cambio de estado pertenece a una sola cita.
+
+12. **Appointment - AppointmentStatus (1 a 1):** Cada cita tiene un estado (`AppointmentStatus`) que indica el estado actual de la cita.
+
+13. **AppointmentStatusChange - AppointmentStatus (1 a 1):** Cada cambio de estado de una cita (`AppointmentStatusChange`) está vinculado a un estado específico.
