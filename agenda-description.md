@@ -71,6 +71,7 @@ classDiagram
         + Description: string
         + RequiredRole?: RoleId
         + Resources: ICollection~Resource~
+        + Services: ICollection~Service~
     }
 
     class ResourceSchedule {
@@ -167,23 +168,16 @@ classDiagram
         Unavailable
     }
 
-    Calendar "1" --> "*" CalendarHoliday
-
-    Calendar "1" --> "0..*" Resource
-    Calendar "1" --> "0..*" Appointment
-    Calendar "1" --> "0..*" Service
-    Calendar "1" --> "0..*" ResourceSchedule
-
-    ResourceType "1" --> "0..*" Resource
-
-    User "1" --> "0..*" Resource
-    User "1" --> "0..*" Appointment
-
-    Resource "1" --> "0..*" ResourceSchedule
-
-    Service "1" --> "0..*" Appointment
-
-    Appointment "1" --> "0..*" AppointmentStatusChange
+    %% Relaciones
+    ResourceType "0..*" --> "0..*" Service : "Has"
+    Resource "0..*" --> "0..*" ResourceType : "Belongs to"
+    Resource "0..*" --> "0..*" ResourceSchedule : "Has"
+    Resource "0..*" --> "0..*" Calendar : "Uses"
+    Service "0..*" --> "0..*" Calendar : "Uses"
+    Appointment "0..*" --> "1" Service : "Contains"
+    Appointment "0..*" --> "1" User : "Belongs to"
+    AppointmentStatusChange "0..*" --> "1" Appointment : "Belongs to"
+    User "0..*" --> "0..*" Resource : "Owns"
 
     %% Relaciones adicionales con enumeraciones y value objects
     ResourceSchedule --> ResourceScheduleType
@@ -197,34 +191,6 @@ classDiagram
     Service --> ColorScheme
     Resource --> ColorScheme
 ```
-
-### Descripción de las Relaciones
-
-1. **Calendar - CalendarHoliday (1 a muchos):** Cada calendario puede tener múltiples días festivos (`CalendarHoliday`), y cada día festivo pertenece a un único calendario.
-
-2. **Calendar - Resource (1 a muchos):** Cada recurso (`Resource`) está asociado a un solo calendario (`Calendar`), mientras que un calendario puede tener múltiples recursos asignados.
-
-3. **ResourceType - Resource (1 a muchos):** Cada recurso tiene un tipo (`ResourceType`), y un tipo de recurso puede ser compartido entre varios recursos.
-
-4. **User - Resource (1 a muchos):** Un usuario (`User`) puede tener múltiples recursos asignados a él, pero cada recurso puede pertenecer a un solo usuario.
-
-5. **Calendar - ResourceSchedule (1 a muchos):** Un calendario puede tener múltiples horarios de recursos (`ResourceSchedule`), y cada horario pertenece a un solo calendario.
-
-6. **Resource - ResourceSchedule (1 a muchos):** Cada recurso puede tener múltiples horarios (`ResourceSchedule`), mientras que un horario está asociado a un solo recurso.
-
-7. **Calendar - Service (1 a muchos):** Un calendario puede tener varios servicios (`Service`), mientras que cada servicio está vinculado a un solo calendario.
-
-8. **Service - Appointment (1 a muchos):** Un servicio puede estar asociado a múltiples citas (`Appointment`), y cada cita está vinculada a un solo servicio.
-
-9. **Calendar - Appointment (1 a muchos):** Un calendario puede tener varias citas (`Appointment`), y cada cita está asignada a un único calendario.
-
-10. **User - Appointment (1 a muchos):** Un usuario puede tener múltiples citas, pero cada cita está asociada a un solo usuario.
-
-11. **Appointment - AppointmentStatusChange (1 a muchos):** Una cita puede tener múltiples cambios de estado (`AppointmentStatusChange`), mientras que cada cambio de estado pertenece a una sola cita.
-
-12. **Appointment - AppointmentStatus (1 a 1):** Cada cita tiene un estado (`AppointmentStatus`) que indica el estado actual de la cita.
-
-13. **AppointmentStatusChange - AppointmentStatus (1 a 1):** Cada cambio de estado de una cita (`AppointmentStatusChange`) está vinculado a un estado específico.
 
 ## Agenda
 
