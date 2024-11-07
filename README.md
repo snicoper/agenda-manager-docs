@@ -1,6 +1,6 @@
 # README.md
 
-TODO: Mover a documentacion apuntes-next
+TODO: Mover a documentación apuntes-next
 
 Enum con `[Flags]` `WeekDays`
 

@@ -47,7 +47,7 @@ classDiagram
         + CalendarId: CalendarId
         + Calendar: Calendar
         + Period: Period
-        + AvailableDays: List~WeekDays~
+        + AvailableDays: WeekDays
         + Name: string
         + Description: string
     }
@@ -153,6 +153,7 @@ classDiagram
 
     class WeekDays {
         <<enumeration>>
+        None
         Monday
         Tuesday
         Wednesday
@@ -160,6 +161,9 @@ classDiagram
         Friday
         Saturday
         Sunday
+        Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday,
+        Weekend = Saturday | Sunday,
+        All = Weekdays | Weekend
     }
 
     class ResourceScheduleType {
@@ -169,11 +173,12 @@ classDiagram
     }
 
     %% Relaciones
+    Calendar "1" <-- "0..*" CalendarHoliday : "Has"
+    Calendar "1" --> "0..*" Service : "has"
     ResourceType "0..*" --> "0..*" Service : "Has"
     Resource "0..*" --> "0..*" ResourceType : "Belongs to"
     Resource "0..*" --> "0..*" ResourceSchedule : "Has"
     Resource "0..*" --> "0..*" Calendar : "Uses"
-    Service "0..*" --> "0..*" Calendar : "Uses"
     Appointment "0..*" --> "1" Service : "Contains"
     Appointment "0..*" --> "1" User : "Belongs to"
     AppointmentStatusChange "0..*" --> "1" Appointment : "Belongs to"
@@ -185,6 +190,7 @@ classDiagram
     Appointment --> AppointmentStatus
     AppointmentStatusChange --> AppointmentStatus
     CalendarHoliday --> Period
+    CalendarHoliday --> WeekDays
     ResourceSchedule --> Period
     Appointment --> Period
     AppointmentStatusChange --> Period
@@ -192,13 +198,15 @@ classDiagram
     Resource --> ColorScheme
 ```
 
-## Agenda
+## Calendar
 
 El `Calendar` representa un conjunto de eventos que se pueden programar en un `Calendar`, cada `Calendar` tendrá sus propios `Resource`, `Service`, `Appointment`, etc.
 
 En `Calendar` comparte todos los `User` del sistema.
 
 Se trata de una agrupación de los `Appointment` creados en el `Calendar`.
+
+## CalendarHoliday
 
 Un `CalendarHoliday` representa rango de días festivos en un `Calendar`, aplicable a todos los `ResourceSchedules` del `Calendar`.
 
