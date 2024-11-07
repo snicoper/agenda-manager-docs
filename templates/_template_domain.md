@@ -24,7 +24,7 @@ Ejemplo:
 
 ## Asociaciones
 
-- **Calendar**: Un `CalendarHoliday` pertenece a un [`Calendar`](./calendar.md).
+- **Calendar**: Un `CalendarHoliday` pertenece a un [Calendar](./calendar.md).
 - **Period**: Un `CalendarHoliday` tiene un `Period` que representa el rango de días festivos.
 - **WeekDays**: Un `CalendarHoliday` tiene una enumeración de días de la semana disponibles.
 
