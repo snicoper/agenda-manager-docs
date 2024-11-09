@@ -36,24 +36,24 @@ La clase `User` representa a un usuario en el sistema de gestión de agenda. Cad
 
 ## Propiedades
 
-| Propiedad       | Tipo                      | Descripción                                                |
-|-----------------|---------------------------|------------------------------------------------------------|
-| `UserId`        | `UserId`                  | Identificador único del usuario.                           |
-| `PasswordHash`  | `string`                  | Hash de la contraseña del usuario.                         |
-| `Email`         | `EmailAddress`            | Dirección de correo electrónico única del usuario.         |
-| `IsEmailConfirmed` | `bool`                  | Estado de confirmación del email del usuario.             |
-| `FirstName`     | `string?`                 | Nombre del usuario, puede ser `null`.                      |
-| `LastName`      | `string?`                 | Apellido del usuario, puede ser `null`.                    |
-| `Active`        | `bool`                    | Estado de actividad del usuario.                           |
-| `RefreshToken`  | `RefreshToken?`           | Token de actualización del usuario, puede ser `null`.      |
-| `Roles`         | `IReadOnlyCollection<Role>` | Lista de roles asociados al usuario.                     |
+| Propiedad           | Tipo                      | Descripción                                                |
+|---------------------|---------------------------|------------------------------------------------------------|
+| `UserId`            | `UserId`                  | Identificador único del usuario.                           |
+| `PasswordHash`      | `string`                  | Hash de la contraseña del usuario.                         |
+| `Email`             | `EmailAddress`            | Dirección de correo electrónico única del usuario.         |
+| `IsEmailConfirmed`  | `bool`                    | Estado de confirmación del email del usuario.              |
+| `FirstName`         | `string?`                 | Nombre del usuario, puede ser `null`.                      |
+| `LastName`          | `string?`                 | Apellido del usuario, puede ser `null`.                    |
+| `Active`            | `bool`                    | Estado de actividad del usuario.                           |
+| `RefreshToken`      | `RefreshToken?`           | Token de actualización del usuario, puede ser `null`.      |
+| `Roles`             | `IReadOnlyCollection<Role>` | Lista de roles asociados al usuario.                     |
 
 ## Asociaciones
 
 - **User**: Un `User` tiene un `UserId` único que identifica al usuario.
 - **User**: Un `User` tiene una dirección de correo electrónico única que identifica al usuario.
 - **User**: Un `User` puede tener un `RefreshToken` que le permite acceder a los recursos del sistema.
-- **User**: Un `User` puede tener uno o varios [Role](./role.md) que le permiten acceder a los recursos del sistema.
+- **User**: Un `User` puede tener 0 o varios [Role](./role.md) que le permiten acceder a los recursos del sistema.
 
 ## Métodos
 
@@ -147,13 +147,20 @@ Esta documentación ayudará a entender mejor el ciclo de vida de un `User` y la
 
 ## Dependencias
 
-Lista de otras clases o servicios que la entidad depende. Esto puede incluir otros objetos de dominio o servicios de infraestructura.
-
 - **Entidades**:
   - `Role`: Lista de roles asociados a este usuario.
-
-- **Servicios**:
-
+- **Services**:
+  - `UserManager`: Gestiona la creación, actualización y eliminación de usuarios.
+  - `IUserRepository`: Interfaz para acceder a los datos de los usuarios.
+  - `UserAuthenticationService`: Gestiona la autenticación de usuarios.
+  - `UserEmailService`: Gestiona el email de un usuario.
+  - `UserPasswordService`: Gestiona la contraseña de un usuario.
+- **Managers**:
+  - `UserManager`: Gestiona la creación, actualización y eliminación de usuarios.
+  - `UserAuthorizationManager`: Gestiona la autorización de usuarios.
+- **Policies**:
+  - `UniqueUserEmailPolicy`: Valida que el email del usuario sea único.
+  - `StrongPasswordPolicy`: Valida que la contraseña del usuario sea fuerte.
 - **Value Objects**:
   - `UserId` `Id`: Identificador único del usuario.
   - `RefreshToken` `RefreshToken`: Token de actualización para el usuario.
@@ -161,6 +168,26 @@ Lista de otras clases o servicios que la entidad depende. Esto puede incluir otr
 
 ## Ejemplos
 
-La entidad `User` no puede ser instanciada fuera de un contexto de dominio. Para crear un nuevo usuario, se debe utilizar el método `CreateAsync` del service model `UserManager`.
+La entidad `User` no puede ser instanciada fuera de un contexto de dominio. Para crear un nuevo usuario, se debe utilizar el método `CreateUserAsync` del service model `UserManager`.
 
-TODO: Agregar enlace de referencia a la documentación de `UserManager`.
+```csharp
+// Crear un nuevo usuario a partir de un identificador único.
+var user = new User(
+    userId: UserId.From(Guid.Parse("123e4567-e89b-12d3-a456-426614174000")),
+    emailAddress: EmailAddress.From("john.doe@example.com"),
+    passwordHash: "PasswordHash",
+    firstName: "John",
+    LastName: "Doe",
+    active: true,
+    emailConfirmed: true)
+
+// Crear un nuevo usuario con un identificador único aleatorio.
+var user = new User(
+    userId: UserId.create(),
+    emailAddress: EmailAddress.From("john.doe@example.com"),
+    passwordHash: "PasswordHash",
+    firstName: "John",
+    LastName: "Doe",
+    active: true,
+    emailConfirmed: true)
+```

@@ -2,94 +2,78 @@
 
 ## Descripción
 
-Breve descripción del propósito de la clase y su rol en el dominio.
-
-Ejemplo: "Un `Calendar` representa una agrupación lógica de `Appointment`s (citas) que pertenecen a una categoría específica, permitiendo una organización y gestión centralizada de citas dentro del sistema."
+Un `Calendar` es una agrupación de `Appointment`s que pertenecen a una misma categoría.
 
 ### Responsabilidades
 
-- Descripción de las responsabilidades clave de la clase. Por ejemplo, lo que la clase está encargada de gestionar, calcular o validar.
+- **Gestión de Citas**:
+  - Almacenar y gestionar una colección de `Appointment`s, `Resources`s, etc.
 
-Ejemplo:
+- **Eventos de Dominio**:
+  - Disparar eventos de dominio cuando se crean, actualizan o eliminan citas (`CalendarCreatedDomainEvent`, `CalendarUpdatedDomainEvent`, `CalendarDeletedDomainEvent`, etc.).
 
-- Gestionar la creación y agrupación de citas.
-- Validar la unicidad del `Calendar` dentro del sistema.
-- Asegurar que los datos asociados (como `Name` y `Description`) cumplen con las restricciones de longitud y unicidad.
+- **Validación**:
+  - Asegurarse de que el `Name` y `Description` no exceda la longitud permitida.
 
 ## Propiedades
 
-```mermaid
-    classDiagram
-```
+| Propiedad           | Tipo                      | Descripción                                                |
+|---------------------|---------------------------|------------------------------------------------------------|
+| `Id`                | `CalendarId`              | Identificador único del calendario.                        |
+| `Name`              | `string`                  | Nombre del calendario.                                     |
+| `Description`       | `string`                  | Descripción del calendario.                                |
 
 ## Asociaciones
 
-- **Calendar**: Un `CalendarHoliday` pertenece a un [Calendar](./calendar.md).
-- **Period**: Un `CalendarHoliday` tiene un `Period` que representa el rango de días festivos.
-- **WeekDays**: Un `CalendarHoliday` tiene una enumeración de días de la semana disponibles.
+- `Calendar` no dispone de asociaciones directas.
 
 ## Métodos
 
-### Método1 (Descripción breve)
-
-Descripción breve del método, qué hace y cómo contribuye a las reglas de negocio.
-
-- **Parámetros:**:
-  - Explica los parámetros si es necesario.
-- **Valor de retorno:**:
-  - Explica lo que el método devuelve.
-- **Eventos:**:
-  - Enumera los eventos que se pueden lanzar.
-- **Excepciones:**:
-  - Enumera las excepciones que podría lanzar.
+`Calendar` no dispone de métodos públicos.
 
 ## Invariantes
 
-Invariantes son las condiciones que deben mantenerse siempre que la entidad esté en un estado válido. Por ejemplo:
-
-- `Id` y `Name` no pueden ser nulos.
-- `Name` debe cumplir una longitud de entre 1 y 50 caracteres.
-- `Description` debe tener entre 1 y 500 caracteres.
+- `Id` no pueden ser nulo.
+- `Name` no puede ser nulo y debe cumplir una longitud de entre 1 y 50 caracteres.
+- `Description` no puede ser nulo y debe tener entre 1 y 500 caracteres.
 
 ## Reglas de negocio
 
-Las reglas de negocio son las condiciones y lógicas que guían el comportamiento de la entidad. Por ejemplo:
+- **Unicidad de Identificador**:
+  - El identificador del calendario debe ser único.
 
-- El `Id` debe ser único en toda la aplicación.
-- `Name` debe ser único en toda la aplicación.
+- **Longitud de Nombre y Descripción**:
+  - El nombre del calendario debe ser único en toda la aplicación.
+
+- **Eliminación de Calendario**:
+  - No se puede eliminar un `Calendar` si tiene alguna cita (`Appointment`) asociada.
+  - No se puede eliminar un `Calendar` si tiene algún día festivo (`CalendarHoliday`) asociado.
+  - No se puede eliminar un `Calendar` si tiene algún recurso (`Resource`) asignado.
+  - No se puede eliminar un `Calendar` si tiene algún servicio (`Service`) asignado.
+  - No se puede eliminar un `Calendar` si tiene algún horario de recurso (`ResourceSchedule`) asignado.
 
 ## Estado y Transiciones
 
-Si la clase tiene diferentes estados o comportamientos dependiendo de ciertas condiciones, documenta esos estados y las transiciones permitidas.
+### Estados Iniciales
 
-Ejemplo:
+- **Estado Inicial**:
+  - Un `Calendar` debe tener un identificador único, un nombre y una descripción.
 
-- **Estado Inicial**: Descripción del estado inicial al crear un nuevo `Calendar`.
+### Estados Posibles
 
-- **Estados Posibles**:
-  - **Activo**: El `Calendar` está en uso y pueden crearse nuevas citas.
-  - **Inactivo**: El `Calendar` no acepta nuevas citas, pero las citas existentes aún se muestran o mantienen.
+### Transiciones Permitidas
 
-- **Transiciones Permitidas**:
-  - De **Activo** a **Inactivo**: Se realiza cuando el calendario se archiva o deja de estar disponible para nuevas citas.
-  - De **Inactivo** a **Activo**: Se realiza cuando el calendario vuelve a estar disponible para aceptar nuevas citas.
-
-- **Condiciones para Transiciones**:
-  - Solo un administrador puede cambiar el estado de `Inactivo` a `Activo`.
+### Condiciones para Transiciones
 
 ## Dependencias
 
-Lista de otras clases o servicios que la entidad depende. Esto puede incluir otros objetos de dominio o servicios de infraestructura.
-
 - **Entidades**:
-  - Lista de entidades utilizadas por esta clase.
-
 - **Servicios**:
-  - Lista de servicios utilizados por esta clase.
-
 - **Value Objects**:
-  - Lista de Value Objects utilizados por esta clase.
+  - `CalendarId`: Identificador único del calendario.
 
 ## Ejemplos
 
-Proporciona ejemplos de cómo interactúa esta clase dentro del dominio, incluyendo cómo se crean instancias y se realizan cambios en sus propiedades. También incluye ejemplos de las reglas de negocio en acción.
+La entidad `Calendar` no pueder ser instanciada fuera de nu contexto de dominio. Para crear un nuevo calendario, se debe utilizar el `CreateCalendarAcync` del service model `CalendarModel`.
+
+TODO: Agregar enlace de referencia a la documentación de `CalendarManager`.
