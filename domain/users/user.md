@@ -23,7 +23,7 @@ La clase `User` representa a un usuario en el sistema de gestión de agenda. Cad
   - Proveer una colección de roles asignados al usuario.
 
 - **Eventos de Dominio**:
-  - Disparar eventos de dominio cuando se crean, actualizan o eliminan datos del usuario (`UserCreatedDomainEvent`, `UserUpdatedDomainEvent`, `UserRoleAddedDomainEvent`, etc.).
+  - Disparar eventos de dominio cuando se crean, actualizan o eliminan datos del usuario.
 
 - **Validación**:
   - Asegurarse de que `FirstName` y `LastName` no exceden la longitud permitida.
@@ -39,7 +39,7 @@ La clase `User` representa a un usuario en el sistema de gestión de agenda. Cad
 | Propiedad           | Tipo                      | Descripción                                                |
 |---------------------|---------------------------|------------------------------------------------------------|
 | `UserId`            | `UserId`                  | Identificador único del usuario.                           |
-| `PasswordHash`      | `string`                  | Hash de la contraseña del usuario.                         |
+| `PasswordHash`      | `PasswordHash`            | Hash de la contraseña del usuario.                         |
 | `Email`             | `EmailAddress`            | Dirección de correo electrónico única del usuario.         |
 | `IsEmailConfirmed`  | `bool`                    | Estado de confirmación del email del usuario.              |
 | `FirstName`         | `string?`                 | Nombre del usuario, puede ser `null`.                      |
@@ -50,14 +50,39 @@ La clase `User` representa a un usuario en el sistema de gestión de agenda. Cad
 
 ## Asociaciones
 
-- **User**: Un `User` tiene un `UserId` único que identifica al usuario.
-- **User**: Un `User` tiene una dirección de correo electrónico única que identifica al usuario.
-- **User**: Un `User` puede tener un `RefreshToken` que le permite acceder a los recursos del sistema.
-- **User**: Un `User` puede tener 0 o varios [Role](./role.md) que le permiten acceder a los recursos del sistema.
+- Un `User` tiene un `UserId` único que identifica al usuario.
+- Un `User` tiene una dirección de correo electrónico única que identifica al usuario.
+- Un `User` tiene un `PasswordHash` que se utiliza para autenticar al usuario.
+- Un `User` puede tener un `RefreshToken` que le permite acceder a los recursos del sistema.
+- Un `User` puede tener 0 o varios [Role](./role.md) que le permiten acceder a los recursos del sistema.
 
 ## Métodos
 
-### UpdateRefreshToken
+### UpdatePassword (public)
+
+Actualiza el hash de la contraseña del usuario.
+
+- **Parámetros:**:
+  - `newPasswordHas`: La nueva contraseña del usuario.
+- **Valor de retorno:**:
+  - `Result`: Un resultado que indica si la operación fue exitosa o no.
+  **Eventos:**:
+  - `UserPasswordUpdatedDomainEvent`.
+  **Excepciones:**:
+
+## UpdateEmail (public)
+
+Actualiza la dirección de correo electrónico del usuario.
+
+- **Parámetros:**:
+  - `newEmail`: La nueva dirección de correo electrónico del usuario.
+- **Valor de retorno:**:
+  - `Result`: Un resultado que indica si la operación fue exitosa o no.
+**Eventos:**:
+  - `UserEmailUpdatedDomainEvent`.
+**Excepciones:**:
+
+### UpdateRefreshToken (public)
 
 Actualiza el `RefreshToken` del usuario.
 
@@ -68,6 +93,66 @@ Actualiza el `RefreshToken` del usuario.
 - **Eventos:**:
   - `UserRefreshTokenUpdatedDomainEvent`.
 - **Excepciones:**:
+
+## SetEmailConfirmed (public)
+
+Establece el estado de confirmación del email del usuario.
+
+- **Parámetros:**:
+- **Valor de retorno:**:
+  - `void`.
+- **Eventos:**:
+- `UserEmailConfirmedDomainEvent`.
+- **Excepciones:**:
+
+### UpdateActiveState (public)
+
+Actualiza el estado de actividad del usuario.
+
+- **Parámetros:**:
+  - `newState`: El nuevo estado de actividad del usuario.
+- **Valor de retorno:**:
+  - `void`.
+**Eventos:**:
+- `UserActiveStateUpdatedDomainEvent`.
+- **Excepciones:**:
+
+### UpdateUser (internal)
+
+Actualiza la información del usuario como `FirstName` y `LastName`.
+
+- **Parámetros:**:
+  - `firstName`: El nuevo nombre del usuario.
+  - `lastName`: El nuevo apellido del usuario.
+**Valor de retorno:**:
+  - `void`.
+Eventos:**:
+  - `UserUpdatedDomainEvent`.
+- **Excepciones:**:
+
+### AddRole (internal)
+
+Agrega un rol al usuario.
+
+- **Parámetros:**:
+  - `role`: El rol a agregar.
+- **Valor de retorno:**:
+  - `Result`: Un resultado que indica si la operación fue exitosa o no.
+**Eventos:**:
+  - `UserRoleAddedDomainEvent`
+**Excepciones:**:
+
+### RemoveRole (internal)
+
+Elimina un rol del usuario.
+
+- **Parámetros:**:
+  - `role`: El rol a eliminar.
+- **Valor de retorno:**:
+  - `Result`: Un resultado que indica si la operación fue exitosa o no.
+Eventos:**:
+  - `UserRoleRemovedDomainEvent`.
+Excepciones:**:
 
 ## Invariantes
 
@@ -152,17 +237,17 @@ Esta documentación ayudará a entender mejor el ciclo de vida de un `User` y la
 - **Services**:
   - `UserManager`: Gestiona la creación, actualización y eliminación de usuarios.
   - `IUserRepository`: Interfaz para acceder a los datos de los usuarios.
-  - `UserAuthenticationService`: Gestiona la autenticación de usuarios.
-  - `UserEmailService`: Gestiona el email de un usuario.
-  - `UserPasswordService`: Gestiona la contraseña de un usuario.
+  - `IPasswordHasher`: Interfaz para hashear contraseñas.
+  - `AuthenticationService`: Gestiona la autenticación de usuarios.
+  - `IEmailUniquenessChecker`: Valida que el email del usuario sea único.
 - **Managers**:
   - `UserManager`: Gestiona la creación, actualización y eliminación de usuarios.
-  - `UserAuthorizationManager`: Gestiona la autorización de usuarios.
+  - `AuthorizationManager`: Gestiona la autorización de usuarios.
 - **Policies**:
-  - `UniqueUserEmailPolicy`: Valida que el email del usuario sea único.
-  - `StrongPasswordPolicy`: Valida que la contraseña del usuario sea fuerte.
+  - `IPasswordPolicy`: Define las políticas de contraseña.
 - **Value Objects**:
   - `UserId` `Id`: Identificador único del usuario.
+  - `PasswordHash`: Hash de la contraseña del usuario.
   - `RefreshToken` `RefreshToken`: Token de actualización para el usuario.
   - `EmailAddress` `Email`: Dirección de correo electrónico del usuario.
 
@@ -175,7 +260,7 @@ La entidad `User` no puede ser instanciada fuera de un contexto de dominio. Para
 var user = new User(
     userId: UserId.From(Guid.Parse("123e4567-e89b-12d3-a456-426614174000")),
     emailAddress: EmailAddress.From("john.doe@example.com"),
-    passwordHash: "PasswordHash",
+    passwordHash: PasswordHash.FromHashed("PasswordHash"),
     firstName: "John",
     LastName: "Doe",
     active: true,
@@ -185,7 +270,7 @@ var user = new User(
 var user = new User(
     userId: UserId.create(),
     emailAddress: EmailAddress.From("john.doe@example.com"),
-    passwordHash: "PasswordHash",
+    passwordHash: PasswordHash.FromHashed("PasswordHash"),
     firstName: "John",
     LastName: "Doe",
     active: true,
