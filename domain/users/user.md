@@ -63,19 +63,19 @@ La clase `User` representa a un usuario en el sistema de gestión de agenda. Cad
 Actualiza el hash de la contraseña del usuario.
 
 - **Parámetros:**:
-  - `newPasswordHas`: La nueva contraseña del usuario.
+  - **newPasswordHas** `PasswordHash`: La nueva contraseña del usuario.
 - **Valor de retorno:**:
   - `Result`: Un resultado que indica si la operación fue exitosa o no.
   **Eventos:**:
   - `UserPasswordUpdatedDomainEvent`.
   **Excepciones:**:
 
-## UpdateEmail (public)
+### UpdateEmail (public)
 
 Actualiza la dirección de correo electrónico del usuario.
 
 - **Parámetros:**:
-  - `newEmail`: La nueva dirección de correo electrónico del usuario.
+  - **newEmail** `EmailAddress`: La nueva dirección de correo electrónico del usuario.
 - **Valor de retorno:**:
   - `Result`: Un resultado que indica si la operación fue exitosa o no.
 **Eventos:**:
@@ -87,14 +87,14 @@ Actualiza la dirección de correo electrónico del usuario.
 Actualiza el `RefreshToken` del usuario.
 
 - **Parámetros:**:
-  - `refreshToken`: El nuevo `RefreshToken` del usuario.
+  - **refreshToken** `RefreshToken`: El nuevo refresh token del usuario.
 - **Valor de retorno:**:
   - `void`.
 - **Eventos:**:
   - `UserRefreshTokenUpdatedDomainEvent`.
 - **Excepciones:**:
 
-## SetEmailConfirmed (public)
+### SetEmailConfirmed (public)
 
 Establece el estado de confirmación del email del usuario.
 
@@ -110,7 +110,7 @@ Establece el estado de confirmación del email del usuario.
 Actualiza el estado de actividad del usuario.
 
 - **Parámetros:**:
-  - `newState`: El nuevo estado de actividad del usuario.
+  - **newState** `bool`: El nuevo estado de actividad del usuario.
 - **Valor de retorno:**:
   - `void`.
 **Eventos:**:
@@ -122,8 +122,8 @@ Actualiza el estado de actividad del usuario.
 Actualiza la información del usuario como `FirstName` y `LastName`.
 
 - **Parámetros:**:
-  - `firstName`: El nuevo nombre del usuario.
-  - `lastName`: El nuevo apellido del usuario.
+  - **firstName** `string`: El nuevo nombre del usuario.
+  - **lastName** `string`: El nuevo apellido del usuario.
 **Valor de retorno:**:
   - `void`.
 Eventos:**:
@@ -135,7 +135,7 @@ Eventos:**:
 Agrega un rol al usuario.
 
 - **Parámetros:**:
-  - `role`: El rol a agregar.
+  - **role** `Role`: El rol a agregar.
 - **Valor de retorno:**:
   - `Result`: Un resultado que indica si la operación fue exitosa o no.
 **Eventos:**:
@@ -147,12 +147,36 @@ Agrega un rol al usuario.
 Elimina un rol del usuario.
 
 - **Parámetros:**:
-  - `role`: El rol a eliminar.
+  - **role** `Role`: El rol a eliminar.
 - **Valor de retorno:**:
   - `Result`: Un resultado que indica si la operación fue exitosa o no.
 Eventos:**:
   - `UserRoleRemovedDomainEvent`.
 Excepciones:**:
+
+### GuardAgainstInvalidFirstName (private)
+
+Valida que el nombre del usuario no sea nulo y no exceda los 256 caracteres.
+
+- **Parámetros:**:
+  - **firstName** `string?`: El nombre del usuario.
+- **Valor de retorno:**:
+  - `void`.
+- **Eventos:**:
+**Excepciones:**:
+  - `UserDomainException` si el nombre del usuario es nulo o excede los 256 caracteres.
+
+### GuardAgainstInvalidLastName (private)
+
+Valida que el apellido del usuario no sea nulo y no exceda los 256 caracteres.
+
+- **Parámetros:**:
+  - **lastName** `string?`: El apellido del usuario.
+- **Valor de retorno:**:
+  - `void`.
+- **Eventos:**:
+**Excepciones:**:
+  - `UserDomainException` si el apellido del usuario es nulo o excede los 256 caracteres.
 
 ## Invariantes
 
