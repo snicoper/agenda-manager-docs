@@ -45,7 +45,7 @@ La clase `User` representa a un usuario en el sistema de gestión de agenda. Cad
 | `FirstName`         | `string?`                 | Nombre del usuario, puede ser `null`.                      |
 | `LastName`          | `string?`                 | Apellido del usuario, puede ser `null`.                    |
 | `Active`            | `bool`                    | Estado de actividad del usuario.                           |
-| `RefreshToken`      | `Token?`           | Token de actualización del usuario, puede ser `null`.      |
+| `RefreshToken`      | `Token?`                  | Token de actualización del usuario, puede ser `null`.      |
 | `Roles`             | `IReadOnlyCollection<Role>` | Lista de roles asociados al usuario.                     |
 
 ## Asociaciones
