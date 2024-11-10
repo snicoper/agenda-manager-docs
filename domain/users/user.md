@@ -30,7 +30,7 @@ La clase `User` representa a un usuario en el sistema de gestión de agenda. Cad
   - Validar la unicidad de la dirección de correo electrónico.
 
 - **Actualización de Información**:
-  - Actualizar y validar el `RefreshToken`.
+  - Actualizar y validar el `Token`.
   - Permitir la actualización del hash de la contraseña.
   - Actualizar la dirección de correo electrónico del usuario de manera segura.
 
@@ -45,7 +45,7 @@ La clase `User` representa a un usuario en el sistema de gestión de agenda. Cad
 | `FirstName`         | `string?`                 | Nombre del usuario, puede ser `null`.                      |
 | `LastName`          | `string?`                 | Apellido del usuario, puede ser `null`.                    |
 | `Active`            | `bool`                    | Estado de actividad del usuario.                           |
-| `RefreshToken`      | `RefreshToken?`           | Token de actualización del usuario, puede ser `null`.      |
+| `RefreshToken`      | `Token?`           | Token de actualización del usuario, puede ser `null`.      |
 | `Roles`             | `IReadOnlyCollection<Role>` | Lista de roles asociados al usuario.                     |
 
 ## Asociaciones
@@ -53,152 +53,85 @@ La clase `User` representa a un usuario en el sistema de gestión de agenda. Cad
 - Un `User` tiene un `UserId` único que identifica al usuario.
 - Un `User` tiene una dirección de correo electrónico única que identifica al usuario.
 - Un `User` tiene un `PasswordHash` que se utiliza para autenticar al usuario.
-- Un `User` puede tener un `RefreshToken` que le permite acceder a los recursos del sistema.
+- Un `User` puede tener un `Token` que le permite acceder a los recursos del sistema.
 - Un `User` puede tener 0 o varios `Role` que le permiten acceder a los recursos del sistema.
 
 ## Métodos
 
-### UpdatePassword (public)
+```csharp
+public Result UpdatePassword(PasswordHash newPasswordHash)
+```
 
-Actualiza el hash de la contraseña del usuario.
+- Actualiza el hash de la contraseña del usuario.
+- Lanza el evento `UserPasswordUpdatedDomainEvent`.
+- Return `Result` Un resultado que indica si la operación fue exitosa o no
 
-- **Parámetros:**:
-  - **newPasswordHas** `PasswordHash`: La nueva contraseña del usuario.
-- **Valor de retorno:**:
-  - `Result`: Un resultado que indica si la operación fue exitosa o no.
-  - **Success:**:
-  - **Error**:
-- **Eventos:**:
-  - `UserPasswordUpdatedDomainEvent`.
-- **Excepciones:**:
+```csharp
+public async Task<Result> UpdateEmail(
+    EmailAddress newEmail,
+    IEmailUniquenessChecker emailUniquenessChecker,
+    CancellationToken cancellationToken)
+```
 
-### UpdateEmail (public)
+- Actualiza la dirección de correo electrónico del usuario.
+- Lanza el evento `UserEmailUpdatedDomainEvent`.
+- Return `Result` Un resultado que indica si la operación fue exitosa o no.
 
-Actualiza la dirección de correo electrónico del usuario.
+```csharp
+public void UpdateRefreshToken(Token refreshToken)
+```
 
-- **Parámetros:**:
-  - **newEmail** `EmailAddress`: La nueva dirección de correo electrónico del usuario.
-  - **IEmailUniquenessChecker** `IEmailUniquenessChecker`: El servicio que verifica la unicidad de la dirección de correo electrónico.
-- **Valor de retorno:**:
-  - `Result`: Un resultado que indica si la operación fue exitosa o no.
-  - **Success:**:
-  - **Error**:
-    - `EmailAlreadyExists` `Validation`: Si la nueva dirección de correo electrónico ya existe en el sistema.
-- **Eventos:**:
-  - `UserEmailUpdatedDomainEvent`.
-- **Excepciones:**:
+- Actualiza el `Token` del usuario.
+- Lanza el evento `UserRefreshTokenUpdatedDomainEvent`.
 
-### UpdateRefreshToken (public)
+```csharp
+public void SetEmailConfirmed()
+```
 
-Actualiza el `RefreshToken` del usuario.
+- Marca el email del usuario como confirmado.
+- Lanza el evento `UserEmailConfirmedDomainEvent`.
 
-- **Parámetros:**:
-  - **refreshToken** `RefreshToken`: El nuevo refresh token del usuario.
-- **Valor de retorno:**:
-  - `void`.
-  - **Success:**:
-  - **Error**:
-- **Eventos:**:
-  - `UserRefreshTokenUpdatedDomainEvent`.
-- **Excepciones:**:
+```csharp
+public void UpdateActiveState(bool newState)
+```
 
-### SetEmailConfirmed (public)
+- Actualiza el estado de actividad del usuario.
+- Lanza el evento `UserActiveStateUpdatedDomainEvent`.
 
-Establece el estado de confirmación del email del usuario.
+```csharp
+internal void UpdateUser(string? firstName, string? lastName)
+```
 
-- **Parámetros:**:
-- **Valor de retorno:**:
-  - `void`.
-  - **Success:**:
-  - **Error**:
-- **Eventos:**:
-- `UserEmailConfirmedDomainEvent`.
-- **Excepciones:**:
+- Actualiza la información del usuario como `FirstName` y `LastName`.
+- Lanza el evento `UserUpdatedDomainEvent`.
 
-### UpdateActiveState (public)
+```csharp
+internal Result AddRole(Role role)
+```
 
-Actualiza el estado de actividad del usuario.
+- Agrega un rol al usuario.
+- Lanza el evento `UserRoleAddedDomainEvent`.
 
-- **Parámetros:**:
-  - **newState** `bool`: El nuevo estado de actividad del usuario.
-- **Valor de retorno:**:
-  - `void`.
-  - **Success:**:
-  - **Error**:
-**Eventos:**:
-- `UserActiveStateUpdatedDomainEvent`.
-- **Excepciones:**:
+```csharp
+internal Result RemoveRole(Role role)
+```
 
-### UpdateUser (internal)
+- Elimina un rol del usuario.
+- Lanza el evento `UserRoleRemovedDomainEvent`.
 
-Actualiza la información del usuario como `FirstName` y `LastName`.
+```csharp
+private static void GuardAgainstInvalidFirstName(string? firstName)
+```
 
-- **Parámetros:**:
-  - **firstName** `string?`: El nuevo nombre del usuario.
-  - **lastName** `string?`: El nuevo apellido del usuario.
-**Valor de retorno:**:
-  - `void`.
-  - **Success:**:
-  - **Error**:
-Eventos:**:
-  - `UserUpdatedDomainEvent`.
-- **Excepciones:**:
+- Valida que el nombre del usuario no sea nulo y no exceda los 256 caracteres.
+- Lanza la excepción `UserDomainException` si el nombre del usuario es nulo o excede los 256 caracteres.
 
-### AddRole (internal)
+```csharp
+private static void GuardAgainstInvalidLastName(string? lastName)
+```
 
-Agrega un rol al usuario.
-
-- **Parámetros:**:
-  - **role** `Role`: El rol a agregar.
-- **Valor de retorno:**:
-  - `Result`: Un resultado que indica si la operación fue exitosa o no.
-  - **Success:**:
-  - **Error**:
-**Eventos:**:
-  - `UserRoleAddedDomainEvent`
-- **Excepciones:**:
-
-### RemoveRole (internal)
-
-Elimina un rol del usuario.
-
-- **Parámetros:**:
-  - **role** `Role`: El rol a eliminar.
-- **Valor de retorno:**:
-  - `Result`: Un resultado que indica si la operación fue exitosa o no.
-  - **Success:**:
-  - **Error**:
-- Eventos:**:
-  - `UserRoleRemovedDomainEvent`.
-- **Excepciones:**:
-
-### GuardAgainstInvalidFirstName (private)
-
-Valida que el nombre del usuario no sea nulo y no exceda los 256 caracteres.
-
-- **Parámetros:**:
-  - **firstName** `string?`: El nombre del usuario.
-- **Valor de retorno:**:
-  - `void`.
-  - **Success:**:
-  - **Error**:
-- **Eventos:**:
-- **Excepciones:**:
-  - `UserDomainException` si el nombre del usuario es nulo o excede los 256 caracteres.
-
-### GuardAgainstInvalidLastName (private)
-
-Valida que el apellido del usuario no sea nulo y no exceda los 256 caracteres.
-
-- **Parámetros:**:
-  - **lastName** `string?`: El apellido del usuario.
-- **Valor de retorno:**:
-  - `void`.
-  - **Success:**:
-  - **Error**:
-- **Eventos:**:
-- **Excepciones:**:
-  - `UserDomainException` si el apellido del usuario es nulo o excede los 256 caracteres.
+- Valida que el apellido del usuario no sea nulo y no exceda los 256 caracteres.
+- Lanza la excepción `UserDomainException` si el apellido del usuario es nulo o excede los 256 caracteres.
 
 ## Invariantes
 
@@ -228,7 +161,7 @@ Valida que el apellido del usuario no sea nulo y no exceda los 256 caracteres.
   - Los roles asociados a un usuario deben permitir la correcta autorización dentro del sistema.
 
 - **Tokens de Actualización**:
-  - `RefreshToken` debe ser único y gestionado de manera segura, asegurando que solo un token activo esté asociado con el usuario en cualquier momento.
+  - `Token` debe ser único y gestionado de manera segura, asegurando que solo un token activo esté asociado con el usuario en cualquier momento.
 
 - **Actualización de Información Personal**:
   - `FirstName` y `LastName` pueden actualizarse, pero deben respetar las limitaciones de longitud y no ser nulos si están presentes.
@@ -289,14 +222,14 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 - **Value Objects**:
   - [UserId](./value-objects/user-id.md) `Id`: Identificador único del usuario.
   - [PasswordHash](./value-objects/password-hash.md) `PasswordHash`: Hash de la contraseña del usuario.
-  - [RefreshToken](./value-objects/refresh-token.md) `RefreshToken`: Token de actualización para el usuario.
+  - [RefreshToken](../common/value-objects/token/token.md) `Token`: Token de actualización para el usuario.
   - [EmailAddress](../common/value-objects/email-address/email-address.md) `Email`: Dirección de correo electrónico del usuario.
 
 ## Interceptores EF Core
 
 - `UserAuditInterceptor`: Intercepta las operaciones de creación, actualización y eliminación de usuarios en la base de datos para registrar los cambios de `Active` en la tabla `AuditRecord`.
 
-## Ejemplos
+## Ejemplos de Uso
 
 La entidad `User` no puede ser instanciada fuera de un contexto de dominio. Para crear un nuevo usuario, se debe utilizar el método `CreateUserAsync` del service model `UserManager`.
 
