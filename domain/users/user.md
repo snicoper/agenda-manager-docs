@@ -54,7 +54,7 @@ La clase `User` representa a un usuario en el sistema de gestión de agenda. Cad
 - Un `User` tiene una dirección de correo electrónico única que identifica al usuario.
 - Un `User` tiene un `PasswordHash` que se utiliza para autenticar al usuario.
 - Un `User` puede tener un `RefreshToken` que le permite acceder a los recursos del sistema.
-- Un `User` puede tener 0 o varios [Role](./role.md) que le permiten acceder a los recursos del sistema.
+- Un `User` puede tener 0 o varios `Role` que le permiten acceder a los recursos del sistema.
 
 ## Métodos
 
@@ -66,9 +66,11 @@ Actualiza el hash de la contraseña del usuario.
   - **newPasswordHas** `PasswordHash`: La nueva contraseña del usuario.
 - **Valor de retorno:**:
   - `Result`: Un resultado que indica si la operación fue exitosa o no.
-  **Eventos:**:
+  - **Success:**:
+  - **Error**:
+- **Eventos:**:
   - `UserPasswordUpdatedDomainEvent`.
-  **Excepciones:**:
+- **Excepciones:**:
 
 ### UpdateEmail (public)
 
@@ -76,11 +78,15 @@ Actualiza la dirección de correo electrónico del usuario.
 
 - **Parámetros:**:
   - **newEmail** `EmailAddress`: La nueva dirección de correo electrónico del usuario.
+  - **IEmailUniquenessChecker** `IEmailUniquenessChecker`: El servicio que verifica la unicidad de la dirección de correo electrónico.
 - **Valor de retorno:**:
   - `Result`: Un resultado que indica si la operación fue exitosa o no.
-**Eventos:**:
+  - **Success:**:
+  - **Error**:
+    - `EmailAlreadyExists` `Validation`: Si la nueva dirección de correo electrónico ya existe en el sistema.
+- **Eventos:**:
   - `UserEmailUpdatedDomainEvent`.
-**Excepciones:**:
+- **Excepciones:**:
 
 ### UpdateRefreshToken (public)
 
@@ -90,6 +96,8 @@ Actualiza el `RefreshToken` del usuario.
   - **refreshToken** `RefreshToken`: El nuevo refresh token del usuario.
 - **Valor de retorno:**:
   - `void`.
+  - **Success:**:
+  - **Error**:
 - **Eventos:**:
   - `UserRefreshTokenUpdatedDomainEvent`.
 - **Excepciones:**:
@@ -101,6 +109,8 @@ Establece el estado de confirmación del email del usuario.
 - **Parámetros:**:
 - **Valor de retorno:**:
   - `void`.
+  - **Success:**:
+  - **Error**:
 - **Eventos:**:
 - `UserEmailConfirmedDomainEvent`.
 - **Excepciones:**:
@@ -113,6 +123,8 @@ Actualiza el estado de actividad del usuario.
   - **newState** `bool`: El nuevo estado de actividad del usuario.
 - **Valor de retorno:**:
   - `void`.
+  - **Success:**:
+  - **Error**:
 **Eventos:**:
 - `UserActiveStateUpdatedDomainEvent`.
 - **Excepciones:**:
@@ -122,10 +134,12 @@ Actualiza el estado de actividad del usuario.
 Actualiza la información del usuario como `FirstName` y `LastName`.
 
 - **Parámetros:**:
-  - **firstName** `string`: El nuevo nombre del usuario.
-  - **lastName** `string`: El nuevo apellido del usuario.
+  - **firstName** `string?`: El nuevo nombre del usuario.
+  - **lastName** `string?`: El nuevo apellido del usuario.
 **Valor de retorno:**:
   - `void`.
+  - **Success:**:
+  - **Error**:
 Eventos:**:
   - `UserUpdatedDomainEvent`.
 - **Excepciones:**:
@@ -138,9 +152,11 @@ Agrega un rol al usuario.
   - **role** `Role`: El rol a agregar.
 - **Valor de retorno:**:
   - `Result`: Un resultado que indica si la operación fue exitosa o no.
+  - **Success:**:
+  - **Error**:
 **Eventos:**:
   - `UserRoleAddedDomainEvent`
-**Excepciones:**:
+- **Excepciones:**:
 
 ### RemoveRole (internal)
 
@@ -150,9 +166,11 @@ Elimina un rol del usuario.
   - **role** `Role`: El rol a eliminar.
 - **Valor de retorno:**:
   - `Result`: Un resultado que indica si la operación fue exitosa o no.
-Eventos:**:
+  - **Success:**:
+  - **Error**:
+- Eventos:**:
   - `UserRoleRemovedDomainEvent`.
-Excepciones:**:
+- **Excepciones:**:
 
 ### GuardAgainstInvalidFirstName (private)
 
@@ -162,8 +180,10 @@ Valida que el nombre del usuario no sea nulo y no exceda los 256 caracteres.
   - **firstName** `string?`: El nombre del usuario.
 - **Valor de retorno:**:
   - `void`.
+  - **Success:**:
+  - **Error**:
 - **Eventos:**:
-**Excepciones:**:
+- **Excepciones:**:
   - `UserDomainException` si el nombre del usuario es nulo o excede los 256 caracteres.
 
 ### GuardAgainstInvalidLastName (private)
@@ -174,8 +194,10 @@ Valida que el apellido del usuario no sea nulo y no exceda los 256 caracteres.
   - **lastName** `string?`: El apellido del usuario.
 - **Valor de retorno:**:
   - `void`.
+  - **Success:**:
+  - **Error**:
 - **Eventos:**:
-**Excepciones:**:
+- **Excepciones:**:
   - `UserDomainException` si el apellido del usuario es nulo o excede los 256 caracteres.
 
 ## Invariantes
@@ -252,23 +274,23 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 ## Dependencias
 
 - **Entidades**:
-  - `Role`: Lista de roles asociados a este usuario.
+  - [Role](./role.md): Lista de roles asociados a este usuario.
 - **Services**:
-  - `UserManager`: Gestiona la creación, actualización y eliminación de usuarios.
-  - `IUserRepository`: Interfaz para acceder a los datos de los usuarios.
-  - `IPasswordHasher`: Interfaz para hashear contraseñas.
-  - `AuthenticationService`: Gestiona la autenticación de usuarios.
-  - `IEmailUniquenessChecker`: Valida que el email del usuario sea único.
+  - [UserManager](./services/user-manager.md): Gestiona la creación, actualización y eliminación de usuarios.
+  - [IUserRepository](./interfaces/i-user-repository.md): Interfaz para acceder a los datos de los usuarios.
+  - [IPasswordHasher](./interfaces/i-password-hasher.md): Interfaz para hashear contraseñas.
+  - [AuthenticationService](./services/authentication-service.md): Gestiona la autenticación de usuarios.
+  - [IEmailUniquenessChecker](./interfaces/i-email-uniqueness-checker.md): Valida que el email del usuario sea único.
 - **Managers**:
-  - `UserManager`: Gestiona la creación, actualización y eliminación de usuarios.
-  - `AuthorizationManager`: Gestiona la autorización de usuarios.
+  - [UserManager](./services/user-manager.md): Gestiona la creación, actualización y eliminación de usuarios.
+  - [AuthorizationManager](./services/authorization-manager.md): Gestiona la autorización de usuarios.
 - **Policies**:
-  - `IPasswordPolicy`: Define las políticas de contraseña.
+  - [IPasswordPolicy](./interfaces/i-password-policy.md): Define las políticas de contraseña.
 - **Value Objects**:
-  - `UserId` `Id`: Identificador único del usuario.
-  - `PasswordHash`: Hash de la contraseña del usuario.
-  - `RefreshToken` `RefreshToken`: Token de actualización para el usuario.
-  - `EmailAddress` `Email`: Dirección de correo electrónico del usuario.
+  - [UserId](./value-objects/user-id.md) `Id`: Identificador único del usuario.
+  - [PasswordHash](./value-objects/password-hash.md) `PasswordHash`: Hash de la contraseña del usuario.
+  - [RefreshToken](./value-objects/refresh-token.md) `RefreshToken`: Token de actualización para el usuario.
+  - [EmailAddress](../common/value-objects/email-address/email-address.md) `Email`: Dirección de correo electrónico del usuario.
 
 ## Interceptores EF Core
 
