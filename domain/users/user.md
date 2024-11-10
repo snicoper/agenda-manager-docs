@@ -216,43 +216,38 @@ Valida que el apellido del usuario no sea nulo y no exceda los 256 caracteres.
 
 La clase `User` tiene diferentes estados que dependen de ciertas condiciones y acciones realizadas dentro del sistema.
 
-### Estados Iniciales
+- **Estados Iniciales**:
+  - **Estado Inicial**: Al crear un nuevo `User`, los estados iniciales son los siguientes:
+    - `IsEmailConfirmed`: `false` (el email del usuario no está confirmado).
+    - `Active`: `true` (el usuario está activo por defecto).
 
-- **Estado Inicial**: Al crear un nuevo `User`, los estados iniciales son los siguientes:
-  - `IsEmailConfirmed`: `false` (el email del usuario no está confirmado).
-  - `Active`: `true` (el usuario está activo por defecto).
-
-### Estados Posibles
-
-- **IsEmailConfirmed**:
-  - **`true`**: El email del usuario ha sido confirmado.
-  - **`false`**: El email del usuario no ha sido confirmado.
+- **Estados Posibles**:
+  - **IsEmailConfirmed**:
+    - **`true`**: El email del usuario ha sido confirmado.
+    - **`false`**: El email del usuario no ha sido confirmado.
 
 - **Active**:
   - **`true`**: El usuario está activo y puede interactuar con el sistema.
   - **`false`**: El usuario está inactivo y no puede interactuar con el sistema.
 
-### Transiciones Permitidas
+- **Transiciones Permitidas**:
+  - **Transiciones de `IsEmailConfirmed`**:
+    - De **`false` a `true`**: Ocurre cuando el usuario confirma su email a través del enlace de confirmación enviado a su correo electrónico.
+      - **Condición**: La confirmación debe ser iniciada por el usuario.
 
-- **Transiciones de `IsEmailConfirmed`**:
-  - De **`false` a `true`**: Ocurre cuando el usuario confirma su email a través del enlace de confirmación enviado a su correo electrónico.
-    - **Condición**: La confirmación debe ser iniciada por el usuario.
-
-- **Transiciones de `Active`**:
-  - De **`true` a `false`**: Puede ocurrir en cualquier momento cuando el personal autorizado decide desactivar al usuario.
-    - **Condición**: Solo personal autorizado puede cambiar el estado a inactivo.
-  - De **`false` a `true`**: Puede ocurrir en cualquier momento cuando el personal autorizado decide reactivar al usuario.
+  - **Transiciones de `Active`**:
+    - De **`true` a `false`**: Puede ocurrir en cualquier momento cuando el personal autorizado decide desactivar al usuario.
+      - **Condición**: Solo personal autorizado puede cambiar el estado a inactivo.
+    - De **`false` a `true`**: Puede ocurrir en cualquier momento cuando el personal autorizado decide reactivar al usuario.
     - **Condición**: Solo personal autorizado puede cambiar el estado a activo.
 
-### Condiciones para Transiciones
+- **Condiciones para Transiciones**:
+  - **Confirmación de Email**:
+    - Solo puede ocurrir una vez después de que el usuario se ha registrado y ha completado el proceso de confirmación de email.
+  - **Cambio de Estado de Actividad**:
+    - Puede ocurrir en cualquier momento, pero solo puede ser realizado por personal autorizado. Este cambio debe ser registrado y auditado adecuadamente dentro del sistema para mantener la integridad y seguridad.
 
-- **Confirmación de Email**:
-  - Solo puede ocurrir una vez después de que el usuario se ha registrado y ha completado el proceso de confirmación de email.
-
-- **Cambio de Estado de Actividad**:
-  - Puede ocurrir en cualquier momento, pero solo puede ser realizado por personal autorizado. Este cambio debe ser registrado y auditado adecuadamente dentro del sistema para mantener la integridad y seguridad.
-
-Esta documentación ayudará a entender mejor el ciclo de vida de un `User` y las condiciones bajo las cuales pueden ocurrir ciertas transiciones de estado.
+  Esta documentación ayudará a entender mejor el ciclo de vida de un `User` y las condiciones bajo las cuales pueden ocurrir ciertas transiciones de estado.
 
 ## Dependencias
 
@@ -274,6 +269,10 @@ Esta documentación ayudará a entender mejor el ciclo de vida de un `User` y la
   - `PasswordHash`: Hash de la contraseña del usuario.
   - `RefreshToken` `RefreshToken`: Token de actualización para el usuario.
   - `EmailAddress` `Email`: Dirección de correo electrónico del usuario.
+
+## Interceptores EF Core
+
+- `UserAuditInterceptor`: Intercepta las operaciones de creación, actualización y eliminación de usuarios en la base de datos para registrar los cambios de `Active` en la tabla `AuditRecord`.
 
 ## Ejemplos
 
