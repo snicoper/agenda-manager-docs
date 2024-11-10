@@ -36,25 +36,27 @@ La clase `User` representa a un usuario en el sistema de gestión de agenda. Cad
 
 ## Propiedades
 
-| Propiedad           | Tipo                      | Descripción                                                |
-|---------------------|---------------------------|------------------------------------------------------------|
-| `UserId`            | `UserId`                  | Identificador único del usuario.                           |
-| `PasswordHash`      | `PasswordHash`            | Hash de la contraseña del usuario.                         |
-| `Email`             | `EmailAddress`            | Dirección de correo electrónico única del usuario.         |
-| `IsEmailConfirmed`  | `bool`                    | Estado de confirmación del email del usuario.              |
-| `FirstName`         | `string?`                 | Nombre del usuario, puede ser `null`.                      |
-| `LastName`          | `string?`                 | Apellido del usuario, puede ser `null`.                    |
-| `Active`            | `bool`                    | Estado de actividad del usuario.                           |
-| `RefreshToken`      | `Token?`                  | Token de actualización del usuario, puede ser `null`.      |
-| `Roles`             | `IReadOnlyCollection<Role>` | Lista de roles asociados al usuario.                     |
+| Propiedad           | Tipo                        | Descripción                                                |
+|---------------------|-----------------------------|------------------------------------------------------------|
+| `UserId`            | `UserId`                    | Identificador único del usuario.                           |
+| `PasswordHash`      | `PasswordHash`              | Hash de la contraseña del usuario.                         |
+| `Email`             | `EmailAddress`              | Dirección de correo electrónico única del usuario.         |
+| `IsEmailConfirmed`  | `bool`                      | Estado de confirmación del email del usuario.              |
+| `FirstName`         | `string?`                   | Nombre del usuario, puede ser `null`.                      |
+| `LastName`          | `string?`                   | Apellido del usuario, puede ser `null`.                    |
+| `Active`            | `bool`                      | Estado de actividad del usuario.                           |
+| `RefreshToken`      | `Token?`                    | Token de actualización del usuario, puede ser `null`.      |
+| `Roles`             | `IReadOnlyCollection<Role>` | Lista de roles asociados al usuario.                       |
+| `Tokens`            | `IReadOnlyCollection<Token>`| Lista de tokens asociados al usuario.                      |
 
 ## Asociaciones
 
 - Un `User` tiene un `UserId` único que identifica al usuario.
 - Un `User` tiene una dirección de correo electrónico única que identifica al usuario.
 - Un `User` tiene un `PasswordHash` que se utiliza para autenticar al usuario.
-- Un `User` puede tener un `Token` que le permite acceder a los recursos del sistema.
-- Un `User` puede tener 0 o varios `Role` que le permiten acceder a los recursos del sistema.
+- Un `User` puede tener un `RefreshToken` que se utiliza para refrescar el token de acceso.
+- Un `User` puede tener 0 o varios `Role` que le dan permisos específicos.
+- Un `User` puede tener 0 o varios `Token` que se utilizan para recuperación de contraseña o validación de correo electrónico.
 
 ## Métodos
 
@@ -97,6 +99,20 @@ public void UpdateActiveState(bool newState)
 
 - Actualiza el estado de actividad del usuario.
 - Lanza el evento `UserActiveStateUpdatedDomainEvent`.
+
+```csharp
+public void AddUserToken(UserToken userToken)
+```
+
+- Agrega un `UserToken` al usuario.
+- Lanza el evento `UserTokenAddedDomainEvent`.
+
+```csharp
+public void RemoveUserToken(UserToken userToken)
+```
+
+- Elimina un `UserToken` del usuario.
+- Lanza el evento `UserTokenRemovedDomainEvent`.
 
 ```csharp
 internal void UpdateUser(string? firstName, string? lastName)
@@ -207,7 +223,7 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 ## Dependencias
 
 - **Entidades**:
-  - [Role](./role.md): Lista de roles asociados a este usuario.
+  - [Role](./entities/role.md): Lista de roles asociados a este usuario.
 - **Services**:
   - [UserManager](./services/user-manager.md): Gestiona la creación, actualización y eliminación de usuarios.
   - [IUserRepository](./interfaces/i-user-repository.md): Interfaz para acceder a los datos de los usuarios.

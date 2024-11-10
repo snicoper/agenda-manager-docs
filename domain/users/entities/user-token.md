@@ -31,7 +31,6 @@ La clase `UserToken` representa un token de seguridad temporal asociado a un usu
 | `UserId`           | `UserId`          | Identificador único del usuario asociado al token.            |
 | `Token`            | `Token`           | El token generado para la acción específica.                  |
 | `UserTokenType`    | `UserTokenType`   | Tipo de token, como `PasswordReset` o `EmailConfirmation`.    |
-| `ExpiryDate`       | `DateTimeOffset`  | Fecha de expiración del token.                                |
 
 ## Asociaciones
 
@@ -48,7 +47,7 @@ La clase `UserToken` representa un token de seguridad temporal asociado a un usu
 - `UserId` debe ser un `UserId` válido.
 - `Token` no puede ser `null` en ningún momento y debe ser un formato válido.
 - `UserTokenType` debe ser un valor válido del enum `UserTokenType`.
-- `ExpiryDate` a la hora de creación debe ser una fecha futura.
+- `ExpiryAt` a la hora de creación debe ser una fecha futura.
 
 ## Reglas de negocio
 
@@ -71,7 +70,7 @@ La clase `UserToken` representa un token de seguridad temporal asociado a un usu
   - El `UserTokenType` debe ser un valor válido del enum `UserTokenType`.
   - Los tipos de `UserTokenType` dentro del enum deben ser únicos e incluir `EmailVerification` y `PasswordReset`.
 
-- **Validación de ExpiryDate**:
+- **Validación de ExpiryAt**:
   - La fecha de expiración del token debe ser una fecha futura.
 
 ## Estado y Transiciones
@@ -93,3 +92,23 @@ La clase `UserToken` representa un token de seguridad temporal asociado a un usu
 ## Interceptores EF Core
 
 ## Ejemplos de Uso
+
+```csharp
+var user = await userRepository.GetByEmailAsync(email, cancellationToken);
+
+if (user is null)
+{
+    return UserErrors.UserNotFound;
+}
+
+var userToken = UserToken.Create(
+    id: UserTokenId.Create(),
+    userId: user.Id,
+    token: Token.Generate(TimeSpan.FromDays(1)),
+    type: UserTokenType.EmailConfirmation);
+
+user.AddUserToken(userToken);
+
+userRepository.Update(user);
+await unitOfWork.SaveChangesAsync(cancellationToken);
+```
