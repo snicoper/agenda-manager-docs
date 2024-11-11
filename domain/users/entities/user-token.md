@@ -1,6 +1,6 @@
 # UserToken
 
-- **Entity**: UserToken
+- **Entity**: `UserToken`
 
 ## Descripción
 

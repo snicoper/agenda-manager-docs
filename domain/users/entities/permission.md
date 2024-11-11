@@ -1,6 +1,6 @@
 # Permisos de Usuario
 
-**Entity**: Permission
+**Entity**: `Permission`
 
 ## Descripción General
 

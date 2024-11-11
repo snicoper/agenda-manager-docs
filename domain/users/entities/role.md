@@ -1,6 +1,6 @@
 # Role
 
-**Entity**: Role
+**Entity**: `Role`
 
 ## Descripción General
 

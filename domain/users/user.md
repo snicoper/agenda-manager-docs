@@ -1,6 +1,6 @@
 # User
 
-**Aggregate Root**: User
+**Aggregate Root**: `User`
 
 ## Descripción General
 

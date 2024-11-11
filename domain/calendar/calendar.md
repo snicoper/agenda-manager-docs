@@ -1,5 +1,7 @@
 # Clase: Calendar
 
+**AggregateRoot**: `Calendar`
+
 ## Descripción
 
 Representa un calendario que actúa como contenedor lógico para appointments y resources, etc.
@@ -23,6 +25,33 @@ La única excepción es la relación de `Calendar` con `CalendarHoliday`, que es
   - Mantener la colección de días festivos
   - Asegurar la consistencia al añadir o eliminar holidays
   - Emitir eventos de dominio relacionados con holidays
+
+## Invariantes
+
+- `Id` no puede ser `null` en ningún momento.
+- `Name` no puede ser nulo y debe tener entre 1 y 50 caracteres.
+- `Description` no puede ser nulo y debe tener entre 1 y 500 caracteres.
+
+## Reglas de Negocio
+
+- **Unicidad de Identificador**:
+  - `Id` debe ser único en toda la aplicación.
+
+- **Gestión de Holidays**:
+  - Un holiday debe pertenecer a un único calendario
+  - No puede haber holidays duplicados (misma fecha) en un calendario
+  - Los holidays se eliminan en cascada al eliminar el calendario
+
+- **Nombre y Descripción**:
+  - El nombre del calendario debe ser único en toda la aplicación y debe tener entre 1 y 50 caracteres.
+  - La descripción del calendario debe tener entre 1 y 500 caracteres.
+
+- **Eliminación de Calendario**:
+  - No se puede eliminar un `Calendar` si tiene alguna cita (`Appointment`) asociada.
+  - No se puede eliminar un `Calendar` si tiene algún día festivo (`CalendarHoliday`) asociado.
+  - No se puede eliminar un `Calendar` si tiene algún recurso (`Resource`) asignado.
+  - No se puede eliminar un `Calendar` si tiene algún servicio (`Service`) asignado.
+  - No se puede eliminar un `Calendar` si tiene algún horario de recurso (`ResourceSchedule`) asignado.
 
 ## Propiedades
 
@@ -113,33 +142,6 @@ public void RemoveHoliday(CalendarHoliday calendarHoliday)
 - `calendarHoliday`: Día festivo a eliminar.
 - Lanza el evento `CalendarHolidayRemovedDomainEvent`.
 
-## Invariantes
-
-- `Id` no puede ser `null` en ningún momento.
-- `Name` no puede ser nulo y debe tener entre 1 y 50 caracteres.
-- `Description` no puede ser nulo y debe tener entre 1 y 500 caracteres.
-
-## Reglas de Negocio
-
-- **Unicidad de Identificador**:
-  - `Id` debe ser único en toda la aplicación.
-
-- **Gestión de Holidays**:
-  - Un holiday debe pertenecer a un único calendario
-  - No puede haber holidays duplicados (misma fecha) en un calendario
-  - Los holidays se eliminan en cascada al eliminar el calendario
-
-- **Longitud de Nombre y Descripción**:
-  - El nombre del calendario debe ser único en toda la aplicación y debe tener entre 1 y 50 caracteres.
-  - La descripción del calendario debe tener entre 1 y 500 caracteres.
-
-- **Eliminación de Calendario**:
-  - No se puede eliminar un `Calendar` si tiene alguna cita (`Appointment`) asociada.
-  - No se puede eliminar un `Calendar` si tiene algún día festivo (`CalendarHoliday`) asociado.
-  - No se puede eliminar un `Calendar` si tiene algún recurso (`Resource`) asignado.
-  - No se puede eliminar un `Calendar` si tiene algún servicio (`Service`) asignado.
-  - No se puede eliminar un `Calendar` si tiene algún horario de recurso (`ResourceSchedule`) asignado.
-
 ## Estado y Transiciones
 
 La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones y acciones realizadas dentro del sistema.
@@ -163,6 +165,7 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
   - [Resource](../resources/resource.md): La clase `Resource` tiene una relación con `Calendar` a través de `CalendarId`.
   - [Service](../services/service.md): La clase `Service` tiene una relación con `Calendar` a través de `CalendarId`.
   - [ResourceSchedule](../resources/resource-schedule.md): La clase `ResourceSchedule` tiene una relación con `Calendar` a través de `CalendarId`.
+  - [CalendarHoliday](./calendar-holiday.md): La clase `Calendar` tiene una lista de la clase `CalendarHoliday`.
 - **Services**:
   - [ICalendarRepository](./interfaces/i-calendar-repository.md): Repositorio para interactuar con la base de datos.
 - **Managers**:
