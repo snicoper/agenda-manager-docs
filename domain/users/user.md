@@ -27,7 +27,7 @@ El **AggregateRoot** `User` representa a un usuario en el sistema de gestión de
 
 - **Gestión de Estado**:
   - Manejar el estado de confirmación del email (`IsEmailConfirmed`).
-  - Controlar el estado de actividad del usuario (`Active`).
+  - Controlar el estado de actividad del usuario (`IsActive`).
 
 - **Roles**:
   - Añadir y remover roles asociados al usuario.
@@ -44,8 +44,8 @@ El **AggregateRoot** `User` representa a un usuario en el sistema de gestión de
 - `Id` no puede ser `null` en ningún momento
 - `Email` no puede ser `null` en ningún momento y debe ser un formato de email válido
 - `PasswordHash` no puede ser `null` o vacío en ningún momento
-- `IsEmailConfirmed` y `Active` debe ser un valor booleano (`true` o `false`) consistente
-- `Active` debe ser un valor booleano (`true` o `false`) consistente
+- `IsEmailConfirmed` y `IsActive` debe ser un valor booleano (`true` o `false`) consistente
+- `IsActive` debe ser un valor booleano (`true` o `false`) consistente
 - `FirstName` puede ser `null`, pero si está presente, no debe exceder los 256 caracteres
 - `LastName` puede ser `null`, pero si está presente, no debe exceder los 256 caracteres
 - `Roles` debe ser una colección de roles que puede ser vacía pero nunca `null`
@@ -61,7 +61,7 @@ El **AggregateRoot** `User` representa a un usuario en el sistema de gestión de
   - Un usuario puede confirmar su email solo si no está ya confirmado (`IsEmailConfirmed` pasa de `false` a `true`).
 
 - **Estado de Actividad**:
-  - Un usuario con permisos puede cambiar su estado de actividad (`Active`) y este cambio **debe ser registrado**.
+  - Un usuario con permisos puede cambiar su estado de actividad (`IsActive`) y este cambio **debe ser registrado**.
 
 - **Roles**:
   - Un usuario puede tener múltiples roles, pero no roles duplicados.
@@ -84,7 +84,7 @@ El **AggregateRoot** `User` representa a un usuario en el sistema de gestión de
 | `IsEmailConfirmed`  | `bool`                      | Estado de confirmación del email del usuario.              |
 | `FirstName`         | `string?`                   | Nombre del usuario, puede ser `null`.                      |
 | `LastName`          | `string?`                   | Apellido del usuario, puede ser `null`.                    |
-| `Active`            | `bool`                      | Estado de actividad del usuario.                           |
+| `IsActive`            | `bool`                      | Estado de actividad del usuario.                           |
 | `RefreshToken`      | `Token?`                    | Token de refresco de autorización del usuario.             |
 | `Roles`             | `IReadOnlyCollection<Role>` | Lista de roles asociados al usuario.                       |
 | `Tokens`            | `IReadOnlyCollection<Token>`| Lista de tokens asociados al usuario.                      |
@@ -217,14 +217,14 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 - **Estados Iniciales**:
   - **Estado Inicial**: Al crear un nuevo `User`, los estados iniciales son los siguientes:
     - `IsEmailConfirmed`: `false` (el email del usuario no está confirmado).
-    - `Active`: `true` (el usuario está activo por defecto).
+    - `IsActive`: `true` (el usuario está activo por defecto).
 
 - **Estados Posibles**:
   - **IsEmailConfirmed**:
     - **`true`**: El email del usuario ha sido confirmado.
     - **`false`**: El email del usuario no ha sido confirmado.
 
-  - **Active**:
+  - **IsActive**:
     - **`true`**: El usuario está activo y puede interactuar con el sistema.
     - **`false`**: El usuario está inactivo y no puede interactuar con el sistema.
 
@@ -233,7 +233,7 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
     - De **`false` a `true`**: Ocurre cuando el usuario confirma su email a través del enlace de confirmación enviado a su correo electrónico.
       - **Condición**: La confirmación debe ser iniciada por el usuario.
 
-  - **Transiciones de `Active`**:
+  - **Transiciones de `IsActive`**:
     - De **`true` a `false`**: Puede ocurrir en cualquier momento cuando el personal autorizado decide desactivar al usuario.
       - **Condición**: Solo personal autorizado puede cambiar el estado a inactivo.
     - De **`false` a `true`**: Puede ocurrir en cualquier momento cuando el personal autorizado decide reactivar al usuario.
@@ -242,9 +242,6 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 - **Condiciones para Transiciones**:
   - **Confirmación de Email**:
     - Solo puede ocurrir una vez después de que el usuario se ha registrado y ha completado el proceso de confirmación de email.
-
-  - **Cambio de Estado de Actividad**:
-    - Puede ocurrir en cualquier momento, pero solo puede ser realizado por personal autorizado. Este cambio debe ser registrado y auditado adecuadamente dentro del sistema para mantener la integridad y seguridad.
 
 ## Dependencias
 
@@ -284,7 +281,7 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 
 ## Interceptores EF Core
 
-- `UserAuditInterceptor`: Intercepta las operaciones de creación, actualización y eliminación de usuarios en la base de datos para registrar los cambios de `Active` en la tabla `AuditRecord`.
+- `UserAuditInterceptor`: Intercepta las operaciones de creación, actualización y eliminación de usuarios en la base de datos para registrar los cambios de `IsActive` en la tabla `AuditRecord`.
 
 ## Comentarios adicionales
 
@@ -300,7 +297,7 @@ var user = new User(
     passwordHash: PasswordHash.FromHashed("PasswordHash"),
     firstName: "John",
     LastName: "Doe",
-    active: true,
+    isActive: true,
     emailConfirmed: true)
 
 // Crear un nuevo usuario con un identificador único aleatorio.
@@ -310,6 +307,6 @@ var user = new User(
     passwordHash: PasswordHash.FromHashed("PasswordHash"),
     firstName: "John",
     LastName: "Doe",
-    active: true,
+    isActive: true,
     emailConfirmed: true)
 ```
