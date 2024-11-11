@@ -1,112 +1,55 @@
-# Clase: Role
+# Role
 
-## Descripción
+**Entity**: Role
+
+## Descripción General
 
 Un `Role` es una entidad que representa un rol de usuario en el sistema. Los roles son una agrupación de permisos que determinan qué acciones puede realizar un usuario dentro del sistema.
 
 ### Responsabilidades
 
+- **Estado**:
+  - Por defecto el sistema debe tener roles predefinidos, como "Administrator", "Employee", "Customer", etc y estos roles deben ser marcados `Editable` como `false` para que no puedan ser modificados por los usuarios.
+
 - **Eventos de Dominio**:
-  - Disparar eventos de dominio cuando se crea, actualiza o elimina un rol (`RoleCreatedDomainEvent`, `RoleUpdatedDomainEvent`, `RoleDeletedDomainEvent`, etc.).
+  - Disparar eventos de dominio cuando se realicen cambios significativos en el usuario.
 
-## Propiedades
+- **Validación**:
+  - Asegurarse de que `Name` y `Description` no exceden la longitud permitida.
 
-| Propiedad     | Tipo                | Descripción                           |
-|---------------|---------------------|---------------------------------------|
-| `Id`          | `RoleId`            | Identificador único del rol.          |
-| `Name`        | `string`            | Nombre del rol.                       |
-| `Description` | `string`            | Descripción del rol.                  |
-| `Editable`    | `bool`              | Indica si el rol es editable.         |
-| `Permissions` | `List<Permission>`  | Lista de permisos asociados al rol.   |
+## Roles Predefinidos
 
-## Asociaciones
+El sistema define cuatro roles inmutables (`Editable = false`) que no pueden ser modificados:
 
-- Un `Role` tiene un `RoleId` que es su identificador único.
-- Un `Role` puede tener muchos `Permission`.
+- **Administrator**:
+  - Acceso total al sistema
+  - Gestión de usuarios, roles y configuración del sistema
+  - Asignado típicamente a administradores del sistema
 
-## Métodos
+- **Employee**
+  - Personal interno de la empresa
+  - Acceso a funciones operativas básicas
+  - No implica capacidad de ser asignado como recurso
 
-### UpdateEditableState (public)
+- **Customer**:
+  - Acceso limitado al sistema
+  - Destinatarios de los servicios
+  - Pueden ver sus propias citas e historial
 
-Actualiza el estado editable del rol.
+- **AssignableStaff**:
+  - Pueden ser asignados como recursos de tipo `Staff`
+  - Independiente del rol Employee
+  - Permite tanto empleados internos como colaboradores externos
+  - Requerido para la asignación de recursos en la programación
 
-- **Parámetros**:
-  - **editable** `bool`: Indica si el rol es editable.
-- **Valor de retorno**:
-  - `void`.
-- **Eventos**:
-  - `RoleEditableStateUpdatedDomainEvent`.
-- **Excepciones**:
-  - Ninguna.
-
-### UpdateRole (internal)
-
-Actualiza el nombre y la descripción del rol. Accesible desde `RoleManager`.
-
-- **Parámetros**:
-  - **name** `string`: El nuevo nombre del rol.
-  - **description** `string`: La nueva descripción del rol.
-- **Valor de retorno**:
-  - `void`.
-- **Eventos**:
-  - `RoleUpdatedDomainEvent`.
-- **Excepciones**:
-  - Ninguna.
-
-### AddPermission (internal)
-
-Agrega un permiso al rol. Accesible desde `AuthorizationManager`.
-
-- **Parámetros**:
-  - **permission** `Permission`: El permiso a agregar.
-- **Valor de retorno**:
-  - `Result`: Un resultado que indica si la operación fue exitosa o no.
-- **Eventos**:
-  - `RolePermissionAddedDomainEvent`.
-- **Excepciones**:
-  - Ninguna.
-
-### RemovePermission (internal)
-
-Elimina un permiso del rol. Accesible desde `AuthorizationManager`.
-
-- **Parámetros**:
-  - **permission** `Permission`: El permiso a eliminar.
-- **Valor de retorno**:
-  - `Result`: Un resultado que indica si la operación fue exitosa o no.
-- **Eventos**:
-  - `RolePermissionRemovedDomainEvent`.
-- **Excepciones**:
-  - Ninguna.
-
-### GuardAgainstInvalidName (private)
-
-Valida que el nombre del rol sea válido.
-
-- **Parámetros**:
-  - **name** `string`: El nombre del rol.
-- **Valor de retorno**:
-  - `void`.
-- **Excepciones**:
-  - `RoleDomainException` si el nombre del rol no es válido.
-
-### GuardAgainstInvalidDescription (private)
-
-Valida que la descripción del rol sea válida.
-
-- **Parámetros**:
-  - **description** `string`: La descripción del rol.
-- **Valor de retorno**:
-  - `void`.
-- **Excepciones**:
-  - `RoleDomainException` si la descripción del rol no es válida.
+> **Nota**: Estos roles son predefinidos por el sistema y no pueden ser modificados ni eliminados.
 
 ## Invariantes
 
-- `Id` no puede ser nulo en ningún momento.
-- `Name` no puede ser nulo en ningún momento.
-- `Description` no puede ser nulo en ningún momento.
-- `Editable` debe ser un valor booleano.
+- `Id` no puede ser `null` en ningún momento.
+- `Name` no puede ser `null` en ningún momento ni exceder la longitud permitida.
+- `Description` no puede ser `null` en ningún momento ni exceder la longitud permitida.
+- `Editable` debe ser un valor booleano (`true` o `false`) consistente.
 
 ## Reglas de Negocio
 
@@ -116,7 +59,9 @@ Valida que la descripción del rol sea válida.
   - El `Description` debe ser único en toda la aplicación.
 
 - **Estado Editable**:
-  - Un rol puede cambiar su estado de editable (`Editable`) y este cambio debe ser registrado.
+  - Un rol **NO** puede cambiar su estado de editable (`Editable`).
+  - Un role `Editable` con estado a `false` nunca puede ser eliminado.
+  - Todos los roles creados por personal autorizado deben tener `Editable` con estado a `true`.
 
 - **Permisos**:
   - Un rol puede tener múltiples permisos, pero no permisos duplicados.
@@ -128,36 +73,82 @@ Valida que la descripción del rol sea válida.
 - **Integridad**:
   - Un rol no puede ser eliminado si tiene usuarios asignados.
 
+## Propiedades
+
+| Propiedad     | Tipo                | Descripción                           |
+|---------------|---------------------|---------------------------------------|
+| `Id`          | `RoleId`            | Identificador único del rol.          |
+| `Name`        | `string`            | Nombre del rol.                       |
+| `Description` | `string`            | Descripción del rol.                  |
+| `Editable`    | `bool`              | Indica si el rol es editable.         |
+| `Permissions` | `List<Permission>`  | Lista de permisos asociados al rol.   |
+
+## Relaciones
+
+- Un `Role` tiene un `RoleId` que es su identificador único.
+- Un `Role` puede tener muchos `Permission`.
+
+## Métodos
+
+```csharp
+internal void UpdateRole(string name, string description)
+```
+
+- Actualiza el nombre y la descripción del rol.
+- Lanza el evento `RoleUpdatedDomainEvent`.
+- Return `void`.
+
+```csharp
+internal Result AddPermission(Permission permission)
+```
+
+- Agrega un permiso al rol.
+- Lanza el evento `RolePermissionAddedDomainEvent`.
+- Return `void`.
+
+```csharp
+internal Result RemovePermission(Permission permission)
+```
+
+- Elimina un permiso del rol.
+- Lanza el evento `RolePermissionRemovedDomainEvent`.
+- Return `void`.
+
+```csharp
+private static void GuardAgainstInvalidName(string name)
+```
+
+- Valida que el nombre del rol no sea nulo y no exceda los 100 caracteres.
+- Lanza la excepción `RoleDomainException` si el nombre del rol es nulo o excede los 256 caracteres.
+- Return `void`.
+
+```csharp
+private static void GuardAgainstInvalidDescription(string description)
+```
+
+- Valida que la descripción del rol no sea nula y no exceda los 500 caracteres.
+- Lanza la excepción `RoleDomainException` si la descripción del rol es nula o excede los 256 caracteres.
+
 ## Estado y Transiciones
 
 La clase `Role` tiene los siguientes estados y transiciones:
 
-### Estado Inicial
+- **Estados Iniciales**:
+  - **Estado Inicial**: Al crear un nuevo rol, el estado inicial es:
+    - `Editable`: `false`, por defecto el rol no es editable.
 
-- **Estado Inicial**: Al crear un nuevo rol, el estado inicial es:
-  - `Editable`: `false`, por defecto el rol no es editable.
+- **Estados Posibles**
+  - **Editable**:
+    - `true`: El rol es editable.
+    - `false`: El rol no es editable y no puede ser eliminado.
 
-### Estados Posibles
-
-- **Editable**:
-  - `true`: El rol es editable.
-  - `false`: El rol no es editable.
-
-### Transiciones Permitidas
-
-- **Transición de `Editable`**:
-  - Desde `true` a `false`: Cuando un usuario cambia el estado editable del rol.
-  - **Condición**: La confirmación debe ser realizada por un usuario con permisos para editar roles.
-
-### Condiciones para Transiciones
-
-- **Condición de Transición de `Editable`**:
-  - Puede ocurrir en cualquier momento, pero solo puede ser realizada por personal autorizado. Este cambio debe ser registrado y auditado adecuadamente dentro del sistema para mantener la integridad y seguridad.
+- **Transiciones Permitidas**:
+  - **Transición de `Editable`**:
+    - Un rol no puede cambiar su estado de editable (`Editable`) en ningún momento.
 
 ## Dependencias
 
 - **Entidades**:
-  - `User`: Un `Role` puede tener muchos `User`.
   - `Permission`: Un `Role` puede tener muchos `Permission`.
 - **Servicios**:
   - `IRoleRepository`: Interfaz para acceder a los datos de los roles.
@@ -166,6 +157,15 @@ La clase `Role` tiene los siguientes estados y transiciones:
   - `AuthorizationManager`: Gestiona la autorización de usuarios.
 - **Value Objects**:
   - `RoleId`: Identificador único del rol.
+
+## Eventos de Dominio
+
+- `RoleCreatedDomainEvent(Id)`: Se lanza cuando se crea un nuevo rol.
+- `RoleUpdatedDomainEvent(Id)`: Se lanza cuando se actualiza un rol.
+- `RolePermissionAddedDomainEvent(Id, permission.Id)`: Se lanza cuando se agrega un permiso a un rol.
+- `RolePermissionRemovedDomainEvent(Id, permission.Id)`: Se lanza cuando se elimina un permiso de un rol.
+
+## Comentarios adicionales
 
 ## Ejemplos
 

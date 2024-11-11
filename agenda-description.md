@@ -216,7 +216,7 @@ Por lo tanto, representa un rango de días festivos en un `Calendar` aplicable a
 
 ## Resources
 
-Un `Resource` representa un recurso que puede ser utilizado en un `Service`.
+Un `Resource` representa un recurso que puede ser utilizado por un `Service`.
 
 Un `Resource` tiene asociado un `Calendar` y un `ResourceType`.
 
@@ -317,3 +317,20 @@ En el `AppointmentStatusChange` se indica el estado `Pending` en la propiedad `S
 Un `AppointmentStatusChange` tiene un `Period` que representa el periodo de tiempo en el que el estado si inicio y finalizo, pero siempre el estado actual se sabe cuando `Period.StartDate` y `Period.EndDate` son iguales y la propiedad `IsCurrentStatus` de `AppointmentStatusChange` es `true` y la propiedad `Duration` sera `default(TimeSpan)` - `00:00:00`.
 
 Cada vez que se cambia el estado de un `Appointment` se cambia al nuevo estado de `Appointment.Status`, se cierra el `AppointmentStatusChange` actual con `Period.EndDate` del momento de cierre, se calcula el `Duration` y se crea un nuevo `AppointmentStatusChange` con el estado actual y el periodo de tiempo actual.
+
+```text
+Agregados y sus Entidades:
+└── Appointment (AR)
+    └── AppointmentStatusChange (E)
+└── AuditRecord (AR)
+└── Calendar (AR)
+    └── CalendarHoliday (E)
+└── Resource (AR)
+    └── ResourceSchedule (E)
+└── ResourceType (AR)
+└── Service (AR)
+└── User (AR)
+    ├── Role (E)
+    ├── Permission (E)
+    └── UserToken (E)
+```

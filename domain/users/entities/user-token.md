@@ -32,7 +32,7 @@ La clase `UserToken` representa un token de seguridad temporal asociado a un usu
 | `Token`            | `Token`           | El token generado para la acción específica.                  |
 | `UserTokenType`    | `UserTokenType`   | Tipo de token, como `PasswordReset` o `EmailConfirmation`.    |
 
-## Asociaciones
+## Relaciones
 
 - Un `UserToken` tiene un **ValueObject** `UserTokenId` único que lo identifica.
 - Un `UserToken` tiene un **ValueObject** `UserId` que identifica al usuario asociado.
