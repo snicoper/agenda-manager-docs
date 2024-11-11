@@ -41,15 +41,15 @@ El **AggregateRoot** `User` representa a un usuario en el sistema de gestión de
 
 ## Invariantes
 
-- `Id` no puede ser `null` en ningún momento.
-- `Email` no puede ser `null` en ningún momento y debe ser un formato de email válido.
-- `PasswordHash` no puede ser `null` o vacío en ningún momento.
-- `IsEmailConfirmed` y `Active` debe ser un valor booleano (`true` o `false`) consistente.
-- `Active` debe ser un valor booleano (`true` o `false`) consistente.
-- `FirstName` puede ser `null`, pero si está presente, no debe exceder los 256 caracteres.
-- `LastName` puede ser `null`, pero si está presente, no debe exceder los 256 caracteres.
-- `Roles` debe ser una colección de roles que puede ser vacía pero nunca `null`.
-- `UserTokens` debe ser una colección de tokens que puede ser vacía pero nunca `null`.
+- `Id` no puede ser `null` en ningún momento
+- `Email` no puede ser `null` en ningún momento y debe ser un formato de email válido
+- `PasswordHash` no puede ser `null` o vacío en ningún momento
+- `IsEmailConfirmed` y `Active` debe ser un valor booleano (`true` o `false`) consistente
+- `Active` debe ser un valor booleano (`true` o `false`) consistente
+- `FirstName` puede ser `null`, pero si está presente, no debe exceder los 256 caracteres
+- `LastName` puede ser `null`, pero si está presente, no debe exceder los 256 caracteres
+- `Roles` debe ser una colección de roles que puede ser vacía pero nunca `null`
+- `UserTokens` debe ser una colección de tokens que puede ser vacía pero nunca `null`
 
 ## Reglas de negocio
 

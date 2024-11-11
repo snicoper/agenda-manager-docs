@@ -34,6 +34,8 @@
 
 - "Una cita solo puede ser confirmada si todos los recursos necesarios están disponibles en ese horario."
 
+## Propiedades
+
 ## Relaciones
 <!-- Detalla las relaciones con otras entidades o agregados. Explica si son relaciones de tipo
      composición, agregación, asociación, etc. Incluye la cardinalidad y el propósito de cada relación. -->
@@ -42,13 +44,21 @@
 
 - `Appointment` se relaciona con `Resource` para gestionar la asignación de recursos a las citas.
 
-## Propiedades
-
 ## Métodos
 <!-- Enumera y describe los métodos públicos principales de la entidad, incluyendo su propósito.
      Esto ayuda a entender qué operaciones se pueden realizar en la entidad y cómo interactúa con otras partes del sistema. -->
 - **Método `NombreDelMetodo1`**: Descripción del propósito del método.
 - **Método `NombreDelMetodo2`**: Descripción del propósito del método.
+
+## Estado y Transiciones
+
+## Dependencias
+
+- **Entidades**:
+- **Services**:
+- **Managers**:
+- **Policies**:
+- **Value Objects**:
 
 ## Eventos de Dominio
 <!-- Si la entidad genera eventos de dominio, indícalos aquí con una breve explicación de cuándo
@@ -58,10 +68,6 @@
 - **Evento `NombreDelEvento2`**: Descripción de la situación que lo desencadena y el objetivo del evento.
 
 ## Interceptores EF Core
-
-## Estado y Transiciones
-
-## Dependencias
 
 ## Comentarios adicionales
 

@@ -12,7 +12,7 @@ Un `Role` es una entidad que representa un rol de usuario en el sistema. Los rol
   - Por defecto el sistema debe tener roles predefinidos, como "Administrator", "Employee", "Customer", etc y estos roles deben ser marcados `Editable` como `false` para que no puedan ser modificados por los usuarios.
 
 - **Eventos de Dominio**:
-  - Disparar eventos de dominio cuando se realicen cambios significativos en el usuario.
+  - Disparar eventos de dominio cuando se realicen cambios significativos en el role.
 
 - **Validación**:
   - Asegurarse de que `Name` y `Description` no exceden la longitud permitida.
@@ -119,7 +119,7 @@ private static void GuardAgainstInvalidName(string name)
 ```
 
 - Valida que el nombre del rol no sea nulo y no exceda los 100 caracteres.
-- Lanza la excepción `RoleDomainException` si el nombre del rol es nulo o excede los 256 caracteres.
+- Lanza la excepción `RoleDomainException` si el nombre del rol es nulo o excede los 256 caracteres o no tiene un sufijo permitido.
 - Return `void`.
 
 ```csharp
