@@ -1,12 +1,12 @@
-¡No hay problema! Aquí tienes la documentación revisada en español:
+# UserToken
 
----
-
-# Clase: UserToken
+- **Entity**: UserToken
 
 ## Descripción
 
 La clase `UserToken` representa un token de seguridad temporal asociado a un usuario para operaciones que requieren verificación adicional, como la confirmación de email o el restablecimiento de contraseña. Esta entidad forma parte del agregado `User`.
+
+Los tokens son de un solo uso y tienen un tiempo de vida limitado definido en su creación. Una vez utilizados o expirados, deben ser eliminados del sistema.
 
 ### Responsabilidades
 
@@ -15,13 +15,31 @@ La clase `UserToken` representa un token de seguridad temporal asociado a un usu
   - Eliminar tokens después de su uso.
   - Eliminar tokens expirados.
 
-- **Validación y seguridad**:
-  - Validar la autenticidad de los tokens.
-  - Asegurar que los tokens solo se usen una vez.
-  - Validar el tipo correcto de token para cada operación.
-
 - **Eventos de Dominio**:
-  - Disparar eventos de dominio cuando se crean los tokens.
+  - Disparar eventos de dominio cuando se realicen cambios significativos en el user token.
+
+- **Validación y seguridad**:
+  - Validar la autenticidad de los tokens
+  - Asegurar que los tokens solo se usen una vez
+  - Validar el tipo correcto de token para cada operación
+  - Asegurar que el token no haya expirado antes de su uso
+  - Garantizar que un usuario no pueda tener múltiples tokens activos del mismo tipo
+
+## Invariantes
+
+- `Id` no puede ser `null` en ningún momento
+- `UserId` no puede ser `null` y debe referenciar a un usuario existente
+- `Token` no puede ser `null` y debe ser válido según las reglas del ValueObject `Token`
+- `Type` no puede ser `UserTokenType.None`
+
+## Reglas de negocio
+
+- Un usuario solo puede tener un token activo por tipo en un momento dado
+- Los tokens de reseteo de contraseña tienen una validez máxima de 1 hora
+- Los tokens de verificación de email tienen una validez máxima de 7 días
+- Un token no puede ser utilizado después de su expiración
+- Un token no puede ser utilizado más de una vez
+- Al generar un nuevo token del mismo tipo, el token anterior (si existe) debe ser eliminado
 
 ## Propiedades
 
@@ -31,6 +49,7 @@ La clase `UserToken` representa un token de seguridad temporal asociado a un usu
 | `UserId`           | `UserId`          | Identificador único del usuario asociado al token.            |
 | `Token`            | `Token`           | El token generado para la acción específica.                  |
 | `UserTokenType`    | `UserTokenType`   | Tipo de token, como `PasswordReset` o `EmailConfirmation`.    |
+| `IsExpired`        | `bool`            | Indica si el token ha expirado.                              |
 
 ## Relaciones
 
@@ -41,39 +60,54 @@ La clase `UserToken` representa un token de seguridad temporal asociado a un usu
 
 ## Métodos
 
-## Invariantes
+```csharp
+public static UserToken Create(UserTokenId id, UserId userId, Token token, UserTokenType type)
+```
 
-- `Id` no puede ser `null` en ningún momento.
-- `UserId` debe ser un `UserId` válido.
-- `Token` no puede ser `null` en ningún momento y debe ser un formato válido.
-- `UserTokenType` debe ser un valor válido del enum `UserTokenType`.
-- `ExpiryAt` a la hora de creación debe ser una fecha futura.
+- Crea una nueva instancia de `UserToken`.
+- `id`: Identificador único del token.
+- `userId`: Identificador único del usuario asociado al token.
+- `token`: El token generado para la acción específica.
+- `type`: Tipo de token, como `PasswordReset` o `EmailConfirmation`.
+- Lanza el evento `UserTokenCreated` con el nuevo token.
+- Devuelve un nuevo `UserToken`.
 
-## Reglas de negocio
+```csharp
+public static Result<UserToken> CreateEmailConfirmation(UserId userId, TimeSpan? validityPeriod = null)
+```
 
-- **Unicidad de identidad**:
-  - El `Id` debe ser único en toda la aplicación.
-  - El `Token` debe ser único en toda la aplicación.
+- Crea un nuevo token de confirmación de email.
+- `userId`: Identificador único del usuario asociado al token.
+- `validityPeriod`: Duración del token. Por defecto, 7 días.
+- Return un nuevo `Result<UserToken>` con el nuevo token de confirmación de email.
 
-- **Token**:
-  - El `Token` no puede ser `null` en ningún momento y debe ser criptográficamente seguro.
-  - La longitud mínima del token debe ser de 32 caracteres.
-  - La longitud máxima del token debe ser de 128 caracteres.
-  - Cada tipo de token tiene un tiempo de expiración específico:
-    - `EmailVerification`: 24 horas
-    - `PasswordReset`: 1 hora
-  - Un token expirado no puede ser utilizado.
-  - Un token utilizado no puede ser utilizado nuevamente.
-  - Al usar un token incorrecto más de 3 veces, se deben bloquear los intentos por 15 minutos.
+```csharp
+public static Result<UserToken> CreatePasswordReset(UserId userId, TimeSpan? validityPeriod = null)
+```
 
-- **Validación de UserTokenType**:
-  - El `UserTokenType` debe ser un valor válido del enum `UserTokenType`.
-  - Los tipos de `UserTokenType` dentro del enum deben ser únicos e incluir `EmailVerification` y `PasswordReset`.
+- Crea un nuevo token de restablecimiento de contraseña.
+- `userId`: Identificador único del usuario asociado al token.
+- `validityPeriod`: Duración del token. Por defecto, 1 hora.
+- Return un nuevo `Result<UserToken>` con el nuevo token de restablecimiento de contraseña.
 
-- **Validación de ExpiryAt**:
-  - La fecha de expiración del token debe ser una fecha futura.
+```csharp
+public Result Consume(string tokenValue)
+```
+
+- Consume el token para la operación correspondiente.
+- `tokenValue`: El valor del token a consumir.
+- Devuelve un `Result` success en caso de éxito o un error si el token no es válido o ha expirado.
 
 ## Estado y Transiciones
+
+El token pasa por los siguientes estados:
+
+1. **Creación**: Se crea con un tipo específico y tiempo de vida
+2. **Uso**: Se consume para la operación correspondiente
+3. **Eliminación**: Se elimina después de:
+   - Ser utilizado
+   - Expira
+   - El usuario solicita un nuevo token del mismo tipo
 
 ## Dependencias
 
@@ -94,21 +128,32 @@ La clase `UserToken` representa un token de seguridad temporal asociado a un usu
 ## Ejemplos de Uso
 
 ```csharp
-var user = await userRepository.GetByEmailAsync(email, cancellationToken);
-
-if (user is null)
-{
-    return UserErrors.UserNotFound;
-}
-
-var userToken = UserToken.Create(
+// Usando el método Create original
+var passwordResetToken = UserToken.Create(
     id: UserTokenId.Create(),
     userId: user.Id,
-    token: Token.Generate(TimeSpan.FromDays(1)),
-    type: UserTokenType.EmailConfirmation);
+    token: Token.Generate(TimeSpan.FromHours(1)),
+    type: UserTokenType.PasswordReset);
 
-user.AddUserToken(userToken);
+// Usando los nuevos métodos factory
+var passwordResetResult = UserToken.CreatePasswordReset(
+    userId: user.Id,
+    validityPeriod: TimeSpan.FromHours(2));
 
-userRepository.Update(user);
-await unitOfWork.SaveChangesAsync(cancellationToken);
+if (passwordResetResult.IsSuccess)
+{
+    var token = passwordResetResult.Value;
+    // Usar el token...
+}
+
+// Ejemplo de consumo de token
+var consumeResult = token.Consume("token-value-here");
+if (consumeResult.IsSuccess)
+{
+    // Token consumido correctamente
+}
+else
+{
+    // Manejar el error (token expirado o inválido)
+}
 ```

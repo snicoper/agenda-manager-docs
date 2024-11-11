@@ -105,6 +105,7 @@ public Result UpdatePassword(PasswordHash newPasswordHash)
 ```
 
 - Actualiza el hash de la contraseña del usuario.
+- `newPasswordHash`: El nuevo hash de la contraseña.
 - Lanza el evento `UserPasswordUpdatedDomainEvent`.
 - Return `Result` Un resultado que indica si la operación fue exitosa o no
 
@@ -124,6 +125,7 @@ public void UpdateRefreshToken(Token refreshToken)
 ```
 
 - Actualiza el `Token` del usuario.
+- `refreshToken`: El nuevo `Token` del usuario.
 - Lanza el evento `UserRefreshTokenUpdatedDomainEvent`.
 - Return `void`.
 
@@ -140,6 +142,7 @@ public void UpdateActiveState(bool newState)
 ```
 
 - Actualiza el estado de actividad del usuario.
+- `newState`: El nuevo estado de actividad del usuario.
 - Lanza el evento `UserActiveStateUpdatedDomainEvent`.
 - Return `void`.
 
@@ -148,6 +151,7 @@ public void AddUserToken(UserToken userToken)
 ```
 
 - Agrega un `UserToken` al usuario.
+- `userToken`: El nuevo `UserToken` del usuario.
 - Lanza el evento `UserTokenAddedDomainEvent`.
 - Return `void`.
 
@@ -156,6 +160,7 @@ public void RemoveUserToken(UserToken userToken)
 ```
 
 - Elimina un `UserToken` del usuario.
+- `userToken`: El `UserToken` a eliminar.
 - Lanza el evento `UserTokenRemovedDomainEvent`.
 - Return `void`.
 
@@ -164,6 +169,8 @@ internal void UpdateUser(string? firstName, string? lastName)
 ```
 
 - Actualiza la información del usuario como `FirstName` y `LastName`.
+- `firstName`: El nuevo nombre del usuario.
+- `lastName`: El nuevo apellido del usuario.
 - Lanza el evento `UserUpdatedDomainEvent`.
 - Return `void`.
 
@@ -172,6 +179,7 @@ internal Result AddRole(Role role)
 ```
 
 - Agrega un rol al usuario.
+- `role`: El rol a agregar.
 - Lanza el evento `UserRoleAddedDomainEvent`.
 - Return `void`.
 
@@ -180,6 +188,7 @@ internal Result RemoveRole(Role role)
 ```
 
 - Elimina un rol del usuario.
+- `role`: El rol a eliminar.
 - Lanza el evento `UserRoleRemovedDomainEvent`.
 - Return `void`.
 
@@ -188,6 +197,7 @@ private static void GuardAgainstInvalidFirstName(string? firstName)
 ```
 
 - Valida que el nombre del usuario no sea nulo y no exceda los 256 caracteres.
+- `firstName`: El nombre del usuario.
 - Lanza la excepción `UserDomainException` si el nombre del usuario es nulo o excede los 256 caracteres.
 - Return `void`.
 
@@ -196,6 +206,7 @@ private static void GuardAgainstInvalidLastName(string? lastName)
 ```
 
 - Valida que el apellido del usuario no sea nulo y no exceda los 256 caracteres.
+- `lastName`: El apellido del usuario.
 - Lanza la excepción `UserDomainException` si el apellido del usuario es nulo o excede los 256 caracteres.
 - Return `void`.
 

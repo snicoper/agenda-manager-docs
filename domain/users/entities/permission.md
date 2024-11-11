@@ -54,6 +54,7 @@ private static void GuardAgainstInvalidName(string name)
 ```
 
 - Valida el nombre del permiso.
+- `name`: Nombre del permiso.
 - Lanza `PermissionDomainException` si el nombre no cumple con las reglas de negocio.
 - Return `void`.
 

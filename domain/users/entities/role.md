@@ -95,6 +95,8 @@ internal void UpdateRole(string name, string description)
 ```
 
 - Actualiza el nombre y la descripción del rol.
+- `name`: Nombre del rol.
+- `description`: Descripción del rol.
 - Lanza el evento `RoleUpdatedDomainEvent`.
 - Return `void`.
 
@@ -103,6 +105,7 @@ internal Result AddPermission(Permission permission)
 ```
 
 - Agrega un permiso al rol.
+- `permission`: Permiso a agregar.
 - Lanza el evento `RolePermissionAddedDomainEvent`.
 - Return `void`.
 
@@ -111,6 +114,7 @@ internal Result RemovePermission(Permission permission)
 ```
 
 - Elimina un permiso del rol.
+- `permission`: Permiso a eliminar.
 - Lanza el evento `RolePermissionRemovedDomainEvent`.
 - Return `void`.
 
@@ -119,6 +123,7 @@ private static void GuardAgainstInvalidName(string name)
 ```
 
 - Valida que el nombre del rol no sea nulo y no exceda los 100 caracteres.
+- `name`: Nombre del rol.
 - Lanza la excepción `RoleDomainException` si el nombre del rol es nulo o excede los 256 caracteres o no tiene un sufijo permitido.
 - Return `void`.
 
@@ -127,6 +132,7 @@ private static void GuardAgainstInvalidDescription(string description)
 ```
 
 - Valida que la descripción del rol no sea nula y no exceda los 500 caracteres.
+- `description`: Descripción del rol.
 - Lanza la excepción `RoleDomainException` si la descripción del rol es nula o excede los 256 caracteres.
 
 ## Estado y Transiciones
