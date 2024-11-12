@@ -48,6 +48,9 @@ Las excepciones son la relación de `Calendar` con `CalendarSettings` y `Calenda
   - No puede haber holidays duplicados (misma fecha) en un calendario
   - Los holidays se eliminan en cascada al eliminar el calendario
 
+- **Estado del CalendarioSettings**:
+  - Un calendar siempre debe tener un `CalendarSettings` asociado
+
 - **Nombre y Descripción**:
   - El nombre del calendario debe ser único en toda la aplicación y debe tener entre 1 y 50 caracteres.
   - La descripción del calendario debe tener entre 1 y 500 caracteres.
@@ -187,6 +190,7 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
 - **Policies**:
 - **Value Objects**:
   - [CalendarId](./value-objects/calendar-id.md): Identificador único del calendario.
+  - [CalendarSettingsId](./value-objects/calendar-settings-id.md): Identificador único de la configuración del calendario.
 
 ## Eventos de Dominio
 
@@ -207,15 +211,19 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
 ## Ejemplos
 
 ```csharp
+var settings = CalendarSettings.Create(/** **/);
+
 // Crear un nuevo calendario a partir de un identificador único.
 var calendar = Calendar.Create(
     CalendarId.From(Guid.Parse("7f2c1a3e-9b4d-4c8f-a45d-e8f1d2c3b4a5")),
+    settings,
     "Mi Calendario",
     "Este es mi calendario");
 
 // Crear un nuevo calendario con un identificador único aleatorio.
 var calendar = Calendar.Create(
     CalendarId.Create(),
+    settings,
     "Mi Calendario",
     "Este es mi calendario");
 
