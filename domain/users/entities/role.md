@@ -154,7 +154,7 @@ La clase `Role` tiene los siguientes estados y transiciones:
 
 ## Dependencias
 
-- **Entidades**:
+- **Entities**:
   - `Permission`: Un `Role` puede tener muchos `Permission`.
 - **Servicios**:
   - `IRoleRepository`: Interfaz para acceder a los datos de los roles.

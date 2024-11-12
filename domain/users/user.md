@@ -245,7 +245,7 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 
 ## Dependencias
 
-- **Entidades**:
+- **Entities**:
   - [Role](./entities/role.md): Lista de roles asociados a este usuario.
   - [UserToken](./entities/user-token.md): Lista de tokens de usuario asociados a este usuario.
 - **Services**:

@@ -111,7 +111,7 @@ El token pasa por los siguientes estados:
 
 ## Dependencias
 
-- **Entidades**:
+- **Entities**:
 - **Servicios**:
   - [IUserTokenRepository](./interfaces/i-user-token-repository.md): Repositorio para acceder a los tokens de usuario.
 - **Managers**:

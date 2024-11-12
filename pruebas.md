@@ -1,26 +1,69 @@
-# Question
+Hola, estoy haciendo la configuracion de EF Core:
 
-Ahora pensando esta entidad no es tan simple como a priori pensé (es lo que tiene el refinamiento)
+Pongo las partes del código importantes:
 
-- Crear un día festivo
-  - ¿Que pasa con las citas creadas en ese día?
+```csharp
+public sealed class Calendar : AggregateRoot
+{
+    public CalendarId Id { get; } = null!;
 
-## Opción 1
+    public CalendarSettingsId SettingsId { get; private set; } = null!;
 
-No permitir crear el día festivo para ese día.
+    public CalendarSettings Settings { get; private set; } = null!;
+}
 
-## Opción 2
+public sealed class CalendarSettings : AuditableEntity
+{
+    public CalendarSettingsId Id { get; } = null!;
 
-Marcar las citas creadas en ese día como canceladas (cuando llegue a las citas, veré como se manejan las citas canceladas)
+    public CalendarId CalendarId { get; private set; } = null!;
 
-Pero esta claro que se deberá lanzar un evento de solapamiento con citas.
+    public Calendar Calendar { get; private set; } = null!;
+}
+```
 
-## Opción 3
+Es una relación de uno a uno.
 
-Permitir crear el día festivo, manteniendo las citas sin modificar, pero hacer saber que ese día tiene citas creadas.
+```csharp
+public class CalendarConfiguration : IEntityTypeConfiguration<Calendar>
+{
+    public void Configure(EntityTypeBuilder<Calendar> builder)
+    {
+        // ...
+        builder.Property(c => c.SettingsId)
+            .HasConversion(
+                id => id.Value,
+                value => CalendarSettingsId.From(value))
+            .IsRequired();
 
-## Opción 4
+        builder.HasOne(c => c.Settings)
+            .WithOne(cs => cs.Calendar)
+            .HasForeignKey<Calendar>(c => c.SettingsId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
 
-No se me ocurren mas.
+public class CalendarSettingsConfiguration : IEntityTypeConfiguration<CalendarSettings>
+{
+    public void Configure(EntityTypeBuilder<CalendarSettings> builder)
+    {
+        // ...
+        builder.Property(cs => cs.CalendarId)
+            .HasConversion(
+                id => id.Value,
+                value => CalendarId.From(value))
+            .IsRequired();
 
----
+        builder.HasOne(cs => cs.Calendar)
+            .WithOne(c => c.Settings)
+            .HasForeignKey<CalendarSettings>(cs => cs.CalendarId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+```
+
+El que "manda" es `Calendar` y lo deseable sería que no se pueda borrar un `CalendarSettings` si tiene un `Calendar` asociado.
+
+Y si  se borra un `Calendar` se borra el `CalendarSettings` asociado.
+
+Si me modificas la parte de los `OnDelete` y revisas si el resto es correcto, te lo agradezco.

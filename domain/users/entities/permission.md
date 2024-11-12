@@ -67,7 +67,7 @@ La entidad Permission es inmutable y no tiene transiciones de estado después de
 
 ## Dependencias
 
-- **Entidades**:
+- **Entities**:
 - **Services**:
   - `IPermissionRepository`: Repositorio de permisos.
 - **Managers**:

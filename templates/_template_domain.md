@@ -1,5 +1,7 @@
 # Nombre de la Entidad (e.g., `Appointment`, `Calendar`)
 
+- **Entity**: `NombreDeLaEntidad`
+
 ## Descripción General
 <!-- Explica brevemente qué representa esta entidad o aggregate root en el contexto del dominio.
      Describe el rol y propósito principal de la entidad en el negocio y su función en el sistema. -->
@@ -54,7 +56,7 @@
 
 ## Dependencias
 
-- **Entidades**:
+- **Entities**:
 - **Services**:
 - **Managers**:
 - **Policies**:

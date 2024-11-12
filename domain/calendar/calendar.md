@@ -8,9 +8,13 @@ Representa un calendario que actúa como contenedor lógico para appointments y 
 
 Este agregado no mantiene referencias directas a sus entidades relacionadas para mantener la consistencia y simplicidad del modelo.
 
-La única excepción es la relación de `Calendar` con `CalendarHoliday`, que es una relación de uno a muchos y se utiliza para representar los días festivos asociados al calendario.
+Las excepciones son la relación de `Calendar` con `CalendarSettings` y `CalendarHoliday`, que es una relación de uno a muchos y se utiliza para representar los días festivos asociados al calendario.
 
 ### Responsabilidades
+
+- **Creación de un nuevo calendario**:
+  - La creación de un nuevo calendario implica la creación de un nuevo `CalendarSettings` asociado.
+  - El `CalendarSettings` se ha de pasar como argumento en el constructor del `Calendar`.
 
 - **Eventos de Dominio**:
   - Disparar eventos de dominio cuando se realicen cambios significativos en el calendario.
@@ -29,6 +33,7 @@ La única excepción es la relación de `Calendar` con `CalendarHoliday`, que es
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento.
+- `SettingsId` no puede ser `null` en ningún momento.
 - `Name` no puede ser nulo y debe tener entre 1 y 50 caracteres.
 - `Description` no puede ser nulo y debe tener entre 1 y 500 caracteres.
 
@@ -36,6 +41,7 @@ La única excepción es la relación de `Calendar` con `CalendarHoliday`, que es
 
 - **Unicidad de Identificador**:
   - `Id` debe ser único en toda la aplicación.
+  - `SettingsId` debe ser único en toda la aplicación.
 
 - **Gestión de Holidays**:
   - Un holiday debe pertenecer a un único calendario
@@ -55,13 +61,14 @@ La única excepción es la relación de `Calendar` con `CalendarHoliday`, que es
 
 ## Propiedades
 
-| Propiedad     | Tipo         | Descripción                                             |
-|---------------|--------------|---------------------------------------------------------|
-| `Id`          | `CalendarId` | Identificador único del calendario.                     |
-| `IsActive`    | `bool`       | Indica si el calendario está activo.                    |
-| `Name`        | `string`     | Nombre del calendario.                                  |
-| `Description` | `string`     | Descripción del calendario.                             |
-| `Holidays`    | `List<CalendarHoliday>` | Lista de vacaciones asociadas al calendario. |
+| Propiedad     | Tipo                    | Descripción                                             |
+|---------------|-------------------------|---------------------------------------------------------|
+| `Id`          | `CalendarId`            | Identificador único del calendario.                     |
+| `SettingsId`  | `CalendarSettingsId`    | Identificador único del `CalendarSettings` asociado.    |
+| `IsActive`    | `bool`                  | Indica si el calendario está activo.                    |
+| `Name`        | `string`                | Nombre del calendario.                                  |
+| `Description` | `string`                | Descripción del calendario.                             |
+| `Holidays`    | `List<CalendarHoliday>` | Lista de vacaciones asociadas al calendario.            |
 
 ## Métodos
 
@@ -90,11 +97,17 @@ public void RemoveHoliday(CalendarHoliday calendarHoliday)
 - Lanza el evento `CalendarUpdatedDomainEvent`.
 
 ```csharp
-internal static Calendar Create(CalendarId id, string name, string description, bool active = true)
+internal static Calendar Create(
+    CalendarId id,
+    CalendarSettings settings,
+    string name,
+    string description,
+    bool active = true)
 ```
 
 - Crea un nuevo calendario con los valores proporcionados.
 - `id`: Identificador único del calendario.
+- `settings`: Configuración del calendario.
 - `name`: Nombre del calendario.
 - `description`: Descripción del calendario.
 - `active`: Indica si el calendario está activo.
@@ -159,9 +172,10 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
 
 ## Dependencias
 
-- **Entidades**:
-  - [Appointment](../appoitments/appointment.md): La clase `Appointment` tiene una relación con `Calendar` a través de `CalendarId`.
+- **Entities**:
   - [CalendarHoliday](./calendar-holiday.md): La clase `Calendar` tiene una lista de la clase `CalendarHoliday`.
+  - [CalendarSettings](./entities/calendar-settings.md): La clase `Calendar` tiene una relación con `CalendarSettings` a través de `CalendarId`.
+  - [Appointment](../appoitments/appointment.md): La clase `Appointment` tiene una relación con `Calendar` a través de `CalendarId`.
   - [Resource](../resources/resource.md): La clase `Resource` tiene una relación con `Calendar` a través de `CalendarId`.
   - [Service](../services/service.md): La clase `Service` tiene una relación con `Calendar` a través de `CalendarId`.
   - [ResourceSchedule](../resources/resource-schedule.md): La clase `ResourceSchedule` tiene una relación con `Calendar` a través de `CalendarId`.
