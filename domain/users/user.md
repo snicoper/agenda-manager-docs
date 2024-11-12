@@ -84,7 +84,7 @@ El **AggregateRoot** `User` representa a un usuario en el sistema de gestión de
 | `IsEmailConfirmed`  | `bool`                      | Estado de confirmación del email del usuario.              |
 | `FirstName`         | `string?`                   | Nombre del usuario, puede ser `null`.                      |
 | `LastName`          | `string?`                   | Apellido del usuario, puede ser `null`.                    |
-| `IsActive`            | `bool`                      | Estado de actividad del usuario.                           |
+| `IsActive`          | `bool`                      | Estado de actividad del usuario.                           |
 | `RefreshToken`      | `Token?`                    | Token de refresco de autorización del usuario.             |
 | `Roles`             | `IReadOnlyCollection<Role>` | Lista de roles asociados al usuario.                       |
 | `Tokens`            | `IReadOnlyCollection<Token>`| Lista de tokens asociados al usuario.                      |

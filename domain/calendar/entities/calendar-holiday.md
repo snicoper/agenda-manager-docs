@@ -168,7 +168,7 @@ Para crear o actualizar un nuevo `CalendarHoliday`, require de `CalendarManager`
 
 ```csharp
 // Crear un nuevo CalendarHoliday
-var calendarHoliday = Create(
+var calendarHoliday = CalendarHoliday.Create(
     calendarHolidayId: CalendarHolidayId.Create(),
     calendarId: CalendarId.From(Guid.Parse("00000000-0000-0000-0000-000000000000")),
     period: Period.From(DateTimeOffset.Now, DateTimeOffset.Now.AddDays(1)),

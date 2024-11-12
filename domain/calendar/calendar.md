@@ -14,7 +14,6 @@ Las excepciones son la relación de `Calendar` con `CalendarSettings` y `Calenda
 
 - **Creación de un nuevo calendario**:
   - La creación de un nuevo calendario implica la creación de un nuevo `CalendarSettings` asociado.
-  - El `CalendarSettings` se ha de pasar como argumento en el constructor del `Calendar`.
 
 - **Eventos de Dominio**:
   - Disparar eventos de dominio cuando se realicen cambios significativos en el calendario.
@@ -29,6 +28,10 @@ Las excepciones son la relación de `Calendar` con `CalendarSettings` y `Calenda
   - Mantener la colección de días festivos
   - Asegurar la consistencia al añadir o eliminar holidays
   - Emitir eventos de dominio relacionados con holidays
+
+- **Gestión de Settings**:
+  - Gestionar la asociación con `CalendarSettings`
+  - Emitir eventos de dominio relacionados con `CalendarSettings` cuando se realicen cambios.
 
 ## Invariantes
 
@@ -98,6 +101,15 @@ public void RemoveHoliday(CalendarHoliday calendarHoliday)
 - Elimina una vacación del calendario.
 - `calendarHoliday`: La vacación a eliminar.
 - Lanza el evento `CalendarUpdatedDomainEvent`.
+
+```csharp
+public void UpdateSettings(IanaTimeZone ianaTimeZone, HolidayCreationStrategy holidayCreationStrategy)
+```
+
+- Actualiza la configuración del calendario.
+- `ianaTimeZone`: La zona horaria del calendario.
+- `holidayCreationStrategy`: Estrategia de creación de vacaciones.
+- Lanza el evento `CalendarSettingsUpdatedDomainEvent`.
 
 ```csharp
 internal static Calendar Create(
@@ -199,6 +211,7 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
 - `CalendarActiveStatusChangedDomainEvent(Id, IsActive)`: Evento de dominio que se lanza cuando se cambia el estado activo de un calendario.
 - `CalendarHolidayAddedDomainEvent(Id, calendarHoliday.Id)`: Evento de dominio que se lanza cuando se agrega un día festivo a un calendario.
 - `CalendarHolidayRemovedDomainEvent(Id, calendarHoliday.Id)`: Evento de dominio que se lanza cuando se elimina un día festivo de un calendario.
+- `CalendarSettingsUpdatedDomainEvent(Id, Settings.Id)`: Evento de dominio que se lanza cuando se actualizan los ajustes de un calendario.
 
 ## Interceptores EF Core
 
@@ -215,17 +228,21 @@ var settings = CalendarSettings.Create(/** **/);
 
 // Crear un nuevo calendario a partir de un identificador único.
 var calendar = Calendar.Create(
-    CalendarId.From(Guid.Parse("7f2c1a3e-9b4d-4c8f-a45d-e8f1d2c3b4a5")),
-    settings,
-    "Mi Calendario",
-    "Este es mi calendario");
+    id: CalendarId.From(Guid.Parse("7f2c1a3e-9b4d-4c8f-a45d-e8f1d2c3b4a5")),
+    name: "My calendar",
+    description: "Description of my calendar",
+    ianaTimeZone: IanaTimeZone.FromIana("Europe/Madrid"),
+    holidayCreationStrategy: HolidayCreationStrategy.CancelOverlapping,
+    active: true);
 
 // Crear un nuevo calendario con un identificador único aleatorio.
 var calendar = Calendar.Create(
-    CalendarId.Create(),
-    settings,
-    "Mi Calendario",
-    "Este es mi calendario");
+    id: CalendarId.Create(),
+    name: "My calendar",
+    description: "Description of my calendar",
+    ianaTimeZone: IanaTimeZone.FromIana("Europe/Madrid"),
+    holidayCreationStrategy: HolidayCreationStrategy.CancelOverlapping,
+    active: true);
 
 // Añadir un holiday
 var holiday = CalendarHoliday.Create(
