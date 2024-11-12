@@ -1,10 +1,13 @@
 # User
 
-**Aggregate Root**: `User`
+- **Aggregate Root**: `User`
+- **Namespace**: `AgendaManager.Domain.Users`
+- **Tipo**: Entidad de Dominio Sellada (sealed)
+- **Herencia**: `AggregateRoot`
 
 ## Descripción General
 
-El **AggregateRoot** `User` representa a un usuario en el sistema de gestión de agenda. Cada usuario tiene información de identidad básica, credenciales de acceso, roles asociados y un estado de actividad y confirmación de email. Esta clase es fundamental para gestionar las cuentas de los usuarios, su autenticación y autorización dentro del sistema.
+El agregado root `User` representa a un usuario en el sistema de gestión de agenda. Cada usuario tiene información de identidad básica, credenciales de acceso, roles asociados y un estado de actividad y confirmación de email. Esta clase es fundamental para gestionar las cuentas de los usuarios, su autenticación y autorización dentro del sistema.
 
 ### Responsabilidades
 
@@ -76,29 +79,22 @@ El **AggregateRoot** `User` representa a un usuario en el sistema de gestión de
 
 ## Propiedades
 
-| Propiedad           | Tipo                        | Descripción                                                |
-|---------------------|-----------------------------|------------------------------------------------------------|
-| `UserId`            | `UserId`                    | Identificador único del usuario.                           |
-| `PasswordHash`      | `PasswordHash`              | Hash de la contraseña del usuario.                         |
-| `Email`             | `EmailAddress`              | Dirección de correo electrónico única del usuario.         |
-| `IsEmailConfirmed`  | `bool`                      | Estado de confirmación del email del usuario.              |
-| `FirstName`         | `string?`                   | Nombre del usuario, puede ser `null`.                      |
-| `LastName`          | `string?`                   | Apellido del usuario, puede ser `null`.                    |
-| `IsActive`          | `bool`                      | Estado de actividad del usuario.                           |
-| `RefreshToken`      | `Token?`                    | Token de refresco de autorización del usuario.             |
-| `Roles`             | `IReadOnlyCollection<Role>` | Lista de roles asociados al usuario.                       |
-| `Tokens`            | `IReadOnlyCollection<Token>`| Lista de tokens asociados al usuario.                      |
-
-## Relaciones
-
-- Un `User` tiene un `UserId` único que identifica al usuario.
-- Un `User` tiene una `EmailAddress` única que identifica al usuario.
-- Un `User` tiene un `PasswordHash` que se utiliza para autenticar al usuario.
-- Un `User` puede tener un `RefreshToken` que se utiliza para refrescar el token de acceso.
-- Un `User` puede tener 0 o varios `Role` que le dan permisos específicos.
-- Un `User` puede tener 0 o varios `Token` que se utilizan para recuperación de contraseña o validación de correo electrónico.
+| Propiedad           | Tipo                        |Acceso           | Descripción                                                |
+|---------------------|-----------------------------|-----------------|------------------------------------------------------------|
+| `UserId`            | `UserId`                    | get             | Identificador único del usuario.                           |
+| `PasswordHash`      | `PasswordHash`              | get/private set | Hash de la contraseña del usuario.                         |
+| `Email`             | `EmailAddress`              | get/private set | Dirección de correo electrónico única del usuario.         |
+| `IsEmailConfirmed`  | `bool`                      | get/private set | Estado de confirmación del email del usuario.              |
+| `FirstName`         | `string?`                   | get/private set | Nombre del usuario, puede ser `null`.                      |
+| `LastName`          | `string?`                   | get/private set | Apellido del usuario, puede ser `null`.                    |
+| `IsActive`          | `bool`                      | get/private set | Estado de actividad del usuario.                           |
+| `RefreshToken`      | `Token?`                    | get/private set | Token de refresco de autorización del usuario.             |
+| `Roles`             | `IReadOnlyCollection<Role>` | get/private set | Lista de roles asociados al usuario.                       |
+| `Tokens`            | `IReadOnlyCollection<Token>`| get/private set | Lista de tokens asociados al usuario.                      |
 
 ## Métodos
+
+### UpdatePassword
 
 ```csharp
 public Result UpdatePassword(PasswordHash newPasswordHash)
@@ -106,8 +102,10 @@ public Result UpdatePassword(PasswordHash newPasswordHash)
 
 - Actualiza el hash de la contraseña del usuario.
 - `newPasswordHash`: El nuevo hash de la contraseña.
-- Lanza el evento `UserPasswordUpdatedDomainEvent`.
-- Return `Result` Un resultado que indica si la operación fue exitosa o no
+- **Eventos**: Lanza el evento `UserPasswordUpdatedDomainEvent`.
+- Return `Result` Un resultado que indica si la operación fue exitosa o no.
+
+### UpdateEmail
 
 ```csharp
 public async Task<Result> UpdateEmail(
@@ -117,8 +115,13 @@ public async Task<Result> UpdateEmail(
 ```
 
 - Actualiza la dirección de correo electrónico del usuario.
-- Lanza el evento `UserEmailUpdatedDomainEvent`.
-- Return `Result` Un resultado que indica si la operación fue exitosa o no.
+- `newEmail`: La nueva dirección de correo electrónico.
+- `emailUniquenessChecker`: Verificador de unicidad de correo electrónico.
+- `cancellationToken`: Token de cancelación para operaciones asincrónicas.
+- **Eventos**: Lanza el evento `UserEmailUpdatedDomainEvent`.
+- **Retorno**: `Result` Un resultado que indica si la operación fue exitosa o no.
+
+### UpdateRefreshToken
 
 ```csharp
 public void UpdateRefreshToken(Token refreshToken)
@@ -126,16 +129,20 @@ public void UpdateRefreshToken(Token refreshToken)
 
 - Actualiza el `Token` del usuario.
 - `refreshToken`: El nuevo `Token` del usuario.
-- Lanza el evento `UserRefreshTokenUpdatedDomainEvent`.
-- Return `void`.
+- **Eventos**: Lanza el evento `UserRefreshTokenUpdatedDomainEvent`.
+- **Retorno**: `void`.
+
+### SetEmailConfirmed
 
 ```csharp
 public void SetEmailConfirmed()
 ```
 
 - Marca el email del usuario como confirmado.
-- Lanza el evento `UserEmailConfirmedDomainEvent`.
-- Return `void`.
+- **Eventos**: Lanza el evento `UserEmailConfirmedDomainEvent`.
+- **Retorno**: `void`.
+
+### UpdateActiveState
 
 ```csharp
 public void UpdateActiveState(bool newState)
@@ -143,8 +150,10 @@ public void UpdateActiveState(bool newState)
 
 - Actualiza el estado de actividad del usuario.
 - `newState`: El nuevo estado de actividad del usuario.
-- Lanza el evento `UserActiveStateUpdatedDomainEvent`.
-- Return `void`.
+- **Eventos**: Lanza el evento `UserActiveStateUpdatedDomainEvent`.
+- **Retorno**: `void`.
+
+### AddUserToken
 
 ```csharp
 public void AddUserToken(UserToken userToken)
@@ -152,8 +161,10 @@ public void AddUserToken(UserToken userToken)
 
 - Agrega un `UserToken` al usuario.
 - `userToken`: El nuevo `UserToken` del usuario.
-- Lanza el evento `UserTokenAddedDomainEvent`.
-- Return `void`.
+- **Eventos**: Lanza el evento `UserTokenAddedDomainEvent`.
+- **Retorno**: `void`.
+
+### RemoveUserToken
 
 ```csharp
 public void RemoveUserToken(UserToken userToken)
@@ -161,8 +172,10 @@ public void RemoveUserToken(UserToken userToken)
 
 - Elimina un `UserToken` del usuario.
 - `userToken`: El `UserToken` a eliminar.
-- Lanza el evento `UserTokenRemovedDomainEvent`.
-- Return `void`.
+- **Eventos**: Lanza el evento `UserTokenRemovedDomainEvent`.
+- **Retorno**: `void`.
+
+### UpdateUser
 
 ```csharp
 internal void UpdateUser(string? firstName, string? lastName)
@@ -171,8 +184,10 @@ internal void UpdateUser(string? firstName, string? lastName)
 - Actualiza la información del usuario como `FirstName` y `LastName`.
 - `firstName`: El nuevo nombre del usuario.
 - `lastName`: El nuevo apellido del usuario.
-- Lanza el evento `UserUpdatedDomainEvent`.
-- Return `void`.
+- **Eventos**: Lanza el evento `UserUpdatedDomainEvent`.
+- **Retorno**: `void`.
+
+### AddRole
 
 ```csharp
 internal Result AddRole(Role role)
@@ -180,8 +195,10 @@ internal Result AddRole(Role role)
 
 - Agrega un rol al usuario.
 - `role`: El rol a agregar.
-- Lanza el evento `UserRoleAddedDomainEvent`.
-- Return `void`.
+- **Eventos**: Lanza el evento `UserRoleAddedDomainEvent`.
+- **Retorno**: `Result` Un resultado que indica si la operación fue exitosa o no.
+
+### RemoveRole
 
 ```csharp
 internal Result RemoveRole(Role role)
@@ -189,8 +206,10 @@ internal Result RemoveRole(Role role)
 
 - Elimina un rol del usuario.
 - `role`: El rol a eliminar.
-- Lanza el evento `UserRoleRemovedDomainEvent`.
-- Return `void`.
+- **Eventos**: Lanza el evento `UserRoleRemovedDomainEvent`.
+- **Retorno**: `Result` Un resultado que indica si la operación fue exitosa o no.
+
+### GuardAgainstInvalidFirstName
 
 ```csharp
 private static void GuardAgainstInvalidFirstName(string? firstName)
@@ -198,8 +217,10 @@ private static void GuardAgainstInvalidFirstName(string? firstName)
 
 - Valida que el nombre del usuario no sea nulo y no exceda los 256 caracteres.
 - `firstName`: El nombre del usuario.
-- Lanza la excepción `UserDomainException` si el nombre del usuario es nulo o excede los 256 caracteres.
-- Return `void`.
+- **Excepciones**: Lanza la excepción `UserDomainException` si el nombre del usuario es nulo o excede los 256 caracteres.
+- **Retorno**: `void`.
+
+### GuardAgainstInvalidLastName
 
 ```csharp
 private static void GuardAgainstInvalidLastName(string? lastName)
@@ -207,8 +228,8 @@ private static void GuardAgainstInvalidLastName(string? lastName)
 
 - Valida que el apellido del usuario no sea nulo y no exceda los 256 caracteres.
 - `lastName`: El apellido del usuario.
-- Lanza la excepción `UserDomainException` si el apellido del usuario es nulo o excede los 256 caracteres.
-- Return `void`.
+- **Excepciones**: Lanza la excepción `UserDomainException` si el apellido del usuario es nulo o excede los 256 caracteres.
+- **Retorno**: `void`.
 
 ## Estado y Transiciones
 
@@ -245,39 +266,50 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 
 ## Dependencias
 
-- **Entities**:
-  - [Role](./entities/role.md): Lista de roles asociados a este usuario.
-  - [UserToken](./entities/user-token.md): Lista de tokens de usuario asociados a este usuario.
-- **Services**:
-  - [UserManager](./services/user-manager.md): Gestiona la creación, actualización y eliminación de usuarios.
-  - [IUserRepository](./interfaces/i-user-repository.md): Interfaz para acceder a los datos de los usuarios.
-  - [IPasswordHasher](./interfaces/i-password-hasher.md): Interfaz para hashear contraseñas.
-  - [AuthenticationService](./services/authentication-service.md): Gestiona la autenticación de usuarios.
-  - [IEmailUniquenessChecker](./interfaces/i-email-uniqueness-checker.md): Valida que el email del usuario sea único.
-- **Managers**:
-  - [UserManager](./services/user-manager.md): Gestiona la creación, actualización y eliminación de usuarios.
-  - [AuthorizationManager](./services/authorization-manager.md): Gestiona la autorización de usuarios.
-- **Policies**:
-  - [IPasswordPolicy](./interfaces/i-password-policy.md): Define las políticas de contraseña.
-- **Value Objects**:
-  - [UserId](./value-objects/user-id.md) `Id`: Identificador único del usuario.
-  - [PasswordHash](./value-objects/password-hash.md) `PasswordHash`: Hash de la contraseña del usuario.
-  - [RefreshToken](../common/value-objects/token/token.md) `Token`: Token de actualización para el usuario.
-  - [EmailAddress](../common/value-objects/email-address/email-address.md) `Email`: Dirección de correo electrónico del usuario.
+### Directas
+
+- **Entidades Base**:
+  - `AggregateRoot`: Base class que designa esta entidad como raíz de agregado, proporcionando control transaccional y consistencia del agregado
+    - Hereda capacidades de auditoría (`AuditableEntity`)
+    - Hereda gestión de eventos de dominio (`Entity`)
+
+### Interfaces
+
+- `UserManager`: Gestiona la creación, actualización y eliminación de usuarios.
+- `IUserRepository`: Interfaz para el repositorio de usuarios.
+- `IPasswordHasher`: Interfaz para el servicio de hash de contraseñas.
+- `AuthenticationService`: Servicio de autenticación.
+- `IEmailUniquenessChecker`: Interfaz para verificar la unicidad del email.
+
+### Managers
+
+- `UserManager`: Gestiona la creación, actualización y eliminación de usuarios.
+- `AuthorizationManager`: Gestiona la autorización de usuarios.
+
+### Policies
+
+- `PasswordPolicy`: Define las políticas de contraseña.
+
+### Value Objects
+
+- `UserId`: Identificador único del usuario.
+- `EmailAddress`: Dirección de correo electrónico del usuario.
+- `PasswordHash`: Hash de la contraseña del usuario.
+- `RefreshToken`: Token de actualización del usuario.
 
 ## Eventos de Dominio
 
-- `UserCreatedDomainEvent(UserId UserId)`: Se lanza cuando se crea un nuevo usuario.
-- `UserUpdatedDomainEvent(UserId UserId)`: Se lanza cuando se actualiza un usuario.
-- `UserPasswordUpdatedDomainEvent(UserId UserId)`: Se lanza cuando se actualiza la contraseña de un usuario.
-- `UserEmailUpdatedDomainEvent(UserId UserId)`: Se lanza cuando se actualiza la dirección de correo electrónico de un usuario.
-- `UserRefreshTokenUpdatedDomainEvent(UserId UserId)`: Se lanza cuando se actualiza el token de actualización de un usuario.
-- `UserEmailConfirmedDomainEvent(UserId UserId)`: Se lanza cuando se confirma la dirección de correo electrónico de un usuario.
-- `UserActiveStateUpdatedDomainEvent(UserId UserId, bool State)`: Se lanza cuando se actualiza el estado activo de un usuario.
-- `UserTokenAddedDomainEvent(UserId UserId, UserTokenId UserTokenId)`: Se lanza cuando se agrega un token a un usuario.
-- `UserTokenRemovedDomainEvent(UserId Id, UserTokenId UserTokenId)`: Se lanza cuando se elimina un token de un usuario.
-- `UserRoleAddedDomainEvent(UserId UserId, RoleId RoleId)`: Se lanza cuando se agrega un rol a un usuario.
-- `UserRoleRemovedDomainEvent(UserId UserId, RoleId RoleId)`: Se lanza cuando se elimina un rol de un usuario.
+- `UserCreatedDomainEvent`: Se lanza cuando se crea un nuevo usuario.
+- `UserUpdatedDomainEvent`: Se lanza cuando se actualiza un usuario.
+- `UserPasswordUpdatedDomainEvent`: Se lanza cuando se actualiza la contraseña de un usuario.
+- `UserEmailUpdatedDomainEvent`: Se lanza cuando se actualiza la dirección de correo electrónico de un usuario.
+- `UserRefreshTokenUpdatedDomainEvent`: Se lanza cuando se actualiza el token de actualización de un usuario.
+- `UserEmailConfirmedDomainEvent`: Se lanza cuando se confirma la dirección de correo electrónico de un usuario.
+- `UserActiveStateUpdatedDomainEvent`: Se lanza cuando se actualiza el estado activo de un usuario.
+- `UserTokenAddedDomainEvent`: Se lanza cuando se agrega un token a un usuario.
+- `UserTokenRemovedDomainEvent`: Se lanza cuando se elimina un token de un usuario.
+- `UserRoleAddedDomainEvent`: Se lanza cuando se agrega un rol a un usuario.
+- `UserRoleRemovedDomainEvent`: Se lanza cuando se elimina un rol de un usuario.
 
 ## Interceptores EF Core
 

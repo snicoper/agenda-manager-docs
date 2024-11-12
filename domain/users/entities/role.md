@@ -1,6 +1,9 @@
 # Role
 
-**Entity**: `Role`
+- **Entity**: `Role`
+- **Namespace**: `AgendaManager.Domain.Users.Entities`
+- **Tipo**: Entidad de Dominio Sellada (sealed)
+- **Herencia**: `AuditableEntity`
 
 ## Descripción General
 
@@ -16,33 +19,6 @@ Un `Role` es una entidad que representa un rol de usuario en el sistema. Los rol
 
 - **Validación**:
   - Asegurarse de que `Name` y `Description` no exceden la longitud permitida.
-
-## Roles Predefinidos
-
-El sistema define cuatro roles inmutables (`Editable = false`) que no pueden ser modificados:
-
-- **Administrator**:
-  - Acceso total al sistema
-  - Gestión de usuarios, roles y configuración del sistema
-  - Asignado típicamente a administradores del sistema
-
-- **Employee**
-  - Personal interno de la empresa
-  - Acceso a funciones operativas básicas
-  - No implica capacidad de ser asignado como recurso
-
-- **Customer**:
-  - Acceso limitado al sistema
-  - Destinatarios de los servicios
-  - Pueden ver sus propias citas e historial
-
-- **AssignableStaff**:
-  - Pueden ser asignados como recursos de tipo `Staff`
-  - Independiente del rol Employee
-  - Permite tanto empleados internos como colaboradores externos
-  - Requerido para la asignación de recursos en la programación
-
-> **Nota**: Estos roles son predefinidos por el sistema y no pueden ser modificados ni eliminados.
 
 ## Invariantes
 
@@ -73,22 +49,46 @@ El sistema define cuatro roles inmutables (`Editable = false`) que no pueden ser
 - **Integridad**:
   - Un rol no puede ser eliminado si tiene usuarios asignados.
 
+## Roles Predefinidos
+
+El sistema define cuatro roles inmutables (`Editable = false`) que no pueden ser modificados:
+
+- **Administrator**:
+  - Acceso total al sistema
+  - Gestión de usuarios, roles y configuración del sistema
+  - Asignado típicamente a administradores del sistema
+
+- **Employee**
+  - Personal interno de la empresa
+  - Acceso a funciones operativas básicas
+  - No implica capacidad de ser asignado como recurso
+
+- **Customer**:
+  - Acceso limitado al sistema
+  - Destinatarios de los servicios
+  - Pueden ver sus propias citas e historial
+
+- **AssignableStaff**:
+  - Pueden ser asignados como recursos de tipo `Staff`
+  - Independiente del rol Employee
+  - Permite tanto empleados internos como colaboradores externos
+  - Requerido para la asignación de recursos en la programación
+
+> **Nota**: Estos roles son predefinidos por el sistema y no pueden ser modificados ni eliminados.
+
 ## Propiedades
 
-| Propiedad     | Tipo                | Descripción                           |
-|---------------|---------------------|---------------------------------------|
-| `Id`          | `RoleId`            | Identificador único del rol.          |
-| `Name`        | `string`            | Nombre del rol.                       |
-| `Description` | `string`            | Descripción del rol.                  |
-| `Editable`    | `bool`              | Indica si el rol es editable.         |
-| `Permissions` | `List<Permission>`  | Lista de permisos asociados al rol.   |
-
-## Relaciones
-
-- Un `Role` tiene un `RoleId` que es su identificador único.
-- Un `Role` puede tener muchos `Permission`.
+| Propiedad     | Tipo                | Acceso          | Descripción                           |
+|---------------|---------------------|-----------------|---------------------------------------|
+| `Id`          | `RoleId`            | get             | Identificador único del rol.          |
+| `Name`        | `string`            | get/private set | Nombre del rol.                       |
+| `Description` | `string`            | get/private set | Descripción del rol.                  |
+| `Editable`    | `bool`              | get/private set | Indica si el rol es editable.         |
+| `Permissions` | `List<Permission>`  | get/private set | Lista de permisos asociados al rol.   |
 
 ## Métodos
+
+### UpdateRole
 
 ```csharp
 internal void UpdateRole(string name, string description)
@@ -97,8 +97,10 @@ internal void UpdateRole(string name, string description)
 - Actualiza el nombre y la descripción del rol.
 - `name`: Nombre del rol.
 - `description`: Descripción del rol.
-- Lanza el evento `RoleUpdatedDomainEvent`.
-- Return `void`.
+- **Eventos**: Lanza el evento `RoleUpdatedDomainEvent`.
+- **Retorno**: `void`.
+
+### AddPermission
 
 ```csharp
 internal Result AddPermission(Permission permission)
@@ -106,8 +108,10 @@ internal Result AddPermission(Permission permission)
 
 - Agrega un permiso al rol.
 - `permission`: Permiso a agregar.
-- Lanza el evento `RolePermissionAddedDomainEvent`.
-- Return `void`.
+- **Eventos**: Lanza el evento `RolePermissionAddedDomainEvent`.
+- Return `Result`.
+
+### RemovePermission
 
 ```csharp
 internal Result RemovePermission(Permission permission)
@@ -115,8 +119,10 @@ internal Result RemovePermission(Permission permission)
 
 - Elimina un permiso del rol.
 - `permission`: Permiso a eliminar.
-- Lanza el evento `RolePermissionRemovedDomainEvent`.
-- Return `void`.
+- **Eventos**: Lanza el evento `RolePermissionRemovedDomainEvent`.
+- Return `Result`.
+
+### GuardAgainstInvalidName
 
 ```csharp
 private static void GuardAgainstInvalidName(string name)
@@ -124,8 +130,10 @@ private static void GuardAgainstInvalidName(string name)
 
 - Valida que el nombre del rol no sea nulo y no exceda los 100 caracteres.
 - `name`: Nombre del rol.
-- Lanza la excepción `RoleDomainException` si el nombre del rol es nulo o excede los 256 caracteres o no tiene un sufijo permitido.
-- Return `void`.
+- **Excepciones**: Lanza la excepción `RoleDomainException` si el nombre del rol es nulo o excede los 100 caracteres.
+- **Retorno**: `void`.
+
+### GuardAgainstInvalidDescription
 
 ```csharp
 private static void GuardAgainstInvalidDescription(string description)
@@ -133,7 +141,8 @@ private static void GuardAgainstInvalidDescription(string description)
 
 - Valida que la descripción del rol no sea nula y no exceda los 500 caracteres.
 - `description`: Descripción del rol.
-- Lanza la excepción `RoleDomainException` si la descripción del rol es nula o excede los 256 caracteres.
+- **Excepciones**: Lanza la excepción `RoleDomainException` si la descripción del rol es nula o excede los 500 caracteres.
+- **Retorno**: `void`.
 
 ## Estado y Transiciones
 
@@ -154,22 +163,35 @@ La clase `Role` tiene los siguientes estados y transiciones:
 
 ## Dependencias
 
-- **Entities**:
-  - `Permission`: Un `Role` puede tener muchos `Permission`.
-- **Servicios**:
-  - `IRoleRepository`: Interfaz para acceder a los datos de los roles.
-- **Managers**:
-  - `RoleManager`: Responsable de la creación, actualización y eliminación de roles.
-  - `AuthorizationManager`: Gestiona la autorización de usuarios.
-- **Value Objects**:
-  - `RoleId`: Identificador único del rol.
+### Directas
+
+- **Entidades Base**:
+  - `AuditableEntity`: Base class que proporciona capacidades de auditoría
+    - Hereda gestión de eventos de dominio (`Entity`)
+
+### Entidades
+
+- `Permission`: Representa un permiso asociado a un rol.
+
+### Servicios
+
+- `IRoleRepository`: Interfaz para acceder a los datos de los roles.
+
+### Managers
+
+- `RoleManager`: Responsable de la creación, actualización y eliminación de roles.
+- `AuthorizationManager`: Gestiona la autorización de usuarios.
+
+### Value Objects
+
+- `RoleId`: Identificador único del rol.
 
 ## Eventos de Dominio
 
-- `RoleCreatedDomainEvent(Id)`: Se lanza cuando se crea un nuevo rol.
-- `RoleUpdatedDomainEvent(Id)`: Se lanza cuando se actualiza un rol.
-- `RolePermissionAddedDomainEvent(Id, permission.Id)`: Se lanza cuando se agrega un permiso a un rol.
-- `RolePermissionRemovedDomainEvent(Id, permission.Id)`: Se lanza cuando se elimina un permiso de un rol.
+- `RoleCreatedDomainEvent`: Se lanza cuando se crea un nuevo rol.
+- `RoleUpdatedDomainEvent`: Se lanza cuando se actualiza un rol.
+- `RolePermissionAddedDomainEvent`: Se lanza cuando se agrega un permiso a un rol.
+- `RolePermissionRemovedDomainEvent`: Se lanza cuando se elimina un permiso de un rol.
 
 ## Comentarios adicionales
 

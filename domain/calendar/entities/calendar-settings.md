@@ -1,7 +1,7 @@
 # CalendarSettings
 
 - **Entity**: `CalendarSettings`
-- **Namespace**: `{namespace}`
+- **Namespace**: `AgendaManager.Domain.Calendars.Entities`
 - **Tipo**: Entidad de Dominio Sellada (sealed)
 - **Herencia**: `AuditableEntity`
 
@@ -65,7 +65,7 @@
 
 ## Propiedades
 
-| Propiedad                 | Tipo                      | Acceso       | Descripción                                                          |
+| Propiedad                 | Tipo                     | Acceso       | Descripción                                                          |
 |--------------------------|---------------------------|--------------|----------------------------------------------------------------------|
 | `Id`                     | `CalendarSettingsId`      | get         | Identificador único de la configuración. Inmutable tras creación.     |
 | `CalendarId`             | `CalendarId`              | get/private set | Identificador del calendario asociado. Inmutable tras creación.   |
@@ -85,10 +85,11 @@ internal static CalendarSettings Create(
     HolidayCreationStrategy holidayCreationStrategy)
 ```
 
-- **Propósito**: Factory method para crear nuevas instancias de configuración.
-- **Validaciones**:
-  - Verifica que ningún parámetro sea nulo
-  - Valida la coherencia de los identificadores
+- Factory method para crear nuevas instancias de configuración.
+- `id`: Identificador único de la configuración.
+- `calendarId`: Identificador del calendario asociado.
+- `ianaTimeZone`: Zona horaria del calendario.
+- `holidayCreationStrategy`: Estrategia de gestión de holidays.
 - **Eventos**: Emite `CalendarSettingsCreatedDomainEvent`
 - **Retorno**: Nueva instancia válida de `CalendarSettings`
 
@@ -100,10 +101,11 @@ internal void Update(
     HolidayCreationStrategy holidayCreationStrategy)
 ```
 
-- **Propósito**: Actualiza la configuración existente
-- **Optimización**: Solo realiza cambios si detecta diferencias reales
-- **Validaciones**: Verifica la validez de los nuevos valores
-- **Efectos**: Actualiza `IanaTimeZone` y `HolidayCreationStrategy` si hay cambios
+- Método para actualizar la configuración existente
+- `ianaTimeZone`: Nueva zona horaria
+- `holidayCreationStrategy`: Nueva estrategia de gestión de holidays
+- **Eventos**: Emite `CalendarSettingsUpdatedDomainEvent`
+- **Retorno**: `void`
 
 ### HasChanges
 
@@ -113,19 +115,12 @@ internal bool HasChanges(
     HolidayCreationStrategy holidayCreationStrategy)
 ```
 
-- **Propósito**: Determina si los nuevos valores representan un cambio real
-- **Lógica**: Compara valores actuales con propuestos
-- **Retorno**: `true` si hay al menos un cambio, `false` en caso contrario
+- Método para determinar si hay cambios reales
+- `ianaTimeZone`: Nueva zona horaria
+- `holidayCreationStrategy`: Nueva estrategia de gestión de holidays
+- **Retorno**: `true` si hay cambios reales, `false` en caso contrario
 
 ## Estado y Transiciones
-
-```mermaid
-stateDiagram-v2
-    [*] --> Creado: Create()
-    Creado --> Actualizado: Update()
-    Actualizado --> Actualizado: Update()
-    Actualizado --> [*]: Eliminado
-```
 
 ## Dependencias
 
@@ -133,6 +128,7 @@ stateDiagram-v2
 
 - **Entidades Base**:
   - `AuditableEntity`: Base class que proporciona capacidades de auditoría
+    - Hereda gestión de eventos de dominio (`Entity`)
 
 ### Value Objects
 
@@ -145,6 +141,10 @@ stateDiagram-v2
 
 - `CalendarSettingsCreatedDomainEvent`: Notifica la creación
 - `CalendarSettingsUpdatedDomainEvent`: Notifica cambios significativos
+
+## Interceptores EF Core
+
+## Comentarios adicionales
 
 ## Ejemplos de Uso
 
@@ -166,34 +166,3 @@ bool hasChanges = settings.HasChanges(
     currentTimeZone,
     newStrategy);
 ```
-
-## Consideraciones de Diseño
-
-- **Inmutabilidad Parcial**: Los identificadores son inmutables tras la creación
-- **Encapsulamiento**: Constructores privados y propiedades con setters protegidos
-- **Validación**: Verificaciones exhaustivas en puntos de entrada
-- **Optimización**: Evita actualizaciones innecesarias mediante `HasChanges`
-
-## Buenas Prácticas Implementadas
-
-1. **Domain-Driven Design (DDD)**:
-   - Encapsulamiento fuerte
-   - Invariantes de dominio protegidos
-   - Eventos de dominio para cambios significativos
-
-2. **Clean Code**:
-   - Métodos con responsabilidad única
-   - Nombres descriptivos y significativos
-   - Validaciones explícitas
-
-3. **Seguridad**:
-   - Validación de nulos
-   - Protección contra modificaciones no autorizadas
-   - Control de acceso mediante modificadores internal
-
-## Notas de Implementación
-
-- La entidad está marcada como `sealed` para prevenir herencia no deseada
-- Los setters privados protegen la integridad de los datos
-- Los métodos internos permiten control desde el mismo assembly
-- Se utiliza el patrón Factory para la creación de instancias

@@ -1,6 +1,9 @@
 # CalendarHoliday
 
-**Entity**: `CalendarHoliday`
+- **Aggregate Root**: `CalendarHoliday`
+- **Namespace**: `AgendaManager.Domain.Calendars.Entities`
+- **Tipo**: Entidad de Dominio Sellada (sealed)
+- **Herencia**: `AggregateRoot`
 
 ## Descripción General
 
@@ -67,26 +70,21 @@
 
 ## Propiedades
 
-| Nombre         | Tipo                | Descripción                                               |
-| -------------- | ------------------- | --------------------------------------------------------- |
-| `Id`           | `CalendarHolidayId` | Identificador único del holiday                           |
-| `CalendarId`   | `CalendarId`        | Identificador del calendario asociado                     |
-| `Calendar`     | `Calendar`          | Referencia al calendario asociado                         |
-| `SettingsId`   | `CalendarSettingsId`| Identificador de la configuración del calendario asociado |
-| `Settings`     | `CalendarSettings`  | Configuración del calendario asociado                     |
-| `Period`       | `Period`            | Periodo del holiday                                       |
-| `Weekdays`     | `Weekdays`          | Días de la semana del holiday                             |
-| `Name`         | `string`            | Nombre del holiday                                        |
-| `Description`  | `string`            | Descripción del holiday                                   |
-
-## Relaciones
-
-- Un `CalendarHoliday` pertenece a un único `Calendar`
-- La relación con `Calendar` es obligatoria y se mantiene a través de `CalendarId`
-- La relación con `CalendarSettings` es obligatoria y se mantiene a través de `SettingsId`
-- La eliminación de un `Calendar` implica la eliminación en cascada de sus `CalendarHoliday`s
+| Nombre         | Tipo                | Acceso           | Descripción                                               |
+| -------------- | ------------------- | ---------------------------------------------------------------------------- |
+| `Id`           | `CalendarHolidayId` | get              | Identificador único del holiday                           |
+| `CalendarId`   | `CalendarId`        | get/private set  | Identificador del calendario asociado                     |
+| `Calendar`     | `Calendar`          | get/private set  | Referencia al calendario asociado                         |
+| `SettingsId`   | `CalendarSettingsId`| get/private set  | Identificador de la configuración del calendario asociado |
+| `Settings`     | `CalendarSettings`  | get/private set  | Configuración del calendario asociado                     |
+| `Period`       | `Period`            | get/private set  | Periodo del holiday                                       |
+| `Weekdays`     | `Weekdays`          | get/private set  | Días de la semana del holiday                             |
+| `Name`         | `string`            | get/private set  | Nombre del holiday                                        |
+| `Description`  | `string`            | get/private set  | Descripción del holiday                                   |
 
 ## Métodos
+
+### Create
 
 ```csharp
 public static CalendarHoliday Create(
@@ -106,8 +104,10 @@ public static CalendarHoliday Create(
 - `weekdays`: Días de la semana del holiday
 - `name`: Nombre del holiday
 - `description`: Descripción del holiday
-- Lanza el evento `CalendarHolidayCreatedDomainEvent`
-- Return `CalendarHoliday`
+- **Eventos**: `CalendarHolidayCreatedDomainEvent`: Evento de creación del holiday
+- **Retorno**: `CalendarHoliday` con los valores proporcionados.
+
+### Update
 
 ```csharp
 public void Update(Period period, WeekDays weekDays, string name, string description)
@@ -118,7 +118,10 @@ public void Update(Period period, WeekDays weekDays, string name, string descrip
 - `weekdays`: Días de la semana del holiday
 - `name`: Nombre del holiday
 - `description`: Descripción del holiday
-- Lanza el evento `CalendarHolidayUpdatedDomainEvent`
+- **Eventos**: `CalendarHolidayUpdatedDomainEvent`: Evento de actualización del holiday
+- **Retorno**: `void`
+
+### GuardAgainstInvalidName
 
 ```csharp
 private static void GuardAgainstInvalidName(string name)
@@ -126,7 +129,10 @@ private static void GuardAgainstInvalidName(string name)
 
 - Valida que el nombre del holiday no sea nulo o vacío
 - `name`: Nombre del holiday
-- Lanza `CalendarHolidayDomainException` si el nombre no cumple con los requisitos
+- **Eventos**: `CalendarHolidayDomainException`: Evento de excepción de Dominio
+- **Retorno**: `void`
+
+### GuardAgainstInvalidDescription
 
 ```csharp
 private static void GuardAgainstInvalidDescription(string description)
@@ -134,29 +140,45 @@ private static void GuardAgainstInvalidDescription(string description)
 
 - Valida que la descripción del holiday no exceda los 500 caracteres
 - `description`: Descripción del holiday
-- Lanza `CalendarHolidayDomainException` si la descripción no cumple con los requisitos
+- **Excepciones**: `CalendarHolidayDomainException`: Evento de excepción de dominio
+- **Retorno**: `void`
 
 ## Estado y Transiciones
 
 ## Dependencias
 
-- **Entities**:
-  - [Calendar](../calendar.md): Referencia al calendario asociado
-- **Services**:
-  - [ICalendarRepository](../interfaces/i-calendar-holiday-repository.md): Servicio para gestionar calendarios
-- **Managers**:
-  - [CalendarManager](../managers/calendar-manager.md): Gestiona la lógica de negocio relacionada con los calendarios
-- **Policies**:
-- **Value Objects**:
-  - [CalendarHolidayId](../value-objects/calendar-holiday-id.md): Identificador único del holiday
-  - [CalendarId](../value-objects/calendar-id.md): Identificador único del calendario
-  - [Period](../../common/value-objects/period/period.md): Representa un periodo de tiempo
-  - [Weekdays](../../common/weekdays/weekdays.md): Representa los días de la semana
+### Directas
+
+- **Entidades Base**:
+  - `AuditableEntity`: Base class que proporciona capacidades de auditoría
+    - Hereda gestión de eventos de dominio (`Entity`)
+
+### Entidades
+
+- **Calendar**: Referencia al calendario asociado
+
+### Servicios
+
+- `ICalendarRepository`: Servicio para gestionar calendarios
+
+### Managers
+
+- `CalendarManager`: Gestiona la lógica de negocio relacionada con los calendarios
+
+### Políticas
+
+### Value Objects
+
+- `CalendarHolidayId`: Identificador único del holiday
+- `CalendarId`: Identificador único del calendario
+- `Period`: Representa un periodo de tiempo
+- `Weekdays`: Días de la semana del holiday
+ys.md): Representa los días de la semana
 
 ## Eventos de Dominio
 
-- `CalendarHolidayCreatedDomainEvent(Id)`: Evento de dominio disparado cuando se crea un nuevo `CalendarHoliday`.
-- `CalendarHolidayUpdatedDomainEvent(Id)`: Evento de dominio disparado cuando se actualiza un `CalendarHoliday`.
+- `CalendarHolidayCreatedDomainEvent`: Evento de dominio disparado cuando se crea un nuevo `CalendarHoliday`.
+- `CalendarHolidayUpdatedDomainEvent`: Evento de dominio disparado cuando se actualiza un `CalendarHoliday`.
 
 ## Interceptores EF Core
 

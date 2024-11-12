@@ -1,6 +1,9 @@
 # Clase: Calendar
 
-**AggregateRoot**: `Calendar`
+- **Aggregate Root**: `Calendar`
+- **Namespace**: `AgendaManager.Domain.Calendars`
+- **Tipo**: Entidad de Dominio Sellada (sealed)
+- **Herencia**: `AggregateRoot`
 
 ## Descripción
 
@@ -67,16 +70,18 @@ Las excepciones son la relación de `Calendar` con `CalendarSettings` y `Calenda
 
 ## Propiedades
 
-| Propiedad     | Tipo                    | Descripción                                             |
-|---------------|-------------------------|---------------------------------------------------------|
-| `Id`          | `CalendarId`            | Identificador único del calendario.                     |
-| `SettingsId`  | `CalendarSettingsId`    | Identificador único del `CalendarSettings` asociado.    |
-| `IsActive`    | `bool`                  | Indica si el calendario está activo.                    |
-| `Name`        | `string`                | Nombre del calendario.                                  |
-| `Description` | `string`                | Descripción del calendario.                             |
-| `Holidays`    | `List<CalendarHoliday>` | Lista de vacaciones asociadas al calendario.            |
+| Propiedad     | Tipo                    | Acceso          |Descripción                                            |
+|---------------|-------------------------|-------------------------------------------------------------------------|
+| `Id`          | `CalendarId`            | get             | Identificador único del calendario.                   |
+| `SettingsId`  | `CalendarSettingsId`    | get/private set | Identificador único del `CalendarSettings` asociado.  |
+| `IsActive`    | `bool`                  | get/private set | Indica si el calendario está activo.                  |
+| `Name`        | `string`                | get/private set | Nombre del calendario.                                |
+| `Description` | `string`                | get/private set | Descripción del calendario.                           |
+| `Holidays`    | `List<CalendarHoliday>` | get/private set | Lista de vacaciones asociadas al calendario.          |
 
 ## Métodos
+
+### ChangeActiveStatus
 
 ```csharp
 public void ChangeActiveStatus(bool isActive)
@@ -84,7 +89,10 @@ public void ChangeActiveStatus(bool isActive)
 
 - Cambia el estado activo del calendario.
 - `isActive`: Indica si el calendario está activo.
-- Lanza el evento `CalendarUpdatedDomainEvent`.
+- **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
+- **Retorno**: `void`
+
+### AddHoliday
 
 ```csharp
 public void AddHoliday(CalendarHoliday calendarHoliday)
@@ -92,7 +100,10 @@ public void AddHoliday(CalendarHoliday calendarHoliday)
 
 - Agrega una nueva vacación al calendario.
 - `calendarHoliday`: La vacación a agregar.
-- Lanza el evento `CalendarUpdatedDomainEvent`.
+- **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
+- **Retorno**: `void`
+
+### RemoveHoliday
 
 ```csharp
 public void RemoveHoliday(CalendarHoliday calendarHoliday)
@@ -100,7 +111,10 @@ public void RemoveHoliday(CalendarHoliday calendarHoliday)
 
 - Elimina una vacación del calendario.
 - `calendarHoliday`: La vacación a eliminar.
-- Lanza el evento `CalendarUpdatedDomainEvent`.
+- **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
+- **Retorno**: `void`
+
+### UpdateSettings
 
 ```csharp
 public void UpdateSettings(IanaTimeZone ianaTimeZone, HolidayCreationStrategy holidayCreationStrategy)
@@ -109,7 +123,10 @@ public void UpdateSettings(IanaTimeZone ianaTimeZone, HolidayCreationStrategy ho
 - Actualiza la configuración del calendario.
 - `ianaTimeZone`: La zona horaria del calendario.
 - `holidayCreationStrategy`: Estrategia de creación de vacaciones.
-- Lanza el evento `CalendarSettingsUpdatedDomainEvent`.
+- **Eventos**: Lanza el evento `CalendarSettingsUpdatedDomainEvent`.
+- **Retorno**: `void`
+
+### Create
 
 ```csharp
 internal static Calendar Create(
@@ -126,8 +143,10 @@ internal static Calendar Create(
 - `name`: Nombre del calendario.
 - `description`: Descripción del calendario.
 - `active`: Indica si el calendario está activo.
-- Lanza el evento `CalendarCreatedDomainEvent`.
-- Devuelve el calendario creado.
+- **Eventos**: Lanza el evento `CalendarCreatedDomainEvent`.
+- **Retorno**: El calendario creado.
+
+### Update
 
 ```csharp
 internal void Update(string name, string description)
@@ -136,7 +155,9 @@ internal void Update(string name, string description)
 - Actualiza el nombre y la descripción del calendario.
 - `name`: Nombre del calendario.
 - `description`: Descripción del calendario.
-- Lanza el evento `CalendarUpdatedDomainEvent`.
+- **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
+
+### GuardAgainstInvalidName
 
 ```csharp
 private static void GuardAgainstInvalidName(string name)
@@ -144,7 +165,10 @@ private static void GuardAgainstInvalidName(string name)
 
 - Valida que el nombre del calendario no sea nulo y no exceda los 50 caracteres.
 - `name`: Nombre del calendario.
-- Lanza la excepción `CalendarDomainException` si el nombre del calendario es nulo o excede los 50 caracteres.
+- **Excepciones**: Lanza la excepción `CalendarDomainException` si el nombre del calendario es nulo o excede los 50 caracteres.
+- **Retorno**: `void`
+
+### GuardAgainstInvalidDescription
 
 ```csharp
 private static void GuardAgainstInvalidDescription(string description)
@@ -152,23 +176,8 @@ private static void GuardAgainstInvalidDescription(string description)
 
 - Valida que la descripción del calendario no sea nula y no exceda los 500 caracteres.
 - `description`: Descripción del calendario.
-- Lanza la excepción `CalendarDomainException` si la descripción del calendario es nula o excede los 500 caracteres.
-
-```csharp
-public void AddHoliday(CalendarHoliday calendarHoliday)
-```
-
-- Agrega un día festivo al calendario.
-- `calendarHoliday`: Día festivo a agregar.
-- Lanza el evento `CalendarHolidayAddedDomainEvent`.
-
-```csharp
-public void RemoveHoliday(CalendarHoliday calendarHoliday)
-```
-
-- Elimina un día festivo del calendario.
-- `calendarHoliday`: Día festivo a eliminar.
-- Lanza el evento `CalendarHolidayRemovedDomainEvent`.
+- **Excepciones**: Lanza la excepción `CalendarDomainException` si la descripción del calendario es nula o excede los 500 caracteres.
+- **Retorno**: `void`
 
 ## Estado y Transiciones
 
@@ -187,31 +196,46 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
 
 ## Dependencias
 
-- **Entities**:
-  - [CalendarHoliday](./calendar-holiday.md): La clase `Calendar` tiene una lista de la clase `CalendarHoliday`.
-  - [CalendarSettings](./entities/calendar-settings.md): La clase `Calendar` tiene una relación con `CalendarSettings` a través de `CalendarId`.
-  - [Appointment](../appoitments/appointment.md): La clase `Appointment` tiene una relación con `Calendar` a través de `CalendarId`.
-  - [Resource](../resources/resource.md): La clase `Resource` tiene una relación con `Calendar` a través de `CalendarId`.
-  - [Service](../services/service.md): La clase `Service` tiene una relación con `Calendar` a través de `CalendarId`.
-  - [ResourceSchedule](../resources/resource-schedule.md): La clase `ResourceSchedule` tiene una relación con `Calendar` a través de `CalendarId`.
-  - [CalendarHoliday](./calendar-holiday.md): La clase `Calendar` tiene una lista de la clase `CalendarHoliday`.
-- **Services**:
-  - [ICalendarRepository](./interfaces/i-calendar-repository.md): Repositorio para interactuar con la base de datos.
-- **Managers**:
-  - [CalendarManager](./managers/calendar-manager.md): Servicio para gestionar calendarios.
-- **Policies**:
-- **Value Objects**:
-  - [CalendarId](./value-objects/calendar-id.md): Identificador único del calendario.
-  - [CalendarSettingsId](./value-objects/calendar-settings-id.md): Identificador único de la configuración del calendario.
+### Directas
+
+- **Entidades Base**:
+  - `AggregateRoot`: Base class que designa esta entidad como raíz de agregado, proporcionando control transaccional y consistencia del agregado
+    - Hereda capacidades de auditoría (`AuditableEntity`)
+    - Hereda gestión de eventos de dominio (`Entity`)
+
+### Entidades
+
+- `CalendarHoliday`: La clase `Calendar` tiene una lista de la clase `CalendarHoliday`.
+- `CalendarSettings`: La clase `Calendar` tiene una relación con `CalendarSettings` a través de `CalendarId`.
+- `Appointment`: La clase `Appointment` tiene una relación con `Calendar` a través de `CalendarId`.
+- `Resource`: La clase `Resource` tiene una relación con `Calendar` a través de `CalendarId`.
+- `Service`: La clase `Service` tiene una relación con `Calendar` a través de `CalendarId`.
+- `ResourceSchedule`: La clase `ResourceSchedule` tiene una relación con `Calendar` a través de `CalendarId`.
+- `CalendarHoliday`: La clase `Calendar` tiene una lista de la clase `CalendarHoliday`.
+
+### Servicios
+
+- `ICalendarRepository`: Interfaz que define los métodos para interactuar con el repositorio de calendarios.
+
+### Managers
+
+- `CalendarManager`: Clase que proporciona métodos para interactuar con el calendario.
+
+### Policies
+
+### Value Objects
+
+- `CalendarId`: Identificador único del calendario.
+- `CalendarHolidayId`: Identificador único de la vacación.
 
 ## Eventos de Dominio
 
-- `CalendarCreatedDomainEvent(id)`: Evento de dominio que se lanza cuando se crea un nuevo calendario.
-- `CalendarUpdatedDomainEvent(Id)`: Evento de dominio que se lanza cuando se actualiza un calendario.
-- `CalendarActiveStatusChangedDomainEvent(Id, IsActive)`: Evento de dominio que se lanza cuando se cambia el estado activo de un calendario.
-- `CalendarHolidayAddedDomainEvent(Id, calendarHoliday.Id)`: Evento de dominio que se lanza cuando se agrega un día festivo a un calendario.
-- `CalendarHolidayRemovedDomainEvent(Id, calendarHoliday.Id)`: Evento de dominio que se lanza cuando se elimina un día festivo de un calendario.
-- `CalendarSettingsUpdatedDomainEvent(Id, Settings.Id)`: Evento de dominio que se lanza cuando se actualizan los ajustes de un calendario.
+- `CalendarCreatedDomainEvent`: Evento de dominio que se lanza cuando se crea un nuevo calendario.
+- `CalendarUpdatedDomainEvent`: Evento de dominio que se lanza cuando se actualiza un calendario.
+- `CalendarActiveStatusChangedDomainEvent`: Evento de dominio que se lanza cuando se cambia el estado activo de un calendario.
+- `CalendarHolidayAddedDomainEvent`: Evento de dominio que se lanza cuando se agrega un día festivo a un calendario.
+- `CalendarHolidayRemovedDomainEvent`: Evento de dominio que se lanza cuando se elimina un día festivo de un calendario.
+- `CalendarSettingsUpdatedDomainEvent`: Evento de dominio que se lanza cuando se actualizan los ajustes de un calendario.
 
 ## Interceptores EF Core
 

@@ -1,6 +1,9 @@
 # UserToken
 
 - **Entity**: `UserToken`
+- **Namespace**: `AgendaManager.Domain.Users.Entities`
+- **Tipo**: Entidad de Dominio Sellada (sealed)
+- **Herencia**: `AuditableEntity`
 
 ## Descripción
 
@@ -43,22 +46,17 @@ Los tokens son de un solo uso y tienen un tiempo de vida limitado definido en su
 
 ## Propiedades
 
-| Propiedad          | Tipo              | Descripción                                                   |
-|--------------------|-------------------|---------------------------------------------------------------|
-| `Id`               | `UserTokenId`     | Identificador único del token.                                |
-| `UserId`           | `UserId`          | Identificador único del usuario asociado al token.            |
-| `Token`            | `Token`           | El token generado para la acción específica.                  |
-| `UserTokenType`    | `UserTokenType`   | Tipo de token, como `PasswordReset` o `EmailConfirmation`.    |
-| `IsExpired`        | `bool`            | Indica si el token ha expirado.                              |
-
-## Relaciones
-
-- Un `UserToken` tiene un **ValueObject** `UserTokenId` único que lo identifica.
-- Un `UserToken` tiene un **ValueObject** `UserId` que identifica al usuario asociado.
-- Un `UserToken` tiene un **ValueObject** `Token` que representa el token específico.
-- Un `UserToken` tiene un **Enum** `UserTokenType` que indica el tipo de token.
+| Propiedad          | Tipo              | Acceso           | Descripción                                                 |
+|--------------------|-------------------|--------------------------------------------------------------------------------|
+| `Id`               | `UserTokenId`     | get              | Identificador único del token.                              |
+| `UserId`           | `UserId`          | get/private set  | Identificador único del usuario asociado al token.          |
+| `Token`            | `Token`           | get/private set  | El token generado para la acción específica.                |
+| `UserTokenType`    | `UserTokenType`   | get/private set  | Tipo de token, como `PasswordReset` o `EmailConfirmation`.  |
+| `IsExpired`        | `bool`            | get/private set  | Indica si el token ha expirado.                             |
 
 ## Métodos
+
+### Create
 
 ```csharp
 public static UserToken Create(UserTokenId id, UserId userId, Token token, UserTokenType type)
@@ -72,6 +70,8 @@ public static UserToken Create(UserTokenId id, UserId userId, Token token, UserT
 - Lanza el evento `UserTokenCreated` con el nuevo token.
 - Devuelve un nuevo `UserToken`.
 
+### CreateEmailConfirmation
+
 ```csharp
 public static Result<UserToken> CreateEmailConfirmation(UserId userId, TimeSpan? validityPeriod = null)
 ```
@@ -79,7 +79,9 @@ public static Result<UserToken> CreateEmailConfirmation(UserId userId, TimeSpan?
 - Crea un nuevo token de confirmación de email.
 - `userId`: Identificador único del usuario asociado al token.
 - `validityPeriod`: Duración del token. Por defecto, 7 días.
-- Return un nuevo `Result<UserToken>` con el nuevo token de confirmación de email.
+- **Retorno**: Un nuevo `Result<UserToken>` con el nuevo token de confirmación de email.
+
+### CreatePasswordReset
 
 ```csharp
 public static Result<UserToken> CreatePasswordReset(UserId userId, TimeSpan? validityPeriod = null)
@@ -88,7 +90,9 @@ public static Result<UserToken> CreatePasswordReset(UserId userId, TimeSpan? val
 - Crea un nuevo token de restablecimiento de contraseña.
 - `userId`: Identificador único del usuario asociado al token.
 - `validityPeriod`: Duración del token. Por defecto, 1 hora.
-- Return un nuevo `Result<UserToken>` con el nuevo token de restablecimiento de contraseña.
+- **Retorno**: Un nuevo `Result<UserToken>` con el nuevo token de restablecimiento de contraseña.
+
+### Consume
 
 ```csharp
 public Result Consume(string tokenValue)
@@ -96,7 +100,7 @@ public Result Consume(string tokenValue)
 
 - Consume el token para la operación correspondiente.
 - `tokenValue`: El valor del token a consumir.
-- Devuelve un `Result` success en caso de éxito o un error si el token no es válido o ha expirado.
+- **Retorno**: Un `Result` que indica si la operación fue exitosa o no.
 
 ## Estado y Transiciones
 
@@ -111,17 +115,28 @@ El token pasa por los siguientes estados:
 
 ## Dependencias
 
-- **Entities**:
-- **Servicios**:
-  - [IUserTokenRepository](./interfaces/i-user-token-repository.md): Repositorio para acceder a los tokens de usuario.
-- **Managers**:
-- **Políticas**:
-- **Value Objects**:
-  - [UserTokenId](./value-objects/user-token-id.md): Identificador único del token.
-  - [UserId](../users/value-objects/user-id.md): Identificador único del usuario asociado al token.
-  - [Token](./value-objects/token.md): Token específico para la acción.
-- **Enums**:
-  - [UserTokenType](./enums/user-token-type.md): Tipo de token para diferentes acciones (`EmailVerification`, `PasswordReset`).
+### Directas
+
+- **Entidades Base**:
+  - `AuditableEntity`: Base class que proporciona capacidades de auditoría
+    - Hereda gestión de eventos de dominio (`Entity`)
+
+### Entidades
+
+### Servicios
+
+- `IUserTokenRepository`: Repositorio para acceder a los tokens de usuario.
+
+### Managers
+
+### Políticas
+
+### Value Objects
+
+- `UserTokenId`: Identificador único del token.
+- `UserId`: Identificador único del usuario asociado al token.
+- `Token`: Token específico para la acción.
+- `UserTokenType`: Tipo de token para diferentes acciones (`EmailVerification`, `PasswordReset`).
 
 ## Interceptores EF Core
 

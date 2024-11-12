@@ -1,6 +1,9 @@
 # Permisos de Usuario
 
-**Entity**: `Permission`
+- **Entity**: `Permission`
+- **Namespace**: `AgendaManager.Domain.Users.Entities`
+- **Tipo**: Entidad de Dominio Sellada (sealed)
+- **Herencia**: `AuditableEntity`
 
 ## Descripción General
 
@@ -38,16 +41,14 @@ Los permisos son inmutables una vez creados y su creación debe realizarse por e
 
 ## Propiedades
 
-| Nombre | Tipo             | Descripción                     |
-| ------ | ---------------- | ------------------------------- |
-| `Id`   | `PermissionId`   | Identificador único del permiso |
-| `Name` | `string`         | Nombre del permiso              |
-
-## Relaciones
-
-- Un `Permission` tiene un `PermissionId` único que identifica el permiso.
+| Nombre | Tipo             | Acceso          | Descripción                     |
+| ------ | ---------------- | ----------------|-------------------------------- |
+| `Id`   | `PermissionId`   | get             | Identificador único del permiso |
+| `Name` | `string`         | get/private set | Nombre del permiso              |
 
 ## Métodos
+
+### GuardAgainstInvalidName
 
 ```csharp
 private static void GuardAgainstInvalidName(string name)
@@ -55,8 +56,8 @@ private static void GuardAgainstInvalidName(string name)
 
 - Valida el nombre del permiso.
 - `name`: Nombre del permiso.
-- Lanza `PermissionDomainException` si el nombre no cumple con las reglas de negocio.
-- Return `void`.
+- **Excepciones**: `PermissionDomainException` si el nombre no cumple con las reglas de negocio
+- **Retorno**: `void`
 
 ## Estado y Transiciones
 
@@ -67,19 +68,32 @@ La entidad Permission es inmutable y no tiene transiciones de estado después de
 
 ## Dependencias
 
-- **Entities**:
-- **Services**:
-  - `IPermissionRepository`: Repositorio de permisos.
-- **Managers**:
-  - [PermissionManager](./services/permission-manager.md): Gestiona la creación de permisos.
-  - [AuthorizationManager](./services/authorization-manager.md): Gestiona la autorización de usuarios.
-- **Policies**:
-- **Value Objects**:
-- [PermissionId](../value-objects/permission-id.md)
+### Directas
+
+- **Entidades Base**:
+  - `AuditableEntity`: Base class que proporciona capacidades de auditoría
+    - Hereda gestión de eventos de dominio (`Entity`)
+
+### Entidades
+
+### Servicios
+
+- `IPermissionRepository`: Repositorio de permisos.
+
+### Managers
+
+- `PermissionManager`: Gestiona la creación de permisos.
+- `AuthorizationManager`: Gestiona la autorización de usuarios.
+
+### Policies
+
+### Value Objects
+
+- `PermissionId`: Identificador único del permiso.
 
 ## Eventos de Dominio
 
-- `PermissionCreatedDomainEvent(Id)`: Se lanza cuando se crea un nuevo permiso.
+- `PermissionCreatedDomainEvent`: Se lanza cuando se crea un nuevo permiso.
 
 ## Interceptores EF Core
 
