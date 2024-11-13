@@ -1,7 +1,7 @@
 # User
 
 - **Aggregate Root**: `User`
-- **Namespace**: `{AgendaManager.Domain.Users}`
+- **Namespace**: `AgendaManager.Domain.ResourceTypes`
 - **Tipo**: Entidad de Dominio Sellada (sealed)
 - **Herencia**: `AggregateRoot`
 

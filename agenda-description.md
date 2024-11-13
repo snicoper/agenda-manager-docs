@@ -334,3 +334,139 @@ Agregados y sus Entidades:
     ├── Permission (E)
     └── UserToken (E)
 ```
+
+---
+
+Relaciones entre `ResourceType`, `Resource` y `Service`:
+
+```csharp
+public sealed class Resource : AggregateRoot
+{
+    public ResourceId Id { get; } = null!;
+
+    public ResourceTypeId TypeId { get; private set; } = null!;
+
+    public ResourceType Type { get; private set; } = null!;
+
+    // ...
+}
+
+public sealed class ResourceType : AggregateRoot
+{
+    public ResourceTypeId Id { get; private set; } = null!;
+
+    public string Name { get; private set; } = default!;
+
+    public string Description { get; private set; } = default!;
+
+    public bool RequiredRole { get; private set; }
+
+    public IReadOnlyList<Resource> Resources => _resources.AsReadOnly();
+
+    public IReadOnlyList<Service> Services => _services.AsReadOnly();
+
+    // ...
+}
+
+public sealed class Service : AggregateRoot
+{
+    public ServiceId Id { get; } = null!;
+
+    private readonly List<ResourceType> _resourceTypes = [];
+
+    public IReadOnlyCollection<ResourceType> ResourceTypes => _resourceTypes.AsReadOnly();
+}
+```
+
+- La relación entre `ResourceType` y `Resource` es de uno a muchos.
+- La relación entre `ResourceType` y `Service` es de muchos a muchos.
+
+La responsabilidad de `ResourceType` es la de crear tipos de recursos como `Cirujano`, `Anestesista`  `Enfermería` o `Odontología`.
+
+Cada `Resource` tiene un `ResourceType` que representa el tipo de recurso que es.
+
+Por ejemplo un `Resource` puede ser algo como:
+
+Estos podrían ser recursos, entre otros:
+
+- **Name**: Dr. Pedro Pérez
+- **Description**: Doctor de cabecera
+- **ResourceType**: Cirujano
+- **ResourceRole**: Employee (Entidad predefinida de `Role`)
+
+- **Name**: Laura García
+- **Description**: Enfermera de cabecera
+- **ResourceType**: Enfermería
+- **ResourceRole**: Employee (Entidad predefinida de `Role`)
+
+- **Name**: Ana López
+- **Description**: Anestesista de cabecera
+- **ResourceType**: Anestesista
+- **ResourceRole**: Employee (Entidad predefinida de `Role`)
+
+- **Name**: Box 1
+- **Description**: Box de cirugía 1
+- **ResourceType**: Facility
+
+- **Name**: "Algún instrumento"
+- **Description**: Instrumento quirúrgico
+- **ResourceType**: Equipment
+
+Para crear un servicio:
+
+- **Name**: Extracción de muela
+- **Description**: Extracción de muela
+- **ResourceType**: [Cirujano, Anestesista, Enfermería, Box 1, Algún instrumento]
+- **Duración**: 1 hora
+
+---
+
+Creación de una cita:
+
+- ¿Que servicio se va a realizar?
+  - Extracción de muela
+    - ¿Qué recursos necesitas?
+      - ¿Qué recursos están disponibles que cumplan con los requisitos?
+        - Cirujano
+          - Obtener todos los cirujanos
+        - Anestesista
+          - Obtener todos los anestesistas
+        - Enfermería
+          - Obtener todas las enfermeras
+        - Box 1
+          - Obtener todos los boxes
+        - Algún instrumento
+          - Obtener todos los instrumentos
+
+---
+
+Lo dejo por si acaso.
+
+Ahora que recuerdo, una de las cosas que pensé, es que los recursos se pueden clasificar en tres categorías:
+
+```csharp
+public enum ResourceCategory
+{
+    Staff,    // Personal, personas (con RoleId)
+    Facility    // Boxes, salas
+    Equipment,  // Instrumentos, máquinas
+}
+```
+
+Por ejemplo, saquemos a pasear a **Sangre de Merlos** y a **El chocolate loco**
+
+- **Name**: El chocolate loco (yo que se esos apodos Sevillanos)
+- **Description**: El mas sumbao
+- **ResourceType**: Cochero
+- **Role**: Employee (Entidad predefinida de `Role`)
+- **ResourceCategory**: Staff
+
+- **Name**: Sangre de Merlos (el caballo vamos :P)
+- **Description**: Caballo manso marron y de caballo largo.
+- **ResourceType**: Caballo
+- **ResourceCategory**: Equipment (me sabe mal, pero es lo que hay)
+
+- **Name**: Carruaje de caballos
+- **Description**: Para 4 personas tirado de un caballo
+- **ResourceType**: Carruaje
+- **ResourceCategory**: Equipment
