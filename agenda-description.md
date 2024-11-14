@@ -255,7 +255,7 @@ Si elijo un `ResourceType` que `RequiredRole` es un `RoleId`, entonces el `Resou
 - Un `ResourceSchedule` tienen disponibilidad diaria con `WeekDays`.
 - Un `Resource` puede tener uno o varios `ResourceSchedule`.
 
-Por ejemplo, supongamos que tenemos un `Resource` que es un `Anestesista` y queremos que sea disponible de lunes a viernes de 8:00 a 12:00 y de 14:00 a 18:00.
+Por ejemplo, supongamos que tenemos un `Resource` que es un `Anestesista` y queremos que este disponible de lunes a viernes de 8:00 a 12:00 y de 14:00 a 18:00.
 
 A la vez, queremos que crear una excepción de disponibilidad para el día 11 de Noviembre de 2024 (Martes), por que el `Anestesista` ha pedido un día libre.
 

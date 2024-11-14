@@ -137,3 +137,39 @@ public static class WeekDaysExtensions
     }
 }
 ```
+
+## NO BORRAR
+
+```text
+# Los Mandamientos del EPA (El Puto Amo / Aggregate Root)
+
+1. El EPA siempre tiene la razón
+   - El Aggregate Root es la fuente de verdad y consistencia
+
+2. Si el EPA no tiene la razón, consulte el primer mandamiento
+   - No hay excepciones a las reglas del agregado
+
+3. El EPA solo habla a través de sus eventos, el resto es ruido
+   - La comunicación con otros agregados debe ser a través de eventos de dominio
+
+4. No tocarás las entidades del EPA sin su permiso
+   - Toda modificación debe pasar por el Aggregate Root
+
+5. No modificarás directamente lo que el EPA protege
+   - No bypass de la encapsulación
+
+6. Honrarás al EPA y sus invariantes
+   - Respetar siempre las reglas de negocio del agregado
+
+7. No codiciarás el estado interno de otro EPA
+   - Mantener los agregados independientes
+
+8. El EPA es el único que puede cambiar su estado
+   - Encapsulación y control de modificaciones
+
+9. No tomarás el nombre del EPA en vano
+   - No hacer bypass de las validaciones del agregado
+
+10. El EPA descansará el séptimo día
+    - Pero siempre vigilando la consistencia 😉
+```
