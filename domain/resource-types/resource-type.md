@@ -83,7 +83,7 @@ Un `ResourceType` sirve como plantilla para la creación de recursos específico
 ## Propiedades
 
 | Propiedad     | Tipo             | Acceso          |Descripción                                            |
-|---------------|------------------|-------------------------------------------------------------------------|
+|---------------|------------------|-----------------|-------------------------------------------------------|
 | `Id`          | `ResourceTypeId` | get             | Identificador único del tipo de recurso.              |
 | `Name`        | `string`         | get/private set | Nombre del tipo de recurso.                           |
 | `Description` | `string`         | get/private set | Descripción del tipo de recurso.                      |
@@ -141,6 +141,8 @@ private static void GuardAgainstInvalidDescription(string description)
 - **Retorna** `void`.
 
 ## Estado y Transiciones
+
+- **No Aplica**
 
 ## Dependencias
 
