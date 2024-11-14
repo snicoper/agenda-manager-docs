@@ -83,7 +83,7 @@ El agregado root `Resource` representa un recurso en el sistema de gestión de a
 ## Propiedades
 
 | Propiedad           | Tipo                      | Acceso          | Descripción                                               |
-|---------------------|---------------------------|-----------------|----------------------------------------------------------|
+|---------------------|---------------------------|-----------------|-----------------------------------------------------------|
 | Id                  | `ResourceId`              | get             | Identificador único del recurso.                          |
 | UserId              | `UserId?`                 | get/private set | Identificador único del usuario propietario del recurso.  |
 | User                | `User?`                   | get/private set | Usuario propietario del recurso.                          |
