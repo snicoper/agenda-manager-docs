@@ -96,14 +96,15 @@ public static CalendarHoliday Create(
     string description)
 ```
 
-- Crea una nueva instancia de `CalendarHoliday` con los valores proporcionados
-- `id`: Identificador único del holiday
-- `calendarId`: Identificador del calendario asociado
-- `name`: Nombre del holiday
-- `period`: Período del holiday
-- `weekdays`: Días de la semana del holiday
-- `name`: Nombre del holiday
-- `description`: Descripción del holiday
+- **Descripción**: Crea una nueva instancia de `CalendarHoliday` con los valores proporcionados
+- **Parámetros**:
+  - `id`: Identificador único del holiday
+  - `calendarId`: Identificador del calendario asociado
+  - `name`: Nombre del holiday
+  - `period`: Período del holiday
+  - `weekdays`: Días de la semana del holiday
+  - `name`: Nombre del holiday
+  - `description`: Descripción del holiday
 - **Eventos**: `CalendarHolidayCreatedDomainEvent`: Evento de creación del holiday
 - **Retorno**: `CalendarHoliday` con los valores proporcionados.
 
@@ -113,13 +114,13 @@ public static CalendarHoliday Create(
 public void Update(Period period, WeekDays weekDays, string name, string description)
 ```
 
-- Actualiza los valores del holiday
-- `period`: Período del holiday
-- `weekdays`: Días de la semana del holiday
-- `name`: Nombre del holiday
-- `description`: Descripción del holiday
+- **Descripción**: Actualiza los valores del holiday
+- **Parámetros**:
+  - `period`: Período del holiday
+  - `weekdays`: Días de la semana del holiday
+  - `name`: Nombre del holiday
+  - `description`: Descripción del holiday
 - **Eventos**: `CalendarHolidayUpdatedDomainEvent`: Evento de actualización del holiday
-- **Retorno**: `void`
 
 ### GuardAgainstInvalidName
 
@@ -127,10 +128,10 @@ public void Update(Period period, WeekDays weekDays, string name, string descrip
 private static void GuardAgainstInvalidName(string name)
 ```
 
-- Valida que el nombre del holiday no sea nulo o vacío
-- `name`: Nombre del holiday
+- **Descripción**: Valida que el nombre del holiday no sea nulo o vacío
+- **Parámetros**:
+  - `name`: Nombre del holiday
 - **Eventos**: `CalendarHolidayDomainException`: Evento de excepción de Dominio
-- **Retorno**: `void`
 
 ### GuardAgainstInvalidDescription
 
@@ -138,12 +139,14 @@ private static void GuardAgainstInvalidName(string name)
 private static void GuardAgainstInvalidDescription(string description)
 ```
 
-- Valida que la descripción del holiday no exceda los 500 caracteres
-- `description`: Descripción del holiday
+- **Descripción**: Valida que la descripción del holiday no exceda los 500 caracteres
+- **Parámetros**:
+  - `description`: Descripción del holiday
 - **Excepciones**: `CalendarHolidayDomainException`: Evento de excepción de dominio
-- **Retorno**: `void`
 
 ## Estado y Transiciones
+
+- **No Aplica**
 
 ## Dependencias
 
@@ -181,6 +184,8 @@ ys.md): Representa los días de la semana
 - `CalendarHolidayUpdatedDomainEvent`: Evento de dominio disparado cuando se actualiza un `CalendarHoliday`.
 
 ## Interceptores EF Core
+
+- **No Aplica**
 
 ## Comentarios adicionales
 

@@ -54,10 +54,9 @@ Los permisos son inmutables una vez creados y su creación debe realizarse por e
 private static void GuardAgainstInvalidName(string name)
 ```
 
-- Valida el nombre del permiso.
-- `name`: Nombre del permiso.
+- **Descripción**:  Valida el nombre del permiso.
+  - `name`: Nombre del permiso.
 - **Excepciones**: `PermissionDomainException` si el nombre no cumple con las reglas de negocio
-- **Retorno**: `void`
 
 ## Estado y Transiciones
 
@@ -76,6 +75,8 @@ La entidad Permission es inmutable y no tiene transiciones de estado después de
 
 ### Entidades
 
+- **No Aplica**
+
 ### Servicios
 
 - `IPermissionRepository`: Repositorio de permisos.
@@ -87,6 +88,8 @@ La entidad Permission es inmutable y no tiene transiciones de estado después de
 
 ### Policies
 
+- **No Aplica**
+
 ### Value Objects
 
 - `PermissionId`: Identificador único del permiso.
@@ -97,7 +100,11 @@ La entidad Permission es inmutable y no tiene transiciones de estado después de
 
 ## Interceptores EF Core
 
+- **No Aplica**
+
 ## Comentarios adicionales
+
+- **No Aplica**
 
 ## Ejemplos de Uso
 

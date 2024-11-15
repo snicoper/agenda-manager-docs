@@ -95,9 +95,97 @@ Los horarios tipo `Unavailable` tienen precedencia sobre los `Available`, permit
 
 ## Métodos
 
-De momento dejar en blanco.
+### Create
+
+```csharp
+public static ResourceSchedule Create(
+    ResourceScheduleId resourceScheduleId,
+    ResourceId resourceId,
+    CalendarId calendarId,
+    Period period,
+    ResourceScheduleType type,
+    WeekDays availableDays,
+    string name,
+    string? description,
+    bool isActive = true)
+```
+
+- **Descripción**: Crea una nueva instancia de `ResourceSchedule`.
+- **Parámetros**:
+  - `resourceScheduleId`: Identificador único de la programación de recurso.
+  - `resourceId`: Identificador del recurso asociado a la programación.
+  - `calendarId`: Identificador del calendario asociado a la programación.
+  - `period`: Período de disponibilidad del recurso.
+  - `type`: Tipo de programación de recurso.
+  - `availableDays`: Días de la semana en los que el recurso está disponible.
+  - `name`: Nombre de la programación de recurso.
+  - `description`: Descripción de la programación de recurso.
+  - `isActive`: Estado de activación del horario.
+- **Eventos**:
+  - `ResourceScheduleCreated`: Evento emitido cuando se crea una nueva programación de recurso.
+- **Retorno**: Nueva instancia de `ResourceSchedule`.
+
+### Update
+
+```csharp
+internal bool Update(Period period, string name, string? description, WeekDays availableDays)
+```
+
+- **Descripción**: Actualiza los detalles de la programación de recurso.
+- **Parámetros**:
+  - `period`: Período de disponibilidad del recurso.
+  - `name`: Nombre de la programación de recurso.
+  - `description`: Descripción de la programación de recurso.
+  - `availableDays`: Días de la semana en los que el recurso está disponible.
+**Retorno**: `true` si hubo actualización, `false` en caso contrario.
+
+### Activate
+
+```csharp
+internal void Activate()
+```
+
+- **Descripción**: Activa la programación de recurso.
+- **Eventos**:
+  - `ResourceScheduleActivated`: Evento emitido cuando se activa una programación de recurso.
+
+### Deactivate
+
+```csharp
+internal void Deactivate()
+```
+
+- **Descripción**: Desactiva la programación de recurso.
+- **Eventos**:
+  - `ResourceScheduleDeactivated`: Evento emitido cuando se desactiva una programación de recurso.
+
+### GuardAgainstInvalidName
+
+```csharp
+private void GuardAgainstInvalidName(string name)
+```
+
+- **Descripción**: Verifica si el nombre proporcionado es válido.
+- **Parámetros**:
+  - `name`: Nombre de la programación de recurso.
+- **Excepciones**:
+  - `ResourceScheduleDomainException`: Se lanza si el nombre proporcionado es inválido.
+
+### GuardAgainstInvalidDescription
+
+```csharp
+private void GuardAgainstInvalidDescription(string? description)
+```
+
+- **Descripción**: Verifica si la descripción proporcionada es válida.
+- **Parámetros**:
+  - `description`: Descripción de la programación de recurso.
+- **Excepciones**:
+  - `ResourceScheduleDomainException`: Se lanza si la descripción proporcionada es inválida.
 
 ## Estado y Transiciones
+
+- **No Aplica**
 
 ### Estados del ResourceSchedule
 
@@ -119,7 +207,11 @@ De momento dejar en blanco.
 
 ### Managers
 
+- **No Aplica**
+
 ### Policies
+
+- **No Aplica**
 
 ### Value Objects
 
@@ -130,11 +222,11 @@ De momento dejar en blanco.
 
 ## Eventos de Dominio
 
-De momento dejar en blanco.
+Los eventos ocurren en el agregado `Resource`.
 
 ## Interceptores EF Core
 
-De momento dejar en blanco.
+- **No Aplica**
 
 ## Comentarios adicionales
 
@@ -195,6 +287,3 @@ Type: Available
 Si "concatenamos" los horarios habituales y este evento especial, el resultado es que para el dia 11 de Noviembre de 2024 el recurso está disponible de 8:00 a 18:00 (siempre que no haya otro horario que se solape con un tipo `Unavailable`).
 
 ## Ejemplos de Uso
-
-```csharp
-```

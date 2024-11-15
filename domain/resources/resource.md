@@ -111,7 +111,6 @@ public void AddSchedule(ResourceSchedule schedule)
 - **Excepciones**:
 - **Eventos**:
   - `ResourceScheduleCreatedDomainEvent`: Evento que se dispara cuando se agrega una nueva programación al recurso.
-- **Retorno**: `void`
 
 ### RemoveSchedule
 
@@ -125,7 +124,6 @@ public void RemoveSchedule(ResourceSchedule schedule)
 - **Excepciones**:
 - **Eventos**:
   - `ResourceScheduleRemovedDomainEvent`: Evento que se dispara cuando se elimina una programación del recurso.
-**Retorno**: `void`
 
 ### Activate
 
@@ -138,7 +136,6 @@ public void Activate()
 - **Excepciones**:
 - **Eventos**:
   - `ResourceActivatedDomainEvent`: Evento que se dispara cuando se activa el recurso.
-- **Retorno**: `void`
 
 ### Deactivate
 
@@ -152,7 +149,6 @@ public void Deactivate(string reason)
 - **Excepciones**:
 - **Eventos**:
   - `ResourceDeactivatedDomainEvent`: Evento que se dispara cuando se desactiva el recurso.
-**Retorno**: `void`
 
 ### UpdateSchedule
 
@@ -211,7 +207,6 @@ internal void Update(string name, string description, ColorScheme colorScheme)
 - **Excepciones**:
 - **Eventos**:
   - `ResourceUpdatedDomainEvent`: Evento que se dispara cuando se actualiza el recurso.
-- **Retorno**: `void`
 
 ### GuardAgainstInvalidName
 
@@ -225,7 +220,6 @@ private static void GuardAgainstInvalidName(string name)
 - **Excepciones**:
   - `ResourceDomainException`: Si el nombre del recurso es inválido.
 - **Eventos**:
-- **Retorno**: `void
 
 ### GuardAgainstInvalidDescription
 
@@ -239,7 +233,6 @@ private static void GuardAgainstInvalidDescription(string description)
 - **Excepciones**:
   - `ResourceDomainException`: Si la descripción del recurso es inválida.
 - **Eventos**:
-- **Retorno**: `void`
 
 ## Dependencias
 
@@ -281,7 +274,14 @@ private static void GuardAgainstInvalidDescription(string description)
 - `ResourceUpdatedDomainEvent`: Evento que se dispara cuando se actualiza el recurso.
 - `ResourceScheduleUpdatedDomainEvent`: Evento que se dispara cuando se actualiza una programación del recurso.
 
+## Interceptores EF Core
+
+- **No Aplica**
+
+## Comentarios adicionales
+
+- **No Aplica**
+
 ## Ejemplos de Uso
 
-```csharp
-```
+- **No Aplica**

@@ -87,10 +87,10 @@ Las excepciones son la relación de `Calendar` con `CalendarSettings` y `Calenda
 public void ChangeActiveStatus(bool isActive)
 ```
 
-- Cambia el estado activo del calendario.
-- `isActive`: Indica si el calendario está activo.
+- **Descripción**: Cambia el estado activo del calendario.
+- **Parámetros**:
+  - `isActive`: Indica si el calendario está activo.
 - **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
-- **Retorno**: `void`
 
 ### AddHoliday
 
@@ -98,10 +98,10 @@ public void ChangeActiveStatus(bool isActive)
 public void AddHoliday(CalendarHoliday calendarHoliday)
 ```
 
-- Agrega una nueva vacación al calendario.
-- `calendarHoliday`: La vacación a agregar.
+- **Descripción**: Agrega una nueva vacación al calendario.
+- **Parámetros**:
+  - `calendarHoliday`: La vacación a agregar.
 - **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
-- **Retorno**: `void`
 
 ### RemoveHoliday
 
@@ -109,10 +109,10 @@ public void AddHoliday(CalendarHoliday calendarHoliday)
 public void RemoveHoliday(CalendarHoliday calendarHoliday)
 ```
 
-- Elimina una vacación del calendario.
-- `calendarHoliday`: La vacación a eliminar.
+- **Descripción**: Elimina una vacación del calendario.
+- **Parámetros**:
+  - `calendarHoliday`: La vacación a eliminar.
 - **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
-- **Retorno**: `void`
 
 ### UpdateSettings
 
@@ -120,11 +120,11 @@ public void RemoveHoliday(CalendarHoliday calendarHoliday)
 public void UpdateSettings(IanaTimeZone ianaTimeZone, HolidayCreationStrategy holidayCreationStrategy)
 ```
 
-- Actualiza la configuración del calendario.
-- `ianaTimeZone`: La zona horaria del calendario.
-- `holidayCreationStrategy`: Estrategia de creación de vacaciones.
+- **Descripción**: Actualiza la configuración del calendario.
+- **Parámetros**:
+  - `ianaTimeZone`: La zona horaria del calendario.
+  - `holidayCreationStrategy`: Estrategia de creación de vacaciones.
 - **Eventos**: Lanza el evento `CalendarSettingsUpdatedDomainEvent`.
-- **Retorno**: `void`
 
 ### Create
 
@@ -137,12 +137,13 @@ internal static Calendar Create(
     bool active = true)
 ```
 
-- Crea un nuevo calendario con los valores proporcionados.
-- `id`: Identificador único del calendario.
-- `settings`: Configuración del calendario.
-- `name`: Nombre del calendario.
-- `description`: Descripción del calendario.
-- `active`: Indica si el calendario está activo.
+- **Descripción**: Crea un nuevo calendario con los valores proporcionados.
+- **Parámetros**:
+  - `id`: Identificador único del calendario.
+  - `settings`: Configuración del calendario.
+  - `name`: Nombre del calendario.
+  - `description`: Descripción del calendario.
+  - `active`: Indica si el calendario está activo.
 - **Eventos**: Lanza el evento `CalendarCreatedDomainEvent`.
 - **Retorno**: El calendario creado.
 
@@ -152,9 +153,10 @@ internal static Calendar Create(
 internal void Update(string name, string description)
 ```
 
-- Actualiza el nombre y la descripción del calendario.
-- `name`: Nombre del calendario.
-- `description`: Descripción del calendario.
+- **Descripción**: Actualiza el nombre y la descripción del calendario.
+- **Parámetros**:
+  - `name`: Nombre del calendario.
+  - `description`: Descripción del calendario.
 - **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
 
 ### GuardAgainstInvalidName
@@ -163,10 +165,10 @@ internal void Update(string name, string description)
 private static void GuardAgainstInvalidName(string name)
 ```
 
-- Valida que el nombre del calendario no sea nulo y no exceda los 50 caracteres.
-- `name`: Nombre del calendario.
+- **Descripción**: Valida que el nombre del calendario no sea nulo y no exceda los 50 caracteres.
+- **Parámetros**:
+  - `name`: Nombre del calendario.
 - **Excepciones**: Lanza la excepción `CalendarDomainException` si el nombre del calendario es nulo o excede los 50 caracteres.
-- **Retorno**: `void`
 
 ### GuardAgainstInvalidDescription
 
@@ -174,10 +176,10 @@ private static void GuardAgainstInvalidName(string name)
 private static void GuardAgainstInvalidDescription(string description)
 ```
 
-- Valida que la descripción del calendario no sea nula y no exceda los 500 caracteres.
-- `description`: Descripción del calendario.
+- **Descripción**: Valida que la descripción del calendario no sea nula y no exceda los 500 caracteres.
+- **Parámetros**:
+  - `description`: Descripción del calendario.
 - **Excepciones**: Lanza la excepción `CalendarDomainException` si la descripción del calendario es nula o excede los 500 caracteres.
-- **Retorno**: `void`
 
 ## Estado y Transiciones
 

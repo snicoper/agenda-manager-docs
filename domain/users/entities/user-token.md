@@ -62,13 +62,14 @@ Los tokens son de un solo uso y tienen un tiempo de vida limitado definido en su
 public static UserToken Create(UserTokenId id, UserId userId, Token token, UserTokenType type)
 ```
 
-- Crea una nueva instancia de `UserToken`.
-- `id`: Identificador único del token.
-- `userId`: Identificador único del usuario asociado al token.
-- `token`: El token generado para la acción específica.
-- `type`: Tipo de token, como `PasswordReset` o `EmailConfirmation`.
-- Lanza el evento `UserTokenCreated` con el nuevo token.
-- Devuelve un nuevo `UserToken`.
+- **Descripción**: Crea una nueva instancia de `UserToken`.
+- **Parámetros**:
+  - `id`: Identificador único del token.
+  - `userId`: Identificador único del usuario asociado al token.
+  - `token`: El token generado para la acción específica.
+  - `type`: Tipo de token, como `PasswordReset` o `EmailConfirmation`.
+- **Eventos**: `UserTokenCreatedDomainEvent` disparado cuando se crea un nuevo token.
+- **Retorno**: Un nuevo `UserToken`.
 
 ### CreateEmailConfirmation
 
@@ -76,9 +77,10 @@ public static UserToken Create(UserTokenId id, UserId userId, Token token, UserT
 public static Result<UserToken> CreateEmailConfirmation(UserId userId, TimeSpan? validityPeriod = null)
 ```
 
-- Crea un nuevo token de confirmación de email.
-- `userId`: Identificador único del usuario asociado al token.
-- `validityPeriod`: Duración del token. Por defecto, 7 días.
+- **Descripción**: Crea un nuevo token de confirmación de email.
+- **Parámetros**:
+  - `userId`: Identificador único del usuario asociado al token.
+  - `validityPeriod`: Duración del token. Por defecto, 7 días.
 - **Retorno**: Un nuevo `Result<UserToken>` con el nuevo token de confirmación de email.
 
 ### CreatePasswordReset
@@ -87,9 +89,10 @@ public static Result<UserToken> CreateEmailConfirmation(UserId userId, TimeSpan?
 public static Result<UserToken> CreatePasswordReset(UserId userId, TimeSpan? validityPeriod = null)
 ```
 
-- Crea un nuevo token de restablecimiento de contraseña.
-- `userId`: Identificador único del usuario asociado al token.
-- `validityPeriod`: Duración del token. Por defecto, 1 hora.
+- **Descripción**: Crea un nuevo token de restablecimiento de contraseña.
+- **Parámetros**:
+  - `userId`: Identificador único del usuario asociado al token.
+  - `validityPeriod`: Duración del token. Por defecto, 1 hora.
 - **Retorno**: Un nuevo `Result<UserToken>` con el nuevo token de restablecimiento de contraseña.
 
 ### Consume
@@ -98,8 +101,9 @@ public static Result<UserToken> CreatePasswordReset(UserId userId, TimeSpan? val
 public Result Consume(string tokenValue)
 ```
 
-- Consume el token para la operación correspondiente.
-- `tokenValue`: El valor del token a consumir.
+- **Descripción**: Consume el token para la operación correspondiente.
+- **Parámetros**:
+  - `tokenValue`: El valor del token a consumir.
 - **Retorno**: Un `Result` que indica si la operación fue exitosa o no.
 
 ## Estado y Transiciones
@@ -123,13 +127,19 @@ El token pasa por los siguientes estados:
 
 ### Entidades
 
+- **No Aplica**
+
 ### Servicios
 
 - `IUserTokenRepository`: Repositorio para acceder a los tokens de usuario.
 
 ### Managers
 
+- **No Aplica**
+
 ### Políticas
+
+- **No Aplica**
 
 ### Value Objects
 
@@ -139,6 +149,8 @@ El token pasa por los siguientes estados:
 - `UserTokenType`: Tipo de token para diferentes acciones (`EmailVerification`, `PasswordReset`).
 
 ## Interceptores EF Core
+
+- **No Aplica**
 
 ## Ejemplos de Uso
 

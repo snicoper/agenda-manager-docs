@@ -94,11 +94,10 @@ El sistema define cuatro roles inmutables (`Editable = false`) que no pueden ser
 internal void UpdateRole(string name, string description)
 ```
 
-- Actualiza el nombre y la descripción del rol.
-- `name`: Nombre del rol.
-- `description`: Descripción del rol.
+- **Descripción**: Actualiza el nombre y la descripción del rol.
+  - `name`: Nombre del rol.
+  - `description`: Descripción del rol.
 - **Eventos**: Lanza el evento `RoleUpdatedDomainEvent`.
-- **Retorno**: `void`.
 
 ### AddPermission
 
@@ -106,10 +105,10 @@ internal void UpdateRole(string name, string description)
 internal Result AddPermission(Permission permission)
 ```
 
-- Agrega un permiso al rol.
-- `permission`: Permiso a agregar.
+- **Descripción**: Agrega un permiso al rol.
+  - `permission`: Permiso a agregar.
 - **Eventos**: Lanza el evento `RolePermissionAddedDomainEvent`.
-- Return `Result`.
+- **Retorno** `Result` con `Success` si el permiso se agregó correctamente.
 
 ### RemovePermission
 
@@ -117,10 +116,10 @@ internal Result AddPermission(Permission permission)
 internal Result RemovePermission(Permission permission)
 ```
 
-- Elimina un permiso del rol.
+- **Descripción**: Elimina un permiso del rol.
 - `permission`: Permiso a eliminar.
 - **Eventos**: Lanza el evento `RolePermissionRemovedDomainEvent`.
-- Return `Result`.
+- **Retorno** `Result` con `Success` si el permiso se eliminó correctamente.
 
 ### GuardAgainstInvalidName
 
@@ -194,6 +193,8 @@ La clase `Role` tiene los siguientes estados y transiciones:
 - `RolePermissionRemovedDomainEvent`: Se lanza cuando se elimina un permiso de un rol.
 
 ## Comentarios adicionales
+
+- **No Aplica**
 
 ## Ejemplos
 

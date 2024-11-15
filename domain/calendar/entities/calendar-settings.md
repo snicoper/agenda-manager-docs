@@ -85,11 +85,12 @@ internal static CalendarSettings Create(
     HolidayCreationStrategy holidayCreationStrategy)
 ```
 
-- Factory method para crear nuevas instancias de configuración.
-- `id`: Identificador único de la configuración.
-- `calendarId`: Identificador del calendario asociado.
-- `ianaTimeZone`: Zona horaria del calendario.
-- `holidayCreationStrategy`: Estrategia de gestión de holidays.
+- **Descripción**: Factory method para crear nuevas instancias de configuración.
+- **Parámetros**:
+  - `id`: Identificador único de la configuración.
+  - `calendarId`: Identificador del calendario asociado.
+  - `ianaTimeZone`: Zona horaria del calendario.
+  - `holidayCreationStrategy`: Estrategia de gestión de holidays.
 - **Eventos**: Emite `CalendarSettingsCreatedDomainEvent`
 - **Retorno**: Nueva instancia válida de `CalendarSettings`
 
@@ -101,11 +102,11 @@ internal void Update(
     HolidayCreationStrategy holidayCreationStrategy)
 ```
 
-- Método para actualizar la configuración existente
-- `ianaTimeZone`: Nueva zona horaria
-- `holidayCreationStrategy`: Nueva estrategia de gestión de holidays
+- **Descripción**: Método para actualizar la configuración existente
+- **Parámetros**:
+  - `ianaTimeZone`: Nueva zona horaria
+  - `holidayCreationStrategy`: Nueva estrategia de gestión de holidays
 - **Eventos**: Emite `CalendarSettingsUpdatedDomainEvent`
-- **Retorno**: `void`
 
 ### HasChanges
 
@@ -115,12 +116,15 @@ internal bool HasChanges(
     HolidayCreationStrategy holidayCreationStrategy)
 ```
 
-- Método para determinar si hay cambios reales
-- `ianaTimeZone`: Nueva zona horaria
-- `holidayCreationStrategy`: Nueva estrategia de gestión de holidays
+- **Descripción**: Método para determinar si hay cambios reales
+- **Parámetros**:
+  - `ianaTimeZone`: Nueva zona horaria
+  - `holidayCreationStrategy`: Nueva estrategia de gestión de holidays
 - **Retorno**: `true` si hay cambios reales, `false` en caso contrario
 
 ## Estado y Transiciones
+
+- **No Aplica**
 
 ## Dependencias
 
@@ -144,7 +148,11 @@ internal bool HasChanges(
 
 ## Interceptores EF Core
 
+- **No Aplica**
+
 ## Comentarios adicionales
+
+- **No Aplica**
 
 ## Ejemplos de Uso
 
