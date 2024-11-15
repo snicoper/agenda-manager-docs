@@ -100,10 +100,12 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
 public Result UpdatePassword(PasswordHash newPasswordHash)
 ```
 
-- Actualiza el hash de la contraseña del usuario.
-- `newPasswordHash`: El nuevo hash de la contraseña.
-- **Eventos**: Lanza el evento `UserPasswordUpdatedDomainEvent`.
-- Return `Result` Un resultado que indica si la operación fue exitosa o no.
+- **Descripción**: Actualiza la contraseña del usuario.
+- **Parámetros**:
+  - `newPasswordHash`: Hash de la nueva contraseña del usuario.
+- **Eventos**:
+  - `UserPasswordUpdatedDomainEvent`: Se dispara cuando se actualiza la contraseña del usuario.
+- **Retorno**: `Result`: Un resultado que indica si la actualización fue exitosa o no.
 
 ### UpdateEmail
 
@@ -114,23 +116,26 @@ public async Task<Result> UpdateEmail(
     CancellationToken cancellationToken)
 ```
 
-- Actualiza la dirección de correo electrónico del usuario.
-- `newEmail`: La nueva dirección de correo electrónico.
-- `emailUniquenessChecker`: Verificador de unicidad de correo electrónico.
-- `cancellationToken`: Token de cancelación para operaciones asincrónicas.
-- **Eventos**: Lanza el evento `UserEmailUpdatedDomainEvent`.
-- **Retorno**: `Result` Un resultado que indica si la operación fue exitosa o no.
+- **Descripción**: Actualiza la dirección de correo electrónico del usuario.
+- **Parámetros**:
+  - `newEmail`: Nueva dirección de correo electrónico del usuario.
+  - `emailUniquenessChecker`: Verificador de unicidad de correo electrónico.
+  - `cancellationToken`: Token de cancelación para la operación.
+**Eventos**:
+  - `UserEmailUpdatedDomainEvent`: Se dispara cuando se actualiza la dirección de correo electrónico del usuario.
+**Retorno**: `Result` Un resultado que indica si la actualización fue exitosa o no.
 
 ### UpdateRefreshToken
 
 ```csharp
-public void UpdateRefreshToken(Token refreshToken)
+public void UpdateRefreshToken(Token token)
 ```
 
-- Actualiza el `Token` del usuario.
-- `refreshToken`: El nuevo `Token` del usuario.
-- **Eventos**: Lanza el evento `UserRefreshTokenUpdatedDomainEvent`.
-- **Retorno**: `void`.
+- **Descripción**: Actualiza el token de refresco del usuario.
+- **Parámetros**:
+  - `token`: Token de refresco del usuario.
+- **Eventos**:
+  - `UserRefreshTokenUpdatedDomainEvent`: Se dispara cuando se actualiza el token de refresco del usuario.
 
 ### SetEmailConfirmed
 
@@ -138,76 +143,103 @@ public void UpdateRefreshToken(Token refreshToken)
 public void SetEmailConfirmed()
 ```
 
-- Marca el email del usuario como confirmado.
-- **Eventos**: Lanza el evento `UserEmailConfirmedDomainEvent`.
-- **Retorno**: `void`.
+- **Descripción**: Marca el correo electrónico del usuario como confirmado.
+- **Eventos**:
+  - `UserEmailConfirmedDomainEvent`: Se dispara cuando se marca el correo electrónico del usuario como confirmado.
 
-### UpdateActiveState
+### Activate
 
 ```csharp
-public void UpdateActiveState(bool newState)
+public void Activate()
 ```
 
-- Actualiza el estado de actividad del usuario.
-- `newState`: El nuevo estado de actividad del usuario.
-- **Eventos**: Lanza el evento `UserActiveStateUpdatedDomainEvent`.
-- **Retorno**: `void`.
+- **Descripción**: Activa el usuario.
+- **Eventos**:
+  - `UserActivatedDomainEvent`: Se dispara cuando se activa el usuario.
+
+### Deactivate
+
+```csharp
+public void Deactivate()
+```
+
+- **Descripción**: Desactiva el usuario.
+- **Eventos**:
+  - `UserDeactivatedDomainEvent`: Se dispara cuando se desactiva el usuario.
 
 ### AddUserToken
 
 ```csharp
-public void AddUserToken(UserToken userToken)
+public void AddUserToken(Token token)
 ```
 
-- Agrega un `UserToken` al usuario.
-- `userToken`: El nuevo `UserToken` del usuario.
-- **Eventos**: Lanza el evento `UserTokenAddedDomainEvent`.
-- **Retorno**: `void`.
+- **Descripción**: Agrega un token de usuario.
+- **Parámetros**:
+  - `token`: Token de usuario.
+- **Eventos**:
+  - `UserTokenAddedDomainEvent`: Se dispara cuando se agrega un token de usuario.
 
-### RemoveUserToken
+### Create
 
 ```csharp
-public void RemoveUserToken(UserToken userToken)
+internal static User Create(
+    UserId userId,
+    EmailAddress email,
+    PasswordHash passwordHash,
+    string? firstName,
+    string? lastName,
+    bool isActive = true,
+    bool emailConfirmed = false)
 ```
 
-- Elimina un `UserToken` del usuario.
-- `userToken`: El `UserToken` a eliminar.
-- **Eventos**: Lanza el evento `UserTokenRemovedDomainEvent`.
-- **Retorno**: `void`.
+- **Descripción**: Crea una nueva instancia de `User`.
+- **Parámetros**:
+  - `userId`: Identificador único del usuario.
+  - `email`: Dirección de correo electrónico única del usuario.
+  - `passwordHash`: Hash de la contraseña del usuario.
+  - `firstName`: Nombre del usuario, puede ser `null`.
+  - `lastName`: Apellido del usuario, puede ser `null`.
+  - `isActive`: Estado de
+- **Eventos**:
+  - `UserCreatedDomainEvent`: Se dispara cuando se crea un nuevo usuario.
+- **Retorno**: Una nueva instancia de `User`.
 
-### UpdateUser
+### Update
 
 ```csharp
-internal void UpdateUser(string? firstName, string? lastName)
+internal void Update(string? firstName, string? lastName)
 ```
 
-- Actualiza la información del usuario como `FirstName` y `LastName`.
-- `firstName`: El nuevo nombre del usuario.
-- `lastName`: El nuevo apellido del usuario.
-- **Eventos**: Lanza el evento `UserUpdatedDomainEvent`.
-- **Retorno**: `void`.
+- **Descripción**: Actualiza el nombre y apellido del usuario.
+- **Parámetros**:
+  - `firstName`: Nuevo nombre del usuario.
+  - `lastName`: Nuevo apellido del usuario.
+**Eventos**:
+  - `UserUpdatedDomainEvent`: Se dispara cuando se actual
 
 ### AddRole
 
 ```csharp
-internal Result AddRole(Role role)
+public void AddRole(Role role)
 ```
 
-- Agrega un rol al usuario.
-- `role`: El rol a agregar.
-- **Eventos**: Lanza el evento `UserRoleAddedDomainEvent`.
-- **Retorno**: `Result` Un resultado que indica si la operación fue exitosa o no.
+- **Descripción**: Agrega un rol al usuario.
+- **Parámetros**:
+  - `role`: Rol a agregar al usuario.
+- **Eventos**:
+  - `UserRoleAddedDomainEvent`: Se dispara cuando se agrega un rol al usuario.
 
 ### RemoveRole
 
 ```csharp
-internal Result RemoveRole(Role role)
+public void RemoveRole(Role role)
 ```
 
-- Elimina un rol del usuario.
-- `role`: El rol a eliminar.
-- **Eventos**: Lanza el evento `UserRoleRemovedDomainEvent`.
-- **Retorno**: `Result` Un resultado que indica si la operación fue exitosa o no.
+- **Descripción**: Elimina un rol del usuario.
+- **Parámetros**:
+  - `role`: Rol a eliminar del usuario.
+- **Eventos**:
+  - `UserRoleRemovedDomainEvent`: Se dispara cuando se elimina un rol del usuario.
 
 ### GuardAgainstInvalidFirstName
 
@@ -215,10 +247,11 @@ internal Result RemoveRole(Role role)
 private static void GuardAgainstInvalidFirstName(string? firstName)
 ```
 
-- Valida que el nombre del usuario no sea nulo y no exceda los 256 caracteres.
-- `firstName`: El nombre del usuario.
-- **Excepciones**: Lanza la excepción `UserDomainException` si el nombre del usuario es nulo o excede los 256 caracteres.
-- **Retorno**: `void`.
+- **Descripción**: Verifica que el nombre del usuario sea válido.
+- **Parámetros**:
+  - `firstName`: Nombre del usuario.
+- **Excepciones**:
+  - `UserDomainException`: Se lanza si el nombre del usuario es inválido.
 
 ### GuardAgainstInvalidLastName
 
@@ -226,10 +259,11 @@ private static void GuardAgainstInvalidFirstName(string? firstName)
 private static void GuardAgainstInvalidLastName(string? lastName)
 ```
 
-- Valida que el apellido del usuario no sea nulo y no exceda los 256 caracteres.
-- `lastName`: El apellido del usuario.
-- **Excepciones**: Lanza la excepción `UserDomainException` si el apellido del usuario es nulo o excede los 256 caracteres.
-- **Retorno**: `void`.
+- **Descripción**: Verifica que el apellido del usuario sea válido.
+- **Parámetros**:
+  - `lastName`: Apellido del usuario.
+- **Excepciones**:
+  - `UserDomainException`: Se lanza si el apellido del usuario es inválido.
 
 ## Estado y Transiciones
 
@@ -305,7 +339,8 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 - `UserEmailUpdatedDomainEvent`: Se lanza cuando se actualiza la dirección de correo electrónico de un usuario.
 - `UserRefreshTokenUpdatedDomainEvent`: Se lanza cuando se actualiza el token de actualización de un usuario.
 - `UserEmailConfirmedDomainEvent`: Se lanza cuando se confirma la dirección de correo electrónico de un usuario.
-- `UserActiveStateUpdatedDomainEvent`: Se lanza cuando se actualiza el estado activo de un usuario.
+- `UserActivatedDomainEvent`: Se lanza cuando se activa un usuario.
+- `UserDeactivatedDomainEvent`: Se lanza cuando se desactiva un usuario.
 - `UserTokenAddedDomainEvent`: Se lanza cuando se agrega un token a un usuario.
 - `UserTokenRemovedDomainEvent`: Se lanza cuando se elimina un token de un usuario.
 - `UserRoleAddedDomainEvent`: Se lanza cuando se agrega un rol a un usuario.
