@@ -220,10 +220,6 @@ private void GuardAgainstInvalidDescription(string? description)
 - `CalendarId`: Identificador del calendario asociado a la programación.
 - `Period`: Período de disponibilidad del recurso.
 
-## Eventos de Dominio
-
-Los eventos ocurren en el agregado `Resource`.
-
 ## Comentarios adicionales
 
 ### Funcionamiento de Period

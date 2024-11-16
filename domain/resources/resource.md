@@ -264,20 +264,6 @@ private static void GuardAgainstInvalidDescription(string description)
 - `ResourceTypeId`: Identificador único del tipo de recurso
 - `ColorScheme`: Esquema de color del recurso
 
-## Eventos de Dominio
-
-- `ResourceScheduleCreatedDomainEvent`: Evento que se dispara cuando se agrega una nueva programación al recurso.
-- `ResourceScheduleRemovedDomainEvent`: Evento que se dispara cuando se elimina una programación del recurso.
-- `ResourceActivatedDomainEvent`: Evento que se dispara cuando se activa el recurso.
-- `ResourceDeactivatedDomainEvent`: Evento que se dispara cuando se desactiva el recurso.
-- `ResourceCreatedDomainEvent`: Evento que se dispara cuando se crea un nuevo recurso.
-- `ResourceUpdatedDomainEvent`: Evento que se dispara cuando se actualiza el recurso.
-- `ResourceScheduleUpdatedDomainEvent`: Evento que se dispara cuando se actualiza una programación del recurso.
-
-## Interceptores EF Core
-
-- **No Aplica**
-
 ## Comentarios adicionales
 
 - **No Aplica**

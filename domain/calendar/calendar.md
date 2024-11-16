@@ -241,18 +241,6 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
 - `CalendarId`: Identificador único del calendario.
 - `CalendarHolidayId`: Identificador único de la vacación.
 
-## Eventos de Dominio
-
-- `CalendarActivatedDomainEvent`: Evento de dominio que se lanza cuando se activa un calendario.
-- `CalendarDeactivatedDomainEvent`: Evento de dominio que se lanza cuando se desactiva un calendario.
-- `CalendarCreatedDomainEvent`: Evento de dominio que se lanza cuando se crea un nuevo calendario.
-- `CalendarUpdatedDomainEvent`: Evento de dominio que se lanza cuando se actualiza un calendario.
-- `CalendarHolidayAddedDomainEvent`: Evento de dominio que se lanza cuando se agrega un día festivo a un calendario.
-- `CalendarHolidayRemovedDomainEvent`: Evento de dominio que se lanza cuando se elimina un día festivo de un calendario.
-- `CalendarSettingsUpdatedDomainEvent`: Evento de dominio que se lanza cuando se actualizan los ajustes de un calendario.
-
-## Interceptores EF Core
-
 ## Comentarios adicionales
 
 - Los métodos `Create` y `Update` son `internal` para forzar el uso del `CalendarManager`

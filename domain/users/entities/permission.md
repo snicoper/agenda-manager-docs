@@ -94,14 +94,6 @@ La entidad Permission es inmutable y no tiene transiciones de estado después de
 
 - `PermissionId`: Identificador único del permiso.
 
-## Eventos de Dominio
-
-- `PermissionCreatedDomainEvent`: Se lanza cuando se crea un nuevo permiso.
-
-## Interceptores EF Core
-
-- **No Aplica**
-
 ## Comentarios adicionales
 
 - **No Aplica**

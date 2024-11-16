@@ -148,10 +148,6 @@ El token pasa por los siguientes estados:
 - `Token`: Token específico para la acción.
 - `UserTokenType`: Tipo de token para diferentes acciones (`EmailVerification`, `PasswordReset`).
 
-## Interceptores EF Core
-
-- **No Aplica**
-
 ## Ejemplos de Uso
 
 ```csharp

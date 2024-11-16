@@ -185,13 +185,6 @@ La clase `Role` tiene los siguientes estados y transiciones:
 
 - `RoleId`: Identificador único del rol.
 
-## Eventos de Dominio
-
-- `RoleCreatedDomainEvent`: Se lanza cuando se crea un nuevo rol.
-- `RoleUpdatedDomainEvent`: Se lanza cuando se actualiza un rol.
-- `RolePermissionAddedDomainEvent`: Se lanza cuando se agrega un permiso a un rol.
-- `RolePermissionRemovedDomainEvent`: Se lanza cuando se elimina un permiso de un rol.
-
 ## Comentarios adicionales
 
 - **No Aplica**

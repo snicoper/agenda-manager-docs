@@ -331,21 +331,6 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 - `PasswordHash`: Hash de la contraseña del usuario.
 - `RefreshToken`: Token de actualización del usuario.
 
-## Eventos de Dominio
-
-- `UserCreatedDomainEvent`: Se lanza cuando se crea un nuevo usuario.
-- `UserUpdatedDomainEvent`: Se lanza cuando se actualiza un usuario.
-- `UserPasswordUpdatedDomainEvent`: Se lanza cuando se actualiza la contraseña de un usuario.
-- `UserEmailUpdatedDomainEvent`: Se lanza cuando se actualiza la dirección de correo electrónico de un usuario.
-- `UserRefreshTokenUpdatedDomainEvent`: Se lanza cuando se actualiza el token de actualización de un usuario.
-- `UserEmailConfirmedDomainEvent`: Se lanza cuando se confirma la dirección de correo electrónico de un usuario.
-- `UserActivatedDomainEvent`: Se lanza cuando se activa un usuario.
-- `UserDeactivatedDomainEvent`: Se lanza cuando se desactiva un usuario.
-- `UserTokenAddedDomainEvent`: Se lanza cuando se agrega un token a un usuario.
-- `UserTokenRemovedDomainEvent`: Se lanza cuando se elimina un token de un usuario.
-- `UserRoleAddedDomainEvent`: Se lanza cuando se agrega un rol a un usuario.
-- `UserRoleRemovedDomainEvent`: Se lanza cuando se elimina un rol de un usuario.
-
 ## Receptores de Eventos
 
 ### Users Application Event Handlers

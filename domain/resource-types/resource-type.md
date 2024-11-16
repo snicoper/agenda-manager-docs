@@ -168,15 +168,6 @@ private static void GuardAgainstInvalidDescription(string description)
 - `ResourceTypeId`: Representa el identificador único de un tipo de recurso.
 - `RoleId`: Representa el identificador único de un rol.
 
-## Eventos de Dominio
-
-- `ResourceTypeCreatedDomainEvent`: Evento de dominio que se dispara cuando se crea un nuevo tipo de recurso.
-- `ResourceTypeUpdatedDomainEvent`: Evento de dominio que se dispara cuando se actualiza un tipo de recurso existente.
-
-## Interceptores EF Core
-
-- **No Aplica**
-
 ## Comentarios adicionales
 
 - **No Aplica**

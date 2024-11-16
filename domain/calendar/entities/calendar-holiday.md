@@ -178,15 +178,6 @@ private static void GuardAgainstInvalidDescription(string description)
 - `Weekdays`: Días de la semana del holiday
 ys.md): Representa los días de la semana
 
-## Eventos de Dominio
-
-- `CalendarHolidayCreatedDomainEvent`: Evento de dominio disparado cuando se crea un nuevo `CalendarHoliday`.
-- `CalendarHolidayUpdatedDomainEvent`: Evento de dominio disparado cuando se actualiza un `CalendarHoliday`.
-
-## Interceptores EF Core
-
-- **No Aplica**
-
 ## Comentarios adicionales
 
 Para crear o actualizar un nuevo `CalendarHoliday`, require de `CalendarManager` para la creación de un nuevo `CalendarHoliday`.

@@ -170,13 +170,6 @@ internal bool Update(
 - `CalendarId`: Identificador del calendario asociado al servicio
 - `ColorScheme`: ColorScheme del servicio
 
-## Eventos de Dominio
-
-- `ServiceCreatedDomainEvent`: Evento emitido cuando se crea un servicio
-- `ServiceUpdatedDomainEvent`: Evento emitido cuando se actualiza un servicio
-- `ResourceTypeAddedToServiceDomainEvent`: Evento emitido cuando se agrega un tipo de recurso a un servicio
-- `ResourceTypeRemovedFromServiceDomainEvent`: Evento emitido cuando se elimina un tipo de recurso de un servicio
-
 ## Comentarios adicionales
 
 - **No Aplica**
