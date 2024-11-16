@@ -23,8 +23,8 @@
 
 ## Propiedades
 
-| Nombre | Tipo             | Acceso          | Descripción                     |
-| ------ | ---------------- | ----------------|-------------------------------- |
+| Nombre | Tipo             | Descripción                     |
+| ------ | ---------------- |-------------------------------- |
 
 ## Métodos
 
@@ -55,10 +55,6 @@
 - **No Aplica**
 
 ### Value Objects
-
-- **No Aplica**
-
-## Eventos de Dominio
 
 - **No Aplica**
 

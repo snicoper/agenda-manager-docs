@@ -76,14 +76,14 @@ Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfi
 
 ## Propiedades
 
-| Propiedad        | Tipo                         | Acceso          |Descripción                                            |
-|------------------|------------------------------|-------------------------------------------------------------------------|
-| `Id`             | `CalendarId`                 | get             | Identificador único del calendario.                   |
-| `Name`           | `string`                     | get/private set | Nombre del calendario.                                |
-| `Description`    | `string`                     | get/private set | Descripción del calendario.                           |
-| `IsActive`       | `bool`                       | get/private set | Indica si el calendario está activo.                  |
-| `Holidays`       | `List<CalendarHoliday>`      | get/private set | Lista de vacaciones asociadas al calendario.          |
-| `Configurations` | `List<CalendarConfiguration>`| get/private set | Lista de configuraciones asociadas al calendario.     |
+| Propiedad        | Tipo                         |Descripción                                            |
+|------------------|------------------------------|-------------------------------------------------------|
+| `Id`             | `CalendarId`                 | Identificador único del calendario.                   |
+| `Name`           | `string`                     | Nombre del calendario.                                |
+| `Description`    | `string`                     | Descripción del calendario.                           |
+| `IsActive`       | `bool`                       | Indica si el calendario está activo.                  |
+| `Holidays`       | `List<CalendarHoliday>`      | Lista de vacaciones asociadas al calendario.          |
+| `Configurations` | `List<CalendarConfiguration>`| Lista de configuraciones asociadas al calendario.     |
 
 ## Métodos
 

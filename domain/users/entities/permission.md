@@ -99,27 +99,3 @@ La entidad Permission es inmutable y no tiene transiciones de estado después de
 - **No Aplica**
 
 ## Ejemplos de Uso
-
-```csharp
-// Ejemplos de creación de permisos válidos
-var userCreatePermission = new Permission(
-    new PermissionId(Guid.NewGuid()),
-    "user:create");
-
-var roleReadPermission = new Permission(
-    new PermissionId(Guid.NewGuid()),
-    "role:read");
-
-// Ejemplos que lanzarán excepciones
-var invalidNamePermission = new Permission(
-    new PermissionId(Guid.NewGuid()),
-    "user"); // Falta el sufijo
-
-var emptyNamePermission = new Permission(
-    new PermissionId(Guid.NewGuid()),
-    string.Empty); // Nombre vacío
-
-var tooLongNamePermission = new Permission(
-    new PermissionId(Guid.NewGuid()),
-    new string('a', 101) + ":create"); // Excede longitud máxima
-```
