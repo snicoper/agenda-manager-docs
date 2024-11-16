@@ -7,7 +7,7 @@
 
 ## Descripción General
 
-> Representa la configuración específica de un calendario en el sistema, gestionando aspectos críticos como la zona horaria y las estrategias de manejo de holidays (días festivos o no laborables). Esta entidad es fundamental para el correcto funcionamiento y la coherencia temporal de los calendarios en la aplicación.
+Representa la configuración específica de un calendario en el sistema, gestionando aspectos críticos como la zona horaria y las estrategias de manejo de holidays (días festivos o no laborables) y manejo de citas en caso de solapamiento. Esta entidad es fundamental para el correcto funcionamiento y la coherencia temporal de los calendarios en la aplicación.
 
 ## Responsabilidades
 
@@ -26,6 +26,9 @@
   - Controla el comportamiento del sistema cuando hay solapamientos entre holidays y otros eventos.
   - Permite la flexibilidad en la gestión de conflictos mediante diferentes estrategias.
 
+- **Gestión de Estrategia para Citas**:
+  - Define la estrategia para la creación de citas en el calendario en caso de solapamiento.
+
 ## Invariantes
 
 - **Integridad de Identificadores**:
@@ -38,40 +41,71 @@
   - No se permiten zonas horarias nulas o inválidas.
 
 - **Estrategia de Holidays**:
-  - `HolidayCreationStrategy` debe estar siempre definida y ser válida.
+  - `HolidayStrategy` debe estar siempre definida y ser válida.
+  - No se permite un valor nulo para la estrategia.
+
+- **Estrategia de Citas**:
+  - `AppointmentStrategy` debe estar siempre definida y ser válida.
   - No se permite un valor nulo para la estrategia.
 
 ## Reglas de Negocio
 
 - **Creación y Modificación**:
-  - La creación de nuevas configuraciones solo se permite mediante el método factory `Create`.
-  - Las modificaciones solo se realizan a través del método `Update`.
+  - La creación de nuevas configuraciones solo se permite mediante el método factory `CalendarManager.CreateCalendarAsync` al crear un nuevo calendario.
+  - Las modificaciones solo se realizan a través del método `UpdateSettings` de la entidad `Calendar`.
   - Se verifica la existencia de cambios reales antes de aplicar actualizaciones.
+  - El valor por defecto de `HolidayStrategy` cuando se crea un nuevo calendario debe ser `RejectIfOverlapping`.
+  - El valor por defecto de `AppointmentStrategy` cuando se crea un nuevo calendario debe ser `RejectIfOverlapping`.
+  - Es requerido que la zona horaria especificada sea un identificador IANA válido.
+  - La modificación se realiza desde el **record** `CalendarSettingsConfiguration`, estas son las propiedades editables:
+    - `IanaTimeZone`
+    - `HolidayStrategy`
+    - `AppointmentStrategy`
 
 - **Gestión de Eventos de Dominio**:
-  - Se notifica la creación mediante `CalendarSettingsCreatedDomainEvent`.
-  - Las modificaciones significativas generan eventos de dominio apropiados.
+  - Emitir eventos de dominio cuando se realicen cambios significativos en la configuración del calendario.
 
 - **Estrategias de Manejo de Holidays**:
 
   ```csharp
-  public enum HolidayCreationStrategy
+  public enum HolidayStrategy
   {
-      RejectIfOverlapping,    // Rechaza nuevos holidays si hay conflictos
-      CancelOverlapping,      // Cancela eventos existentes para dar prioridad al holiday
-      AllowOverlapping        // Permite la coexistencia de holidays y otros eventos
+      [Display(Name = "Reject if overlapping")]
+      RejectIfOverlapping = 1, // Rechazar si se solapan
+
+      [Display(Name = "Cancel if overlapping")]
+      CancelOverlapping = 2, // Cancelar si se solapan
+
+      [Display(Name = "Allow overlapping")]
+      AllowOverlapping = 3 // Permitir solapamiento
   }
   ```
 
+- **Estrategia de Manejo de Citas**:
+
+  ```csharp
+    public enum AppointmentStrategy
+    {
+        [Display(Name = "Reject if overlapping")]
+        RejectIfOverlapping = 1, // Rechazar si se solapan
+
+        [Display(Name = "Allow overlapping")]
+        AllowOverlapping = 2 // Permitir solapamiento
+    }
+    ```
+
 ## Propiedades
 
-| Propiedad                 | Tipo                     | Acceso       | Descripción                                                          |
-|--------------------------|---------------------------|--------------|----------------------------------------------------------------------|
-| `Id`                     | `CalendarSettingsId`      | get         | Identificador único de la configuración. Inmutable tras creación.     |
-| `CalendarId`             | `CalendarId`              | get/private set | Identificador del calendario asociado. Inmutable tras creación.   |
-| `Calendar`               | `Calendar`                | get/private set | Navegación a la entidad Calendar asociada.                         |
-| `IanaTimeZone`           | `IanaTimeZone`            | get/private set | Zona horaria del calendario. Modificable vía Update.              |
-| `HolidayCreationStrategy`| `HolidayCreationStrategy` | get/private set | Estrategia de gestión de holidays. Modificable vía Update.        |
+| Propiedad                    | Tipo                              | Descripción                                |
+|------------------------------|-----------------------------------|--------------------------------------------|
+| `Id`                         | `CalendarSettingsId`              | Identificador único de la configuración    |
+| `CalendarId`                 | `CalendarId`                      | Identificador del calendario asociado.     |
+| `Calendar`                   | `Calendar`                        | Navegación a la entidad Calendar asociada. |
+| `IanaTimeZone`               | `IanaTimeZone`                    | Zona horaria del calendario.               |
+| `HolidayStrategy`            | `HolidayStrategy`                 | Estrategia de gestión de holidays.         |
+| `AppointmentStrategy`        | `AppointmentStrategy`             | Estrategia de gestión de citas.            |
+
+- **Acceso**: `Id` es **get**, el resto son **get/private set**.
 
 ## Métodos
 
@@ -82,44 +116,40 @@ internal static CalendarSettings Create(
     CalendarSettingsId id,
     CalendarId calendarId,
     IanaTimeZone ianaTimeZone,
-    HolidayCreationStrategy holidayCreationStrategy)
+    HolidayStrategy holidayStrategy,
+    AppointmentStrategy appointmentStrategy)
 ```
 
-- **Descripción**: Factory method para crear nuevas instancias de configuración.
+- **Descripción**: Método para crear una nueva configuración de calendario
 - **Parámetros**:
-  - `id`: Identificador único de la configuración.
-  - `calendarId`: Identificador del calendario asociado.
-  - `ianaTimeZone`: Zona horaria del calendario.
-  - `holidayCreationStrategy`: Estrategia de gestión de holidays.
-- **Eventos**: Emite `CalendarSettingsCreatedDomainEvent`
-- **Retorno**: Nueva instancia válida de `CalendarSettings`
+  - `id`: Identificador único de la configuración
+  - `calendarId`: Identificador del calendario asociado
+  - `ianaTimeZone`: Zona horaria del calendario
+  - `holidayStrategy`: Estrategia de gestión de holidays
+  - `appointmentStrategy`: Estrategia de gestión de citas
+**Eventos**: Emite `CalendarSettingsCreatedDomainEvent`
+**Retorno**: Nueva instancia de `CalendarSettings`
 
 ### Update
 
 ```csharp
-internal void Update(
-    IanaTimeZone ianaTimeZone,
-    HolidayCreationStrategy holidayCreationStrategy)
+internal void Update(CalendarSettingsConfiguration configuration)
 ```
 
 - **Descripción**: Método para actualizar la configuración existente
 - **Parámetros**:
-  - `ianaTimeZone`: Nueva zona horaria
-  - `holidayCreationStrategy`: Nueva estrategia de gestión de holidays
+  - `configuration`: Configuración actualizada
 - **Eventos**: Emite `CalendarSettingsUpdatedDomainEvent`
 
 ### HasChanges
 
 ```csharp
-internal bool HasChanges(
-    IanaTimeZone ianaTimeZone,
-    HolidayCreationStrategy holidayCreationStrategy)
+internal bool HasChanges(CalendarSettingsConfiguration configuration)
 ```
 
 - **Descripción**: Método para determinar si hay cambios reales
 - **Parámetros**:
-  - `ianaTimeZone`: Nueva zona horaria
-  - `holidayCreationStrategy`: Nueva estrategia de gestión de holidays
+  - `configuration`: Configuración actualizada
 - **Retorno**: `true` si hay cambios reales, `false` en caso contrario
 
 ## Estado y Transiciones
@@ -139,38 +169,19 @@ internal bool HasChanges(
 - `CalendarSettingsId`: Identificador de la configuración
 - `CalendarId`: Identificador del calendario
 - `IanaTimeZone`: Representa una zona horaria válida
-- `HolidayCreationStrategy`: Enum de estrategias disponibles
+- `HolidayStrategy`: Enum de estrategias disponibles
 
 ### Eventos de Dominio
 
 - `CalendarSettingsCreatedDomainEvent`: Notifica la creación
 - `CalendarSettingsUpdatedDomainEvent`: Notifica cambios significativos
 
-## Interceptores EF Core
+### Records
 
-- **No Aplica**
+- `CalendarSettingsDomainRequest`: Record para crear y actualizar configuraciones del calendario
 
 ## Comentarios adicionales
 
 - **No Aplica**
 
 ## Ejemplos de Uso
-
-```csharp
-// Creación de nueva configuración
-var settings = CalendarSettings.Create(
-    new CalendarSettingsId(Guid.NewGuid()),
-    existingCalendarId,
-    new IanaTimeZone("Europe/Madrid"),
-    HolidayCreationStrategy.RejectIfOverlapping);
-
-// Actualización de configuración
-settings.Update(
-    new IanaTimeZone("Europe/London"),
-    HolidayCreationStrategy.CancelOverlapping);
-
-// Verificación de cambios
-bool hasChanges = settings.HasChanges(
-    currentTimeZone,
-    newStrategy);
-```

@@ -346,9 +346,19 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 - `UserRoleAddedDomainEvent`: Se lanza cuando se agrega un rol a un usuario.
 - `UserRoleRemovedDomainEvent`: Se lanza cuando se elimina un rol de un usuario.
 
-## Interceptores EF Core
+## Receptores de Eventos
 
-- `UserAuditInterceptor`: Intercepta las operaciones de creación, actualización y eliminación de usuarios en la base de datos para registrar los cambios de `IsActive` en la tabla `AuditRecord`.
+### Users Application Event Handlers
+
+#### Audit Handlers
+
+- `AuditUserActivatedDomainEventHandler` ->  `UserActivatedDomainEvent`
+  - Registra el cambio de `IsActive` en la tabla `AuditRecord`
+  - Registra: `userId`, `oldValue: false`, `newValue: true`
+
+- `AuditUserDeactivatedDomainEventHandler` ->  `UserDeactivatedDomainEvent`
+  - Registra el cambio de `IsActive` en la tabla `AuditRecord`
+  - Registra: `userId`, `oldValue: true`, `newValue: false`
 
 ## Comentarios adicionales
 

@@ -224,10 +224,6 @@ private void GuardAgainstInvalidDescription(string? description)
 
 Los eventos ocurren en el agregado `Resource`.
 
-## Interceptores EF Core
-
-- **No Aplica**
-
 ## Comentarios adicionales
 
 ### Funcionamiento de Period

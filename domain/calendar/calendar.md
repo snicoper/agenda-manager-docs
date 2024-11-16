@@ -11,12 +11,15 @@ Representa un calendario que actúa como contenedor lógico para appointments y 
 
 Este agregado no mantiene referencias directas a sus entidades relacionadas para mantener la consistencia y simplicidad del modelo.
 
-Las excepciones son la relación de `Calendar` con `CalendarSettings` y `CalendarHoliday`, que es una relación de uno a muchos y se utiliza para representar los días festivos asociados al calendario.
+Las excepciones son la relación de `Calendar` con `CalendarSettings` con una relación uno a y `CalendarHoliday`, que es una relación de uno a muchos y se utiliza para representar los días festivos asociados al calendario.
 
 ### Responsabilidades
 
 - **Creación de un nuevo calendario**:
   - La creación de un nuevo calendario implica la creación de un nuevo `CalendarSettings` asociado.
+  - El `CalendarSettings` se crea con la configuración predeterminada.
+    - El valor por defecto de `HolidayStrategy` cuando se crea un nuevo calendario debe ser `RejectIfOverlapping`.
+    - El valor por defecto de `AppointmentStrategy` cuando se crea un nuevo calendario debe ser `RejectIfOverlapping`.
 
 - **Eventos de Dominio**:
   - Disparar eventos de dominio cuando se realicen cambios significativos en el calendario.
@@ -54,7 +57,7 @@ Las excepciones son la relación de `Calendar` con `CalendarSettings` y `Calenda
   - No puede haber holidays duplicados (misma fecha) en un calendario
   - Los holidays se eliminan en cascada al eliminar el calendario
 
-- **Estado del CalendarioSettings**:
+- **Estado del CalendarSettings**:
   - Un calendar siempre debe tener un `CalendarSettings` asociado
 
 - **Nombre y Descripción**:
@@ -74,22 +77,30 @@ Las excepciones son la relación de `Calendar` con `CalendarSettings` y `Calenda
 |---------------|-------------------------|-------------------------------------------------------------------------|
 | `Id`          | `CalendarId`            | get             | Identificador único del calendario.                   |
 | `SettingsId`  | `CalendarSettingsId`    | get/private set | Identificador único del `CalendarSettings` asociado.  |
-| `IsActive`    | `bool`                  | get/private set | Indica si el calendario está activo.                  |
+| `Settings`    | `CalendarSettings`      | get             | Referencia al `CalendarSettings` asociado.            |
 | `Name`        | `string`                | get/private set | Nombre del calendario.                                |
 | `Description` | `string`                | get/private set | Descripción del calendario.                           |
+| `IsActive`    | `bool`                  | get/private set | Indica si el calendario está activo.                  |
 | `Holidays`    | `List<CalendarHoliday>` | get/private set | Lista de vacaciones asociadas al calendario.          |
 
 ## Métodos
 
-### ChangeActiveStatus
+### Activate
 
 ```csharp
-public void ChangeActiveStatus(bool isActive)
+public void Activate()
 ```
 
-- **Descripción**: Cambia el estado activo del calendario.
-- **Parámetros**:
-  - `isActive`: Indica si el calendario está activo.
+- **Descripción**: Activa el calendario.
+- **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
+
+### Deactivate
+
+```csharp
+public void Deactivate()
+```
+
+- **Descripción**: Desactiva el calendario.
 - **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
 
 ### AddHoliday
@@ -101,7 +112,7 @@ public void AddHoliday(CalendarHoliday calendarHoliday)
 - **Descripción**: Agrega una nueva vacación al calendario.
 - **Parámetros**:
   - `calendarHoliday`: La vacación a agregar.
-- **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
+- **Eventos**: Lanza el evento `CalendarHolidayAddedDomainEvent`.
 
 ### RemoveHoliday
 
@@ -112,18 +123,18 @@ public void RemoveHoliday(CalendarHoliday calendarHoliday)
 - **Descripción**: Elimina una vacación del calendario.
 - **Parámetros**:
   - `calendarHoliday`: La vacación a eliminar.
-- **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
+- **Eventos**: Lanza el evento `CalendarHolidayRemovedDomainEvent`.
 
 ### UpdateSettings
 
 ```csharp
-public void UpdateSettings(IanaTimeZone ianaTimeZone, HolidayCreationStrategy holidayCreationStrategy)
+public void UpdateSettings(IanaTimeZone ianaTimeZone, HolidayStrategy holidayStrategy)
 ```
 
 - **Descripción**: Actualiza la configuración del calendario.
 - **Parámetros**:
   - `ianaTimeZone`: La zona horaria del calendario.
-  - `holidayCreationStrategy`: Estrategia de creación de vacaciones.
+  - `holidayStrategy`: Estrategia de creación de vacaciones.
 - **Eventos**: Lanza el evento `CalendarSettingsUpdatedDomainEvent`.
 
 ### Create
@@ -232,9 +243,10 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
 
 ## Eventos de Dominio
 
+- `CalendarActivatedDomainEvent`: Evento de dominio que se lanza cuando se activa un calendario.
+- `CalendarDeactivatedDomainEvent`: Evento de dominio que se lanza cuando se desactiva un calendario.
 - `CalendarCreatedDomainEvent`: Evento de dominio que se lanza cuando se crea un nuevo calendario.
 - `CalendarUpdatedDomainEvent`: Evento de dominio que se lanza cuando se actualiza un calendario.
-- `CalendarActiveStatusChangedDomainEvent`: Evento de dominio que se lanza cuando se cambia el estado activo de un calendario.
 - `CalendarHolidayAddedDomainEvent`: Evento de dominio que se lanza cuando se agrega un día festivo a un calendario.
 - `CalendarHolidayRemovedDomainEvent`: Evento de dominio que se lanza cuando se elimina un día festivo de un calendario.
 - `CalendarSettingsUpdatedDomainEvent`: Evento de dominio que se lanza cuando se actualizan los ajustes de un calendario.
@@ -258,7 +270,7 @@ var calendar = Calendar.Create(
     name: "My calendar",
     description: "Description of my calendar",
     ianaTimeZone: IanaTimeZone.FromIana("Europe/Madrid"),
-    holidayCreationStrategy: HolidayCreationStrategy.CancelOverlapping,
+    holidayStrategy: HolidayStrategy.CancelOverlapping,
     active: true);
 
 // Crear un nuevo calendario con un identificador único aleatorio.
@@ -267,7 +279,7 @@ var calendar = Calendar.Create(
     name: "My calendar",
     description: "Description of my calendar",
     ianaTimeZone: IanaTimeZone.FromIana("Europe/Madrid"),
-    holidayCreationStrategy: HolidayCreationStrategy.CancelOverlapping,
+    holidayStrategy: HolidayStrategy.CancelOverlapping,
     active: true);
 
 // Añadir un holiday
