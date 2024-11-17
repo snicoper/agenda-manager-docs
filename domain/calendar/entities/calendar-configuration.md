@@ -5,31 +5,57 @@
 - **Tipo**: Entidad de Dominio Sellada (sealed)
 - **Herencia**: `Entity`
 
+## Vista General
+
+Las configuraciones de calendario permiten personalizar el comportamiento de cada calendario en la aplicación. Cada calendario tiene un conjunto de configuraciones que determinan cómo manejar:
+
+- Creación y gestión de citas
+- Manejo de solapamientos
+- Gestión de días festivos
+- Configuración de zona horaria
+
 ## Descripción General
 
-Esta entidad se utiliza para almacenar las configuraciones específicas de un calendario, como la estrategia de creación de citas, la estrategia de superposición de citas, la estrategia de creación de vacaciones, la zona horaria IANA, etc.
+Esta entidad se utiliza para almacenar las configuraciones específicas de un calendario. Las configuraciones son específicas para cada calendario y pueden ser modificadas por el usuario.
 
-Estas configuraciones son específicas para cada calendario y pueden ser modificadas por el usuario.
+Las opciones de cada configuración están definidas en `CalendarConfigurationKeys`, que actúa como un registro central de todas las configuraciones posibles y sus valores permitidos.
 
-Las opciones de cada configuración están definidas en la entidad `CalendarConfigurationOption`, que se utiliza para almacenar las opciones de configuración específicas de cada configuración.
+## Tipos de Configuración
+
+### Configuraciones con Opciones Predefinidas
+
+Configuraciones que solo permiten seleccionar entre un conjunto predefinido de valores:
+
+- AppointmentCreationStrategy (Direct, RequireConfirmation)
+- AppointmentOverlappingStrategy (AllowOverlapping, RejectIfOverlapping)
+- HolidayCreateStrategy (RejectIfOverlapping, CancelOverlapping, AllowOverlapping)
+
+### Configuraciones de Valor Único (UnitValue)
+
+Configuraciones que aceptan un valor personalizado con validación específica:
+
+- IanaTimeZone (ejemplo: "Europe/Madrid")
 
 ### Responsabilidades
 
 - **Creación de una nueva configuración**:
   - Añadir los valores por defecto de las opciones de configuración.
-  - Los valores con una `Key` `UnitValue`, se deberá proporcionar un valor obtenido por un usuario.
+  - Los valores con una `Key` -> `UnitValue`, se deberá proporcionar un valor obtenido por un usuario.
 
 - **Actualización de una configuración**:
-  - Comprobar si la categoría de configuración existe en la base de datos `CalendarConfigurationOptions`.
-  - Se deberán proporcionar la `Category` y `SelectedKey` de la configuración.
-  - Se deberá comprobar si la `Category` y `SelectedKey` existen en la base de datos `CalendarConfigurationOptions`.
-    - Si la `Category` tiene una `Key` `UnitValue`, no require de validación y siempre deberá ser un string.
+  - Comprobar si la categoría de configuración existe en `CalendarConfigurationKeys.Metadata.Options`.
+  - Se deberán proporcionar la `Category` y `SelectedKey` de la configuración a editar.
+  - Se deberá comprobar si la `Category` y `SelectedKey` existen en `CalendarConfigurationKeys.Metadata.Options`.
+    - Si la `Category` tiene una `Key` `UnitValue`, dependerá de la configuración que se haya asignado en `CalendarConfigurationKeys`.
 
 - **Validación de valores UnitValue**:
   - Para configuraciones con `Key = 'UnitValue'`, validar que el valor proporcionado cumple con el formato esperado (ej: formato de zona horaria IANA).
+  - La creación de una nueva configuración no deberá permitir generar un lambda para la validación de los valores.
 
 - **Validación**:
   - Asegurarse de que el `Name` y `Description` cumplen con las restricciones de longitud.
+
+  Segunda parte:
 
 ## Invariantes
 
@@ -47,7 +73,7 @@ Las opciones de cada configuración están definidas en la entidad `CalendarConf
 
 - **Validación de Valores**:
   - Los valores para configuraciones con `Key = 'UnitValue'` deben cumplir con el formato específico de cada categoría.
-  - Para otras configuraciones, `SelectedKey` debe existir en `CalendarConfigurationOptions` para la categoría correspondiente.
+  - Para otras configuraciones, `SelectedKey` debe existir en `CalendarConfigurationKeys` para la categoría correspondiente.
 
 ## Propiedades
 
@@ -78,6 +104,9 @@ internal static CalendarConfiguration Create(
   - `category`: Categoría de la configuración.
   - `selectedKey`: Clave seleccionada de la configuración.
 - **Retorna**: Nueva instancia de `CalendarConfiguration`.
+- **Validaciones**:
+  - Verifica que la configuración sea válida según `CalendarConfigurationKeys`.
+  - Comprueba las restricciones de longitud y formato.
 
 ### Update
 
@@ -88,6 +117,38 @@ internal bool Update(string category, string selectedKey)
 - **Descripción**: Actualiza la configuración de calendario.
 - **Parámetros**:
   - `category`: Categoría de la configuración.
+  - `selectedKey`: Nueva clave seleccionada para la configuración.
+- **Retorna**: `true` si la configuración fue actualizada, `false` si no hubo cambios.
+- **Validaciones**:
+  - Verifica que la nueva configuración sea válida.
+  - Comprueba si realmente hay cambios antes de actualizar.
+
+### IsUnitValueConfiguration
+
+```csharp
+internal bool IsUnitValueConfiguration()
+```
+
+- **Descripción**: Verifica si la configuración es de tipo `UnitValue`.
+- **Retorna**: `true` si la configuración es de tipo `UnitValue`, `false` en caso contrario.
+- **Uso**: Útil para determinar si la configuración acepta valores personalizados.
+
+### GuardAgainstInvalidConfiguration
+
+```csharp
+private void GuardAgainstInvalidConfiguration(string category, string selectedKey)
+```
+
+- **Descripción**: Verifica que la configuración sea válida según las reglas definidas en `CalendarConfigurationKeys`.
+- **Parámetros**:
+  - `category`: Categoría de la configuración.
+  - `selectedKey`: Clave seleccionada de la configuración.
+- **Excepciones**:
+  - `CalendarConfigurationDomainException`: Si la configuración no es válida.
+- **Validaciones**:
+  - Verifica que la categoría exista.
+  - Comprueba que el selectedKey sea válido para la categoría.
+  - Para UnitValue, aplica la validación específica.
 
 ### GuardAgainstInvalidCategory
 
@@ -100,6 +161,10 @@ private void GuardAgainstInvalidCategory(string category)
   - `category`: Categoría de la configuración.
 - **Excepciones**:
   - `CalendarConfigurationDomainException`: Si la categoría no es válida.
+- **Validaciones**:
+  - No puede ser null.
+  - Longitud entre 1 y 100 caracteres.
+  - Debe existir en CalendarConfigurationKeys.
 
 ### GuardAgainstInvalidSelectedKey
 
@@ -112,6 +177,10 @@ private void GuardAgainstInvalidSelectedKey(string selectedKey)
   - `selectedKey`: Clave seleccionada de la configuración.
 - **Excepciones**:
   - `CalendarConfigurationDomainException`: Si la clave seleccionada no es válida.
+- **Validaciones**:
+  - No puede ser null.
+  - Longitud entre 1 y 100 caracteres.
+  - Para configuraciones no-UnitValue, debe estar en las opciones permitidas.
 
 ### HasChanges
 
@@ -121,9 +190,11 @@ private bool HasChanges(string category, string selectedKey)
 
 - **Descripción**: Verifica si la configuración ha cambiado.
 - **Parámetros**:
-  - `category`: Categoría de la configuración.
-  - `selectedKey`: Clave seleccionada de la configuración.
-**Retorna**: `true` si la configuración ha cambiado, `false` en caso contrario.
+  - `category`: Nueva categoría de la configuración.
+  - `selectedKey`: Nueva clave seleccionada de la configuración.
+- **Retorna**: `true` si la configuración ha cambiado, `false` en caso contrario.
+
+Cuarta parte:
 
 ## Estado y Transiciones
 
@@ -136,6 +207,8 @@ private bool HasChanges(string category, string selectedKey)
 - **Entidades Base**:
   - `AuditableEntity`: Base class que proporciona capacidades de auditoría
     - Hereda gestión de eventos de dominio (`Entity`)
+
+- `Calendar`: Entidad que representa un calendario.
 
 ### Interfaces
 
@@ -154,48 +227,68 @@ private bool HasChanges(string category, string selectedKey)
 - `CalendarConfigurationId`: Identificador único de la configuración.
 - `CalendarId`: Identificador único del calendario.
 
+## Ejemplos de Uso
+
+### Consultar configuración
+
+```csharp
+var strategy = await calendarConfigurationRepository
+    .GetBySelectedKeyAsync(
+        calendarId,
+        CalendarConfigurationKeys.Holidays.CreateStrategy);
+
+if (strategy == CalendarConfigurationKeys.Holidays.CreationOptions.RejectIfOverlapping)
+{
+    // Lógica específica para rechazar solapamientos
+}
+```
+
+### Validar configuración
+
+```csharp
+if (CalendarConfigurationKeys.Metadata.IsValidConfiguration(category, selectedKey))
+{
+    // Configuración válida, proceder con la operación
+}
+```
+
+### Obtener todas las configuraciones disponibles
+
+```csharp
+var configurations = CalendarConfigurationKeys.Metadata.Options.Values
+    .Select(option => new
+    {
+        Category = option.Category,
+        Description = option.Description,
+        IsUnitValue = option.IsUnitValue,
+        AvailableOptions = option.AvailableKeys
+    });
+```
+
+## Glosario
+
+- **Category**: Identifica un grupo de configuraciones relacionadas (ej: AppointmentCreationStrategy)
+- **SelectedKey**: El valor específico elegido para una configuración (ej: Direct)
+- **UnitValue**: Configuración que acepta un valor personalizado con validación (ej: IanaTimeZone)
+- **DefaultKey**: Valor predeterminado para una configuración cuando se crea un nuevo calendario
+
 ## Comentarios adicionales
 
-Esta es la representación de la tabla `CalendarConfigurationOptions` en la base de datos:
+### ConfigurationOption
 
-| OptionId                             | Category                       | Key                 | DefaultValue | Description           |
-| ------------------------------------ | ------------------------------ | ------------------- | ------------ | --------------------- |
-| 2a0c43ff-64ae-4797-b35b-4a50e3c429a1 | AppointmentCreationStrategy    | RequireConfirmation | false        | Require confirmation  |
-| 2d32245d-3b77-492b-9de1-5229ba77046c | HolidayCreateStrategy          | RejectIfOverlapping | true         | Reject if overlapping |
-| 6d93cf82-21f0-45bd-b427-2080f475c2c8 | AppointmentOverlappingStrategy | AllowOverlapping    | false        | Allow overlapping     |
-| 7dccd558-3d0b-41ca-a92c-1b9327d6dd16 | HolidayCreateStrategy          | CancelOverlapping   | false        | Cancel overlapping    |
-| ab89b7a9-1304-4c3a-ac3e-956b06fbef40 | AppointmentCreationStrategy    | Direct              | true         | Direct                |
-| e024653b-7b4c-49a9-8385-4bb35710e895 | IanaTimeZone                   | UnitValue           | true         | Time zone             |
-| eaea7f13-4f41-462e-a2a6-bffb3ee09757 | HolidayCreateStrategy          | AllowOverlapping    | false        | Allow overlapping     |
-| febb98ae-280b-436e-8aa4-56b538bf8e76 | AppointmentOverlappingStrategy | RejectIfOverlapping | true         | Reject if overlapping |
+```csharp
+public class ConfigurationOption
+{
+    public string Category { get; }           // Categoría de la configuración
+    public string? DefaultKey { get; }        // Valor por defecto (null para UnitValue)
+    public string[] AvailableKeys { get; }    // Valores permitidos
+    public bool IsUnitValue { get; }          // Indica si acepta valor personalizado
+    public Func<string, bool>? Validator { get; }  // Validador para UnitValue
+    public string Description { get; }        // Descripción de la configuración
+}
+```
 
-Las configuraciones son transversales a todos los calendarios, por lo que se almacenan en la tabla `CalendarConfigurations`.
-
-Esta tabla no tiene ninguna asociación con ninguna entidad en ninguna dirección.
-
-- La `Category` es una cadena que se utiliza para agrupar las opciones de configuración.
-- Una `Key` es una cadena que se utiliza para identificar la opción de configuración específica.
-  - La `Key` con un valor `UnitValue` indica que la opción única dentro de la categoría, pro lo que solo habrá un único `Category` asociado al `Key`.
-- La `DefaultValue` es un valor booleano que se utiliza para establecer el valor predeterminado de la opción de configuración.
-- La `Description` es una cadena que se utiliza para describir la opción de configuración.
-
-En este ejemplo, hay 4 categorías de opciones de configuración:
-
-- **Categorías de configuración de citas**
-  - `AppointmentCreationStrategy`
-    - `RequireConfirmation`
-    - `Direct`
-  - `AppointmentOverlappingStrategy`
-    - `AllowOverlapping`
-    - `RejectIfOverlapping`
-  - `HolidayCreateStrategy`
-    - `RejectIfOverlapping`
-    - `CancelOverlapping`
-    - `AllowOverlapping`
-  - `IanaTimeZone`
-    - `UnitValue`: Este es un valor único, en este caso el valor se debe proporcionar por el usuario, ejemplo: `Europe/Madrid`.
-
----
+### Estructura en Base de Datos
 
 Esta es una representación de la tabla `CalendarConfigurations` en la base de datos:
 
@@ -206,116 +299,113 @@ Esta es una representación de la tabla `CalendarConfigurations` en la base de d
 |ab7e15a4-2ef1-430f-b283-3daf3e4361ec | 6c8926c3-aed5-4ff5-960b-39def35143fc | AppointmentCreationStrategy    | Direct              |
 |b23980da-5021-4e2f-8c0e-159e6477f47c | 6c8926c3-aed5-4ff5-960b-39def35143fc | HolidayCreateStrategy          | RejectIfOverlapping |
 
-Estas son las configuraciones del calendario con el ID `6c8926c3-aed5-4ff5-960b-39def35143fc`, cada calendario existente, deberá tener una configuración de `CalendarConfigurationOptions.Category`.
-En este caso, el calendario tiene 4 configuraciones:
+### Guía: Añadir una Nueva Configuración
 
-- **Configuración de citas del calendario 6c8926c3-aed5-4ff5-960b-39def35143fc**
-  - `AppointmentOverlappingStrategy`
-    - `RejectIfOverlapping`
-  -`IanaTimeZone`
-    - `Europe/Madrid`
-  - `AppointmentCreationStrategy`
-    - `Direct`
-  - `HolidayCreateStrategy`
-    - `RejectIfOverlapping`
+#### 1. Definir la Configuración en Código
 
----
+```csharp
+// En CalendarConfigurationKeys.cs
+public static class NewFeature
+{
+    public const string Category = "NewFeatureStrategy";
+    public static class Options
+    {
+        public const string OptionA = "OptionA";
+        public const string OptionB = "OptionB";
+    }
+}
 
-Para facilitar las configuraciones existentes, ver `CalendarConfigurationKeys`
+// En la sección Metadata.Options
+[NewFeature.Category] = new ConfigurationOption(
+    category: NewFeature.Category,
+    defaultKey: NewFeature.Options.OptionA,
+    availableKeys: new[]
+    {
+        NewFeature.Options.OptionA,
+        NewFeature.Options.OptionB
+    },
+    description: "Description of new feature"
+)
 
----
+// Para UnitValue, usar este patrón:
+public static class CustomFeature
+{
+    public const string Category = "CustomFeatureStrategy";
+    public const string Key = "UnitValue";
+}
+```
 
-### Añadir una nueva configuración
-
-1. Añadir una nueva opción de configuración en la tabla `CalendarConfigurationOptions`
+#### 2. Crear Migración de Base de Datos
 
 ```sql
--- 1. Insertamos las nuevas opciones en CalendarConfigurationOptions
-INSERT INTO CalendarConfigurationOptions
-(OptionId, Category, "Key", DefaultValue, Description, CreatedAt, CreatedBy, LastModifiedAt, LastModifiedBy, Version)
-VALUES
-(gen_random_uuid(), 'DocumentStrategy', 'RequireSignature', 'false', 'Require document signature',
- CURRENT_TIMESTAMP, 'System', CURRENT_TIMESTAMP, 'System', 1),
-(gen_random_uuid(), 'DocumentStrategy', 'AllowDownload', 'false', 'Allow document download',
- CURRENT_TIMESTAMP, 'System', CURRENT_TIMESTAMP, 'System', 1),
-(gen_random_uuid(), 'DocumentStrategy', 'EnablePreview', 'true', 'Enable document preview',
- CURRENT_TIMESTAMP, 'System', CURRENT_TIMESTAMP, 'System', 1), -- Este es el valor por defecto
-(gen_random_uuid(), 'DocumentStrategy', 'AllowSharing', 'false', 'Allow document sharing',
- CURRENT_TIMESTAMP, 'System', CURRENT_TIMESTAMP, 'System', 1);
-
--- 2. Por cada CalendarId, insertamos la opción que tiene DefaultValue = true
-INSERT INTO CalendarConfiguration
+-- Para cada calendario existente, insertar la nueva configuración con su valor por defecto
+INSERT INTO "CalendarConfiguration"
 (Id, CalendarId, Category, SelectedKey, CreatedAt, CreatedBy, LastModifiedAt, LastModifiedBy, Version)
 SELECT
     gen_random_uuid() AS Id,
-    c.Id AS CalendarId,
-    'DocumentStrategy' AS Category,
-    (SELECT "Key"
-     FROM CalendarConfigurationOptions
-     WHERE Category = 'DocumentStrategy'
-     AND DefaultValue = 'true') AS SelectedKey,  -- Esto seleccionará 'EnablePreview'
+    c.CalendarId AS CalendarId,
+    'NewFeatureStrategy' AS Category,
+    'OptionA' AS SelectedKey,  -- El DefaultKey de tu nueva regla
     CURRENT_TIMESTAMP AS CreatedAt,
     'System' AS CreatedBy,
     CURRENT_TIMESTAMP AS LastModifiedAt,
     'System' AS LastModifiedBy,
     1 AS Version
-FROM CalendarConfiguration c
+FROM "CalendarConfiguration" c
 WHERE c.CalendarId NOT IN (
     SELECT DISTINCT CalendarId
-    FROM CalendarConfiguration
-    WHERE Category = 'DocumentStrategy'
+    FROM "CalendarConfiguration"
+    WHERE Category = 'NewFeatureStrategy'
 )
-GROUP BY c.Id;
+GROUP BY c.CalendarId;
 ```
 
-### Mantenibilidad
+#### 3. Implementar la Migración en EF Core
 
-- Se recomienda mantener actualizados los valores en `CalendarConfigurationKeys` cada vez que se añada una nueva configuración.
-- Considerar crear tests que validen que todos los calendarios tienen todas las configuraciones necesarias.
-- Documentar el proceso de migración cuando se añaden nuevas configuraciones.
-
-## Casos de Uso Comunes
-
-1. **Creación de nuevo calendario**:
-   - Se crean todas las configuraciones con sus valores por defecto
-   - Para `UnitValue`, se requiere input del usuario
-
-2. **Actualización de zona horaria**:
-   - Ejemplo de actualización de configuración tipo `UnitValue`
-   - Validación del formato IANA
-
-3. **Cambio de estrategia de citas**:
-   - Ejemplo de actualización entre opciones predefinidas
-   - Validación contra valores permitidos
-
-## Consideraciones de Rendimiento
-
-- Las consultas de configuración son frecuentes en operaciones de calendario
-- Considerar estrategias de caché para configuraciones frecuentemente accedidas
-- Las validaciones contra `CalendarConfigurationOptions` deberían estar optimizadas
-
-## Diagrama
-
-```mermaid
-classDiagram
-    class Calendar {
-        +CalendarId Id
-        +string Name
-    }
-    class CalendarConfiguration {
-        +CalendarConfigurationId Id
-        +CalendarId CalendarId
-        +string Category
-        +string SelectedKey
-    }
-    class CalendarConfigurationOptions {
-        +Guid OptionId
-        +string Category
-        +string Key
-        +bool DefaultValue
-        +string Description
+```csharp
+public class AddNewRuleConfiguration : Migration
+{
+    protected override void Up(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.Sql(@"
+            INSERT INTO ""CalendarConfiguration"" (
+                ""Id"", ""CalendarId"", ""Category"", ""SelectedKey"",
+                ""CreatedAt"", ""CreatedBy"", ""LastModifiedAt"", ""LastModifiedBy"", ""Version"")
+            SELECT
+                gen_random_uuid(),
+                c.""CalendarId"",
+                'NewFeatureStrategy',
+                'OptionA',
+                CURRENT_TIMESTAMP,
+                'System',
+                CURRENT_TIMESTAMP,
+                'System',
+                1
+            FROM ""CalendarConfiguration"" c
+            WHERE c.""CalendarId"" NOT IN (
+                SELECT DISTINCT ""CalendarId""
+                FROM ""CalendarConfiguration""
+                WHERE ""Category"" = 'NewFeatureStrategy'
+            )
+            GROUP BY c.""CalendarId"";
+        ");
     }
 
-    Calendar "1" -- "*" CalendarConfiguration : has
-    CalendarConfigurationOptions "*" -- "*" CalendarConfiguration : configures
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.Sql(@"
+            DELETE FROM ""CalendarConfiguration""
+            WHERE ""Category"" = 'NewFeatureStrategy';
+        ");
+    }
+}
 ```
+
+#### 4. Checklist de Implementación
+
+- [ ] Añadir constantes en `CalendarConfigurationKeys`
+- [ ] Definir configuración en `Metadata.Options`
+- [ ] Crear migración de base de datos
+- [ ] Actualizar tests
+- [ ] Actualizar documentación si es necesario
+- [ ] Validar funcionamiento en ambiente de desarrollo
