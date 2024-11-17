@@ -13,6 +13,11 @@
 
 - **No Aplica**
 
+## Propiedades
+
+| Nombre | Tipo             | Descripción                     |
+| ------ | ---------------- |-------------------------------- |
+
 ## Invariantes
 
 - **No Aplica**
@@ -20,11 +25,6 @@
 ## Reglas de negocio
 
 - **No Aplica**
-
-## Propiedades
-
-| Nombre | Tipo             | Descripción                     |
-| ------ | ---------------- |-------------------------------- |
 
 ## Métodos
 
