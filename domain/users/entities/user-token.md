@@ -28,6 +28,16 @@ Los tokens son de un solo uso y tienen un tiempo de vida limitado definido en su
   - Asegurar que el token no haya expirado antes de su uso
   - Garantizar que un usuario no pueda tener múltiples tokens activos del mismo tipo
 
+## Propiedades
+
+| Propiedad          | Tipo              | Acceso           | Descripción                                                 |
+|--------------------|-------------------|--------------------------------------------------------------------------------|
+| `Id`               | `UserTokenId`     | get              | Identificador único del token.                              |
+| `UserId`           | `UserId`          | get/private set  | Identificador único del usuario asociado al token.          |
+| `Token`            | `Token`           | get/private set  | El token generado para la acción específica.                |
+| `UserTokenType`    | `UserTokenType`   | get/private set  | Tipo de token, como `PasswordReset` o `EmailConfirmation`.  |
+| `IsExpired`        | `bool`            | get/private set  | Indica si el token ha expirado.                             |
+
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento
@@ -43,16 +53,6 @@ Los tokens son de un solo uso y tienen un tiempo de vida limitado definido en su
 - Un token no puede ser utilizado después de su expiración
 - Un token no puede ser utilizado más de una vez
 - Al generar un nuevo token del mismo tipo, el token anterior (si existe) debe ser eliminado
-
-## Propiedades
-
-| Propiedad          | Tipo              | Acceso           | Descripción                                                 |
-|--------------------|-------------------|--------------------------------------------------------------------------------|
-| `Id`               | `UserTokenId`     | get              | Identificador único del token.                              |
-| `UserId`           | `UserId`          | get/private set  | Identificador único del usuario asociado al token.          |
-| `Token`            | `Token`           | get/private set  | El token generado para la acción específica.                |
-| `UserTokenType`    | `UserTokenType`   | get/private set  | Tipo de token, como `PasswordReset` o `EmailConfirmation`.  |
-| `IsExpired`        | `bool`            | get/private set  | Indica si el token ha expirado.                             |
 
 ## Métodos
 

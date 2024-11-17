@@ -15,6 +15,18 @@
 - Establecer la duración base que se requiere para su realización
 - Pertenecer a un calendario específico
 
+## Propiedades
+
+| Nombre        | Tipo             | Acceso          | Descripción                                       |
+| ------------- | ---------------- | ----------------|-------------------------------------------------- |
+| `Id`          | `ServiceId`      | get             | Identificador único del servicio                  |
+| `CalendarId`  | `CalendarId`     | get/private set | Identificador del calendario asociado al servicio |
+| `Name`        | `string`         | get/private set | Nombre del servicio                               |
+| `Description` | `string`         | get/private set | Descripción del servicio                          |
+| `ColorScheme` | `ColorScheme`    | get/private set | ColorScheme del servicio                          |
+| `Duration`    | `Duration`       | get/private set | Duración del servicio                             |
+| `IsActive`    | `bool`           | get/private set | Indica si el servicio está activo                 |
+
 ## Invariantes
 
 - `ID` no puede ser `null` en ningún momento
@@ -53,18 +65,6 @@
   - Al eliminar un servicio, se emitirá un evento de dominio para notificar cambios en la programación
   - Restricciones:
     - No debe tener citas asociadas
-
-## Propiedades
-
-| Nombre        | Tipo             | Acceso          | Descripción                                       |
-| ------------- | ---------------- | ----------------|-------------------------------------------------- |
-| `Id`          | `ServiceId`      | get             | Identificador único del servicio                  |
-| `CalendarId`  | `CalendarId`     | get/private set | Identificador del calendario asociado al servicio |
-| `Name`        | `string`         | get/private set | Nombre del servicio                               |
-| `Description` | `string`         | get/private set | Descripción del servicio                          |
-| `ColorScheme` | `ColorScheme`    | get/private set | ColorScheme del servicio                          |
-| `Duration`    | `Duration`       | get/private set | Duración del servicio                             |
-| `IsActive`    | `bool`           | get/private set | Indica si el servicio está activo                 |
 
 ## Métodos
 

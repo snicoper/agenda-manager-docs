@@ -18,6 +18,13 @@ Los permisos son inmutables una vez creados y su creación debe realizarse por e
 - Notificar la creación de nuevos permisos a través de eventos de dominio
 - Encapsular la lógica de validación del nombre del permiso
 
+## Propiedades
+
+| Nombre | Tipo             | Acceso          | Descripción                     |
+| ------ | ---------------- | ----------------|-------------------------------- |
+| `Id`   | `PermissionId`   | get             | Identificador único del permiso |
+| `Name` | `string`         | get/private set | Nombre del permiso              |
+
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento
@@ -38,13 +45,6 @@ Los permisos son inmutables una vez creados y su creación debe realizarse por e
 - **Unicidad de Identidad**:
   - `Id` debe ser único en toda la aplicación.
   - `Name` no puede repetirse en ningún momento dentro de la aplicación.
-
-## Propiedades
-
-| Nombre | Tipo             | Acceso          | Descripción                     |
-| ------ | ---------------- | ----------------|-------------------------------- |
-| `Id`   | `PermissionId`   | get             | Identificador único del permiso |
-| `Name` | `string`         | get/private set | Nombre del permiso              |
 
 ## Métodos
 

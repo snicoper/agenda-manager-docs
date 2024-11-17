@@ -55,7 +55,15 @@ Configuraciones que aceptan un valor personalizado con validación específica:
 - **Validación**:
   - Asegurarse de que el `Name` y `Description` cumplen con las restricciones de longitud.
 
-  Segunda parte:
+  ## Propiedades
+
+| Nombre        | Tipo                      | Descripción                                                     |
+| ------------- | ------------------------- | --------------------------------------------------------------- |
+| `Id`          | `CalendarConfigurationId` | Identificador único de la configuración.                        |
+| `CalendarId`  | `CalendarId`              | Identificador del calendario al que pertenece la configuración. |
+| `Calendar`    | `Calendar`                | Referencia al calendario al que pertenece la configuración.     |
+| `Category`    | `string`                  | Categoría de la configuración.                                  |
+| `SelectedKey` | `string`                  | Clave seleccionada de la configuración.                         |
 
 ## Invariantes
 
@@ -74,16 +82,6 @@ Configuraciones que aceptan un valor personalizado con validación específica:
 - **Validación de Valores**:
   - Los valores para configuraciones con `Key = 'UnitValue'` deben cumplir con el formato específico de cada categoría.
   - Para otras configuraciones, `SelectedKey` debe existir en `CalendarConfigurationKeys` para la categoría correspondiente.
-
-## Propiedades
-
-| Nombre        | Tipo                      | Descripción                                                     |
-| ------------- | ------------------------- | --------------------------------------------------------------- |
-| `Id`          | `CalendarConfigurationId` | Identificador único de la configuración.                        |
-| `CalendarId`  | `CalendarId`              | Identificador del calendario al que pertenece la configuración. |
-| `Calendar`    | `Calendar`                | Referencia al calendario al que pertenece la configuración.     |
-| `Category`    | `string`                  | Categoría de la configuración.                                  |
-| `SelectedKey` | `string`                  | Clave seleccionada de la configuración.                         |
 
 ## Métodos
 

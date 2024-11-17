@@ -42,6 +42,21 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
 - **Validación**:
   - Asegurarse de que `FirstName` y `LastName` no exceden la longitud permitida.
 
+  ## Propiedades
+
+| Propiedad           | Tipo                        |Acceso           | Descripción                                                |
+|---------------------|-----------------------------|-----------------|------------------------------------------------------------|
+| `UserId`            | `UserId`                    | get             | Identificador único del usuario.                           |
+| `PasswordHash`      | `PasswordHash`              | get/private set | Hash de la contraseña del usuario.                         |
+| `Email`             | `EmailAddress`              | get/private set | Dirección de correo electrónico única del usuario.         |
+| `IsEmailConfirmed`  | `bool`                      | get/private set | Estado de confirmación del email del usuario.              |
+| `FirstName`         | `string?`                   | get/private set | Nombre del usuario, puede ser `null`.                      |
+| `LastName`          | `string?`                   | get/private set | Apellido del usuario, puede ser `null`.                    |
+| `IsActive`          | `bool`                      | get/private set | Estado de actividad del usuario.                           |
+| `RefreshToken`      | `Token?`                    | get/private set | Token de refresco de autorización del usuario.             |
+| `Roles`             | `IReadOnlyCollection<Role>` | get/private set | Lista de roles asociados al usuario.                       |
+| `Tokens`            | `IReadOnlyCollection<Token>`| get/private set | Lista de tokens asociados al usuario.                      |
+
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento
@@ -76,21 +91,6 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
 - **Actualización de Información Personal**:
   - `FirstName` y `LastName` pueden actualizarse, pero deben respetar las limitaciones de longitud y no ser nulos si están presentes.
   - El `Email` puede ser actualizado y debe seguir siendo único en la aplicación después de la actualización.
-
-## Propiedades
-
-| Propiedad           | Tipo                        |Acceso           | Descripción                                                |
-|---------------------|-----------------------------|-----------------|------------------------------------------------------------|
-| `UserId`            | `UserId`                    | get             | Identificador único del usuario.                           |
-| `PasswordHash`      | `PasswordHash`              | get/private set | Hash de la contraseña del usuario.                         |
-| `Email`             | `EmailAddress`              | get/private set | Dirección de correo electrónico única del usuario.         |
-| `IsEmailConfirmed`  | `bool`                      | get/private set | Estado de confirmación del email del usuario.              |
-| `FirstName`         | `string?`                   | get/private set | Nombre del usuario, puede ser `null`.                      |
-| `LastName`          | `string?`                   | get/private set | Apellido del usuario, puede ser `null`.                    |
-| `IsActive`          | `bool`                      | get/private set | Estado de actividad del usuario.                           |
-| `RefreshToken`      | `Token?`                    | get/private set | Token de refresco de autorización del usuario.             |
-| `Roles`             | `IReadOnlyCollection<Role>` | get/private set | Lista de roles asociados al usuario.                       |
-| `Tokens`            | `IReadOnlyCollection<Token>`| get/private set | Lista de tokens asociados al usuario.                      |
 
 ## Métodos
 

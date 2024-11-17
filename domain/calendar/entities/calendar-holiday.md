@@ -38,6 +38,20 @@
     - Las citas que han sido canceladas si se usa `CancelOverlapping`
     - Las citas que quedan solapadas si se usa `AllowOverlapping`
 
+## Propiedades
+
+| Nombre         | Tipo                | Acceso           | Descripción                                               |
+| -------------- | ------------------- | ---------------------------------------------------------------------------- |
+| `Id`           | `CalendarHolidayId` | get              | Identificador único del holiday                           |
+| `CalendarId`   | `CalendarId`        | get/private set  | Identificador del calendario asociado                     |
+| `Calendar`     | `Calendar`          | get/private set  | Referencia al calendario asociado                         |
+| `SettingsId`   | `CalendarSettingsId`| get/private set  | Identificador de la configuración del calendario asociado |
+| `Settings`     | `CalendarSettings`  | get/private set  | Configuración del calendario asociado                     |
+| `Period`       | `Period`            | get/private set  | Periodo del holiday                                       |
+| `Weekdays`     | `Weekdays`          | get/private set  | Días de la semana del holiday                             |
+| `Name`         | `string`            | get/private set  | Nombre del holiday                                        |
+| `Description`  | `string`            | get/private set  | Descripción del holiday                                   |
+
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento
@@ -67,20 +81,6 @@
     - Si la estrategia es `CancelOverlapping`, todas las citas solapadas deben ser canceladas antes de crear/modificar el holiday
     - Si la estrategia es `AllowOverlapping`, se debe permitir el solapamiento pero registrar y notificar la situación
   - La modificación de un holiday existente debe reevaluar los solapamientos si se modifica el período o los días de la semana
-
-## Propiedades
-
-| Nombre         | Tipo                | Acceso           | Descripción                                               |
-| -------------- | ------------------- | ---------------------------------------------------------------------------- |
-| `Id`           | `CalendarHolidayId` | get              | Identificador único del holiday                           |
-| `CalendarId`   | `CalendarId`        | get/private set  | Identificador del calendario asociado                     |
-| `Calendar`     | `Calendar`          | get/private set  | Referencia al calendario asociado                         |
-| `SettingsId`   | `CalendarSettingsId`| get/private set  | Identificador de la configuración del calendario asociado |
-| `Settings`     | `CalendarSettings`  | get/private set  | Configuración del calendario asociado                     |
-| `Period`       | `Period`            | get/private set  | Periodo del holiday                                       |
-| `Weekdays`     | `Weekdays`          | get/private set  | Días de la semana del holiday                             |
-| `Name`         | `string`            | get/private set  | Nombre del holiday                                        |
-| `Description`  | `string`            | get/private set  | Descripción del holiday                                   |
 
 ## Métodos
 

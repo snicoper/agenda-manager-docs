@@ -42,6 +42,17 @@ Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfi
   - Cada `CalendarConfiguration` representa una configuración específica del calendario.
   - Emitir eventos de dominio relacionados con `CalendarConfiguration` cuando se realicen cambios.
 
+## Propiedades
+
+| Propiedad        | Tipo                         |Descripción                                            |
+|------------------|------------------------------|-------------------------------------------------------|
+| `Id`             | `CalendarId`                 | Identificador único del calendario.                   |
+| `Name`           | `string`                     | Nombre del calendario.                                |
+| `Description`    | `string`                     | Descripción del calendario.                           |
+| `IsActive`       | `bool`                       | Indica si el calendario está activo.                  |
+| `Holidays`       | `List<CalendarHoliday>`      | Lista de vacaciones asociadas al calendario.          |
+| `Configurations` | `List<CalendarConfiguration>`| Lista de configuraciones asociadas al calendario.     |
+
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento.
@@ -73,17 +84,6 @@ Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfi
   - No se puede eliminar un `Calendar` si tiene algún recurso (`Resource`) asignado.
   - No se puede eliminar un `Calendar` si tiene algún servicio (`Service`) asignado.
   - No se puede eliminar un `Calendar` si tiene algún horario de recurso (`ResourceSchedule`) asignado.
-
-## Propiedades
-
-| Propiedad        | Tipo                         |Descripción                                            |
-|------------------|------------------------------|-------------------------------------------------------|
-| `Id`             | `CalendarId`                 | Identificador único del calendario.                   |
-| `Name`           | `string`                     | Nombre del calendario.                                |
-| `Description`    | `string`                     | Descripción del calendario.                           |
-| `IsActive`       | `bool`                       | Indica si el calendario está activo.                  |
-| `Holidays`       | `List<CalendarHoliday>`      | Lista de vacaciones asociadas al calendario.          |
-| `Configurations` | `List<CalendarConfiguration>`| Lista de configuraciones asociadas al calendario.     |
 
 ## Métodos
 

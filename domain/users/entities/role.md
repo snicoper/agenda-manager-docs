@@ -20,6 +20,16 @@ Un `Role` es una entidad que representa un rol de usuario en el sistema. Los rol
 - **Validación**:
   - Asegurarse de que `Name` y `Description` no exceden la longitud permitida.
 
+  ## Propiedades
+
+| Propiedad     | Tipo                | Acceso          | Descripción                           |
+|---------------|---------------------|-----------------|---------------------------------------|
+| `Id`          | `RoleId`            | get             | Identificador único del rol.          |
+| `Name`        | `string`            | get/private set | Nombre del rol.                       |
+| `Description` | `string`            | get/private set | Descripción del rol.                  |
+| `Editable`    | `bool`              | get/private set | Indica si el rol es editable.         |
+| `Permissions` | `List<Permission>`  | get/private set | Lista de permisos asociados al rol.   |
+
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento.
@@ -75,16 +85,6 @@ El sistema define cuatro roles inmutables (`Editable = false`) que no pueden ser
   - Requerido para la asignación de recursos en la programación
 
 > **Nota**: Estos roles son predefinidos por el sistema y no pueden ser modificados ni eliminados.
-
-## Propiedades
-
-| Propiedad     | Tipo                | Acceso          | Descripción                           |
-|---------------|---------------------|-----------------|---------------------------------------|
-| `Id`          | `RoleId`            | get             | Identificador único del rol.          |
-| `Name`        | `string`            | get/private set | Nombre del rol.                       |
-| `Description` | `string`            | get/private set | Descripción del rol.                  |
-| `Editable`    | `bool`              | get/private set | Indica si el rol es editable.         |
-| `Permissions` | `List<Permission>`  | get/private set | Lista de permisos asociados al rol.   |
 
 ## Métodos
 

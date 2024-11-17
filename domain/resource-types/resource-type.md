@@ -31,6 +31,16 @@ Un `ResourceType` sirve como plantilla para la creación de recursos específico
 - **Validación**:
   - Asegurarse de que `Name` y `Description` no exceden la longitud permitida.
 
+## Propiedades
+
+| Propiedad     | Tipo             | Acceso          |Descripción                                            |
+|---------------|------------------|-----------------|-------------------------------------------------------|
+| `Id`          | `ResourceTypeId` | get             | Identificador único del tipo de recurso.              |
+| `Name`        | `string`         | get/private set | Nombre del tipo de recurso.                           |
+| `Description` | `string`         | get/private set | Descripción del tipo de recurso.                      |
+| `RoleId`      | `RoleId?`        | get/private set | Identificador del rol asociado al tipo de recurso.    |
+| `Resources`   | `List<Resource>` | get/private set | Colección de recursos asociados al tipo de recurso.   |
+
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento
@@ -79,16 +89,6 @@ Un `ResourceType` sirve como plantilla para la creación de recursos específico
 - **Uso en Servicios**:
   - Un `ResourceType` puede ser requerido por múltiples servicios
   - Define qué tipos de recursos son necesarios para realizar un servicio
-
-## Propiedades
-
-| Propiedad     | Tipo             | Acceso          |Descripción                                            |
-|---------------|------------------|-----------------|-------------------------------------------------------|
-| `Id`          | `ResourceTypeId` | get             | Identificador único del tipo de recurso.              |
-| `Name`        | `string`         | get/private set | Nombre del tipo de recurso.                           |
-| `Description` | `string`         | get/private set | Descripción del tipo de recurso.                      |
-| `RoleId`      | `RoleId?`        | get/private set | Identificador del rol asociado al tipo de recurso.    |
-| `Resources`   | `List<Resource>` | get/private set | Colección de recursos asociados al tipo de recurso.   |
 
 ## Métodos
 

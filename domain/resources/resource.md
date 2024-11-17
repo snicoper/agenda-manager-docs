@@ -32,7 +32,24 @@ El agregado root `Resource` representa un recurso en el sistema de gestión de a
   - Gestionar el estado activo/inactivo del recurso
   - Permitir la desactivación temporal sin eliminar el recurso
 
-## Invariantes del Agregado
+## Propiedades
+
+| Propiedad           | Tipo                      | Acceso          | Descripción                                               |
+|---------------------|---------------------------|-----------------|-----------------------------------------------------------|
+| Id                  | `ResourceId`              | get             | Identificador único del recurso.                          |
+| UserId              | `UserId?`                 | get/private set | Identificador único del usuario propietario del recurso.  |
+| User                | `User?`                   | get/private set | Usuario propietario del recurso.                          |
+| CalendarId          | `CalendarId`              | get/private set | Identificador único del calendario asociado al recurso.   |
+| Calendar            | `Calendar`                | get/private set | Calendario asociado al recurso.                           |
+| TypeId              | `ResourceTypeId`          | get/private set | Identificador único del tipo de recurso.                  |
+| Name                | `string`                  | get/private set | Nombre del recurso.                                       |
+| Description         | `string`                  | get/private set | Descripción del recurso.                                  |
+| IsActive            | `bool`                    | get/private set | Indica si el recurso está activo o no.                    |
+| DeactivationReason  | `string?`                 | get/private set | Último motivo por el que se desactivó el recurso.         |
+| ColorScheme         | `string`                  | get/private set | Esquema de color del recurso.                             |
+| Schedules           | `List<ResourceSchedule>`  | get/private set | Programaciones asociadas al recurso.                      |
+
+## Invariantes
 
 - **Unicidad de Identificador**:
   - `Id` no puede ser `null` en ningún momento
@@ -79,23 +96,6 @@ El agregado root `Resource` representa un recurso en el sistema de gestión de a
     - El proceso de notificación a las partes interesadas
   - Un recurso desactivado no puede aceptar nuevas citas
   - Un recurso puede ser reactivado si no ha sido eliminado
-
-## Propiedades
-
-| Propiedad           | Tipo                      | Acceso          | Descripción                                               |
-|---------------------|---------------------------|-----------------|-----------------------------------------------------------|
-| Id                  | `ResourceId`              | get             | Identificador único del recurso.                          |
-| UserId              | `UserId?`                 | get/private set | Identificador único del usuario propietario del recurso.  |
-| User                | `User?`                   | get/private set | Usuario propietario del recurso.                          |
-| CalendarId          | `CalendarId`              | get/private set | Identificador único del calendario asociado al recurso.   |
-| Calendar            | `Calendar`                | get/private set | Calendario asociado al recurso.                           |
-| TypeId              | `ResourceTypeId`          | get/private set | Identificador único del tipo de recurso.                  |
-| Name                | `string`                  | get/private set | Nombre del recurso.                                       |
-| Description         | `string`                  | get/private set | Descripción del recurso.                                  |
-| IsActive            | `bool`                    | get/private set | Indica si el recurso está activo o no.                    |
-| DeactivationReason  | `string?`                 | get/private set | Último motivo por el que se desactivó el recurso.         |
-| ColorScheme         | `string`                  | get/private set | Esquema de color del recurso.                             |
-| Schedules           | `List<ResourceSchedule>`  | get/private set | Programaciones asociadas al recurso.                      |
 
 ## Métodos
 

@@ -48,7 +48,23 @@ Los horarios tipo `Unavailable` tienen precedencia sobre los `Available`, permit
     - No participa en la validación de disponibilidad
     - No permite nuevas asignaciones de citas
 
-## Invariantes del Agregado
+## Propiedades
+
+| Propiedad           | Tipo                      | Acceso          | Descripción                                               |
+|---------------------|---------------------------|-----------------|-----------------------------------------------------------|
+| `Id`                | `ResourceScheduleId`      | get             | Identificador único de la programación de recurso.        |
+| `ResourceId`        | `ResourceId`              | get/private set | Identificador del recurso asociado a la programación.     |
+| `Resource`          | `Resource`                | get/private set | Recurso asociado a la programación.                       |
+| `CalendarId`        | `CalendarId`              | get/private set | Identificador del calendario asociado a la programación.  |
+| `Calendar`          | `Calendar`                | get/private set | Calendario asociado a la programación.                    |
+| `Period`            | `Period`                  | get/private set | Período de disponibilidad del recurso.                    |
+| `Type`              | `ResourceScheduleType`    | get/private set | Tipo de programación de recurso.                          |
+| `WeekDays`          | `AvailableDays`           | get/private set | Días de la semana en los que el recurso está disponible.  |
+| `Name`              | `string`                  | get/private set | Nombre de la programación de recurso.                     |
+| `Description`       | `string?`                 | get/private set | Descripción de la programación de recurso.                |
+| `IsActive`          | `bool`                    | get/private set | Estado de activación del horario.                         |
+
+## Invariantes
 
 - **Unicidad e Integridad**:
   - `Id` no puede ser `null` en ningún momento
@@ -76,22 +92,6 @@ Los horarios tipo `Unavailable` tienen precedencia sobre los `Available`, permit
 - **Gestión de Estado Activo**:
   - La desactivación de un horario emitirá un evento de dominio para notificar cambios en la programación
   - La activación de un horario no requiere notificación
-
-## Propiedades
-
-| Propiedad           | Tipo                      | Acceso          | Descripción                                               |
-|---------------------|---------------------------|-----------------|-----------------------------------------------------------|
-| `Id`                | `ResourceScheduleId`      | get             | Identificador único de la programación de recurso.        |
-| `ResourceId`        | `ResourceId`              | get/private set | Identificador del recurso asociado a la programación.     |
-| `Resource`          | `Resource`                | get/private set | Recurso asociado a la programación.                       |
-| `CalendarId`        | `CalendarId`              | get/private set | Identificador del calendario asociado a la programación.  |
-| `Calendar`          | `Calendar`                | get/private set | Calendario asociado a la programación.                    |
-| `Period`            | `Period`                  | get/private set | Período de disponibilidad del recurso.                    |
-| `Type`              | `ResourceScheduleType`    | get/private set | Tipo de programación de recurso.                          |
-| `WeekDays`          | `AvailableDays`           | get/private set | Días de la semana en los que el recurso está disponible.  |
-| `Name`              | `string`                  | get/private set | Nombre de la programación de recurso.                     |
-| `Description`       | `string?`                 | get/private set | Descripción de la programación de recurso.                |
-| `IsActive`          | `bool`                    | get/private set | Estado de activación del horario.                         |
 
 ## Métodos
 
