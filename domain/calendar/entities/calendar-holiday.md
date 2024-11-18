@@ -5,6 +5,8 @@
 - **Tipo**: Entidad de Dominio Sellada (sealed)
 - **Herencia**: `AggregateRoot`
 
+> **TODO**: Considerar si `RejectIfOverlapping` es true, ver que estado pueden cambiar los estados de las citas.
+
 ## Descripción General
 
 `CalendarHoliday` representa un día festivo asociado a un calendario. Permite definir períodos festivos que pueden ser recurrentes o puntuales, aplicables a días específicos de la semana dentro del período establecido.
@@ -80,7 +82,7 @@
     - Si la estrategia es `RejectIfOverlapping`, cualquier solapamiento debe resultar en un rechazo
     - Si la estrategia es `CancelOverlapping`, todas las citas solapadas deben ser canceladas antes de crear/modificar el holiday
     - Si la estrategia es `AllowOverlapping`, se debe permitir el solapamiento pero registrar y notificar la situación
-  - La modificación de un holiday existente debe reevaluar los solapamientos si se modifica el período o los días de la semana
+  - La modificación de un holiday existente debe revaluar los solapamientos si se modifica el período o los días de la semana
 
 ## Métodos
 
