@@ -36,8 +36,6 @@
 
 ## Dependencias
 
-- **No Aplica**
-
 ### Directas
 
 - **No Aplica**
