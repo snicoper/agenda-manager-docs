@@ -235,7 +235,7 @@ var strategy = await calendarConfigurationRepository
         calendarId,
         CalendarConfigurationKeys.Holidays.CreateStrategy);
 
-if (strategy == CalendarConfigurationKeys.Holidays.CreationOptions.RejectIfOverlapping)
+if (strategy is CalendarConfigurationKeys.Holidays.CreationOptions.RejectIfOverlapping)
 {
     // Lógica específica para rechazar solapamientos
 }

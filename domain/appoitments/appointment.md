@@ -19,7 +19,7 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 - Mantener la integridad y consistencia del estado de la cita
 - Registrar el historial de cambios de estado
 - Gestionar el proceso de confirmación cuando sea necesario
-- Aplicar las reglas de negocio en creación y modificaciones
+- Aplicar las reglas de negocio en creación, modificación y eliminación de citas
 - Gestionar las transiciones de estado válidas
 - Emitir eventos de dominio para cambios significativos
 - Las citas con un estado no final expiradas deben ser canceladas automáticamente
@@ -49,19 +49,19 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 - Una cita siempre debe estar programada para una fecha/hora futura
 
 - **Period**:
-  - El período debe aplicar las reglas del value object `Period`
+  - Aplica las reglas del value object `Period`
     - `Start` debe ser mayor o igual a la fecha/hora actual
     - `End` debe ser mayor o igual a `Start`
     - `Duration` es un campo calculado basado en `Start` y `End`
 
 - El CurrentState debe ser coherente con el StatusHistories
-- El historial de estados, solo puede haber un `AppointmentStatusHistory.IsCurrentState` en `true`
+- La lista del historial de estados, solo puede tener un `AppointmentStatusHistory.IsCurrentState` como `true`
 
 - **Resources**:
   - La lista de recursos asignados nunca debe ser `null` o vacía
   - Los recursos asignados deben ser válidos y estar disponibles durante el período
 
-- Solo las citas pendientes, aceptadas y pendientes de reprogramación pueden ser editadas
+- Solo las citas pendientes, aceptadas y pendientes de reprogramación pueden ser editadas o eliminadas
 - Una cita cancelada no puede volver a estados activos
 - Una cita completada no puede volver a estados activos
 
@@ -71,6 +71,7 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 
 - Los cambios de estado deben seguir las transiciones permitidas
 - Todo cambio de estado debe quedar registrado en StatusHistories
+- Eliminar una cita debe cumplir un estado permitido para poder eliminarse
 
 ## Configuración y Comportamiento
 
@@ -78,8 +79,9 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 
 #### AppointmentCreationStrategy
 
-- **Direct**
+Determina el estado inicial de una cita al crearla:
 
+- **Direct**
   - Las citas se crean directamente en estado `Accepted`
   - No requiere confirmación adicional
 
@@ -87,12 +89,13 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
   - Las citas se crean en estado `Pending`
   - Requiere confirmación del cliente
   - Se genera token de confirmación
-  - Tiene tiempo límite de confirmación (*)
+  - Tiene tiempo límite de confirmación
 
 #### AppointmentOverlappingStrategy
 
-- **AllowOverlapping**
+Determina la estrategia de validación de solapamiento de citas cuando se crea o edita una nueva cita:
 
+- **AllowOverlapping**
   - Permite solapamiento de citas
   - No realiza validaciones solapamiento con otras citas
 
@@ -100,9 +103,59 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
   - Rechaza citas que se solapan
   - Realiza validaciones solapamiento con otras citas
 
+#### ResourcesScheduleValidationStrategy
+
+Determina la estrategia de validación de la disponibilidad de recursos cuando se crea o edita una nueva cita:
+
+- **Validate**:
+  - Valida la disponibilidad de recursos seleccionados en la cita
+  - Si no hay disponibilidad, la cita no sera creada o editada
+
+- **DoNotValidate**:
+  - No valida la disponibilidad de recursos seleccionados en la cita
+  - La cita se crea o edita sin importar la disponibilidad de los recursos
+
+> **Nota**: No aplica a los **recursos requeridos** por el servicio, solo al `ResourceSchedule`
+
 ## Ciclo de Vida
 
 ### Estados y Transiciones
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pending: Create with\nRequireConfirmation
+    [*] --> Accepted: Create Direct
+
+    Pending --> Accepted: Confirm
+    Pending --> Cancelled: Cancel
+    Pending --> RequiresRescheduling: Request\nReschedule
+
+    Accepted --> Waiting: Client\nArrival
+    Accepted --> Cancelled: Cancel
+    Accepted --> RequiresRescheduling: Request\nReschedule
+
+    RequiresRescheduling --> Pending: Reschedule with\nConfirmation
+    RequiresRescheduling --> Accepted: Reschedule\nDirect
+    RequiresRescheduling --> Cancelled: Cancel
+
+    Waiting --> InProgress: Start
+    Waiting --> Cancelled: Cancel
+
+    InProgress --> Completed: Finish
+
+    Completed --> [*]
+    Cancelled --> [*]
+
+    note right of Pending
+        Requires valid token
+        if confirmation enabled
+    end note
+
+    note right of RequiresRescheduling
+        Can return to Pending/Accepted
+        based on creation strategy
+    end note
+  ```
 
 #### Estados Posibles
 
@@ -110,10 +163,12 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
   - `Pending`: Esperando confirmación del cliente
   - `Accepted`: Confirmada y programada
 
+- **Estados Especiales**:
+  - `RequiresRescheduling`: Requiere reprogramación
+
 - **Estados Activos**:
   - `Waiting`: El cliente está en espera sea físicamente presente o no
   - `InProgress`: En proceso, la cita está en curso sea físicamente presente o no
-  - `RequiresRescheduling`: Requiere reprogramación
 
 - **Estados Finales**:
   - `Cancelled`: Cancelada definitivamente
@@ -139,33 +194,44 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 
 ## Operaciones y Reglas de Negocio
 
+- Todas las citas independientemente del estado ocupan un hueco en el calendario.
+
 ### Creación de Citas
-
-#### Requisitos Básicos
-
-- Calendario, holidays, servicio y usuario válidos y activos
-- Período dentro del horario del calendario y en fecha futura
-- Recursos requeridos por el servicio disponibles
-- Duración inicial según el servicio
 
 #### Proceso de Creación
 
-1. Validación de requisitos básicos
-2. Verificación de disponibilidad según estrategia de solapamiento
-3. Asignación de estado inicial según estrategia de creación
-4. Generación de token si requiere confirmación
-5. Emisión de eventos correspondientes
-  5.1 Creación de cita
-  5.2 Si requiere confirmación, evento de confirmación
+- Calendario, holidays, servicio y usuario válidos y activos
+- Período dentro del horario del calendario y en fecha futura
+- La lista de recursos no puede ser nula o vacía en ningún momento
+
+- Obtener estrategia de creación
+  - Establecer un estado inicial valido `Pending` o `Accepted` según la estrategia de creación
+
+- Validación días festivos de un calendario
+
+- Obtener estrategia de solapamiento de citas
+  - Si se permite solapamiento, no se realizan validaciones adicionales
+  - Si no se permite solapamiento, se realizan validaciones adicionales
+
+- Obtener estrategia de validación de horarios de los recursos
+  - Si se valida, se realizan validaciones adicionales
+  - Si no se valida, no se realizan validaciones adicionales
+
+- Validación de los recursos requeridos por el servicio
+
+- Emisión de eventos correspondientes
+  - Creación de cita
+  - Si requiere confirmación, evento de confirmación
+  - Creación de evento del historial de estado
 
 ### Confirmación de Citas
 
 #### Proceso de Confirmación
 
-1. Verificación de token válido y no expirado
-2. Validación de estado `Pending`
-3. Cambio a estado `Accepted`
-4. Emisión de evento de confirmación
+- Verificación de token válido y no expirado
+- Validación de estado `Pending`
+- Cambio a estado `Accepted`
+- Emisión de evento de confirmación
 
 ### Modificación de Citas
 
@@ -176,15 +242,16 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 
 #### Reglas de Modificación
 
-- Solo en estados `Pending`, `Accepted` y `RequiresRescheduling`
-- Validación de fecha futura
-- Revalidación de disponibilidad
-- Verificación de reglas de solapamiento
+- Solo estados `Pending`, `Accepted` o `RequiresRescheduling` son modificables
+- Validación de fecha futura `Period`
+- Regeneración de token de confirmación según estrategia
+- Verificación de reglas de solapamiento de citas en base a la estrategia
+- Verificación de reglas de validación de horarios de los recursos en base a la estrategia
 - La lista de recursos asignados no puede ser `null` o vacía
 
 ### Eliminación de Citas
 
-- Solo en estados `Pending` o `Accepted`
+- Solo en estados `Pending`, `Accepted` o `RequiresRescheduling`
 - Solo para citas futuras
 - Eliminación permanente
 - Generación de evento de eliminación
@@ -403,3 +470,5 @@ private void GuardAgainstMultipleCurrentStatesInStatusHistories()
 
 - [ ] `EventHandler`: Implementar event handler `AppointmentStatusHistoryCreatedDomainEvent(Id, CurrentState)` comprobar si es `AppointmentStatus.Pending`, generar `UserToken` y enviar correo electrónico de confirmación.
 - [ ] Definir tiempo para cancelación de citas expiradas en estado no final.
+- [ ] Definir tiempo de expiración para el token de confirmación de citas.
+- [ ] Dar una vuelta al eliminar si hacer una eliminación lógica o física, para temas de auditoría.
