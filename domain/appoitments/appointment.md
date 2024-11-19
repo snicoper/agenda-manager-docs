@@ -15,6 +15,7 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 
 - Gestionar el ciclo de vida completo de una cita
 - Validar la disponibilidad temporal y de recursos
+- Validar la disponibilidad de los días festivos del calendario
 - Mantener la integridad y consistencia del estado de la cita
 - Registrar el historial de cambios de estado
 - Gestionar el proceso de confirmación cuando sea necesario
@@ -43,7 +44,7 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 
 ### Invariantes
 
-- `Id` no puede ser `null` en ningún momento
+- `Id` no puede ser `null` en ningún momento y debe ser único en la aplicación
 - Una cita debe tener siempre un calendario, servicio y usuario asociados
 - Una cita siempre debe estar programada para una fecha/hora futura
 
@@ -66,7 +67,7 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 
 - **RequiresRescheduling**:
   - Si `RequireConfirmation` está activo, la cita debe tener un token válido asociado
-  - Cuando se consuma el token de confirmación, se debe eliminar el token
+  - Cuando se consuma el token de confirmación, se debe eliminar el token de la base de datos
 
 - Los cambios de estado deben seguir las transiciones permitidas
 - Todo cambio de estado debe quedar registrado en StatusHistories
@@ -102,39 +103,6 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 ## Ciclo de Vida
 
 ### Estados y Transiciones
-
-```mermaid
-stateDiagram-v2
-    [*] --> Pending: Create
-    [*] --> Accepted: Create
-
-    Pending --> Accepted: Confirm
-    Pending --> Cancelled: Cancel
-    Pending --> RequiresRescheduling: Request Reschedule
-
-    Accepted --> Waiting: Client Arrives
-    Accepted --> Cancelled: Cancel
-    Accepted --> RequiresRescheduling: Request Reschedule
-
-    Waiting --> InProgress: Start
-    Waiting --> Cancelled: Cancel
-
-    InProgress --> Completed: Finish
-    InProgress --> Cancelled: Cancel
-
-    RequiresRescheduling --> Pending: New Date
-    RequiresRescheduling --> Accepted: New Date
-    RequiresRescheduling --> Cancelled: Cancel
-
-    Completed --> [*]
-    Cancelled --> [*]
-
-    %% Nota, esta comentado por que el editor deja de funcionar la sintaxis en el resto del documento.
-
-    %% note right of Pending: Requires confirmation
-    %% note right of Waiting: Within appointment period
-    %% note right of InProgress: Can only complete from here
-```
 
 #### Estados Posibles
 
@@ -175,7 +143,7 @@ stateDiagram-v2
 
 #### Requisitos Básicos
 
-- Calendario, servicio y usuario válidos y activos
+- Calendario, holidays, servicio y usuario válidos y activos
 - Período dentro del horario del calendario y en fecha futura
 - Recursos requeridos por el servicio disponibles
 - Duración inicial según el servicio
@@ -187,6 +155,8 @@ stateDiagram-v2
 3. Asignación de estado inicial según estrategia de creación
 4. Generación de token si requiere confirmación
 5. Emisión de eventos correspondientes
+  5.1 Creación de cita
+  5.2 Si requiere confirmación, evento de confirmación
 
 ### Confirmación de Citas
 
@@ -221,7 +191,7 @@ stateDiagram-v2
 
 ### Expiración de Citas en estado no final
 
-- Deben ser canceladas automáticamente después de un período de tiempo definido (*)
+- Deben ser canceladas automáticamente después de un período de tiempo definido
 - Generación de evento de expiración
 - Registrar en el historial de cambios con el motivo de la cancelación
   - Motivo: **Expiración automática por tiempo de espera**
@@ -238,11 +208,7 @@ public Result ChangeState(AppointmentStatus status, string? description = null)
 - **Parámetros**:
   - `status`: Nuevo estado de la cita.
   - `description`: Descripción opcional del cambio de estado.
-- **Eventos**:
-  - `AppointmentStatusChangedDomainEvent(Id, CurrentState)`: Evento de cambio de estado.
-  - **Parámetros**:
-    - `Id`: Identificador de la cita.
-    - `CurrentState`: Estado actual de la cita.
+- **Eventos**: Ver método `AddNewCurrentStatus`
 - **Retorna**: Resultado de la operación.
 
 ### CreateForTesting
@@ -293,9 +259,11 @@ internal static Result<Appointment> Create(
   - `period`: Período de la cita.
   - `status`: Estado inicial de la cita.
   - `resources`: Recursos asignados a la cita.
-- **Eventos**: `AppointmentCreatedDomainEvent(appointment.Id)` si la creación es exitosa.
-  - **Parámetros**:
-  - `id`: Identificador de la cita.
+- **Eventos**:
+  - `AppointmentCreatedDomainEvent(appointment.Id)` si la creación es exitosa.
+    - **Parámetros**:
+      - `id`: Identificador de la cita.
+  - Ver método `AddNewCurrentStatus`.
 - **Retorna**: Resultado de la operación, que puede ser un objeto `Appointment` o un error.
 
 ### Update
@@ -310,15 +278,15 @@ internal Result Update(Period period, List<Resource> resources)
   - `resources`: Recursos asignados a la cita.
 - **Eventos**: `AppointmentUpdatedDomainEvent(Id, period, resources)` si la actualización es exitosa.
   - **Parámetros**:
-  - `id`: Identificador de la cita.
-  - `period`: Nuevo período de la cita.
-  - `resources`: Recursos asignados a la cita.
+    - `id`: Identificador de la cita.
+    - `period`: Nuevo período de la cita.
+    - `resources`: Recursos asignados a la cita.
 - **Retorna**: Resultado de la operación, que puede ser un objeto `Appointment` o un error.
 
 ### UpdatePeriodAndResources
 
 ```csharp
-internal Result UpdatePeriodAndResources(Period period, List<Resource> resources)
+private Result UpdatePeriodAndResources(Period period, List<Resource> resources)
 ```
 
 - **Descripción**: Actualiza el período y los recursos de la cita.
@@ -329,7 +297,7 @@ internal Result UpdatePeriodAndResources(Period period, List<Resource> resources
 ### AreResourceListEqual
 
 ```csharp
-internal static bool AreResourceListEqual(List<Resource> other)
+private static bool AreResourceListEqual(List<Resource> other)
 ```
 
 - **Descripción**: Compara con la lista actual de recursos para verificar si son iguales.
@@ -340,12 +308,11 @@ internal static bool AreResourceListEqual(List<Resource> other)
 ### ValidateForUpdate
 
 ```csharp
-internal Result ValidateForUpdate(Period period, List<Resource> resources)
+private Result ValidateForUpdate(List<Resource> resources)
 ```
 
-- **Descripción**: Valida la cita para su actualización.
+- **Descripción**: Comprueba si la cita tiene un estado valido para su actualización y resources tiene un estado valido.
 - **Parámetros**:
-  - `period`: Nuevo período de la cita.
   - `resources`: Recursos asignados a la cita.
 - **Retorna**: Resultado de la operación de validación.
 
@@ -376,14 +343,16 @@ private void AddNewCurrentStatus(string? description = null)
 - **Descripción**: Agrega un nuevo estado actual a la cita.
 - **Parámetros**:
   - `description`: Descripción opcional del cambio de estado.
+- **Eventos**: `AppointmentStatusHistoryCreatedDomainEvent(Id, CurrentState)` si el estado se cambia exitosamente.
 
-### EnsureSingleCurrentStateActive
+### GuardAgainstMultipleCurrentStatesInStatusHistories
 
 ```csharp
-private void EnsureSingleCurrentStateActive()
+private void GuardAgainstMultipleCurrentStatesInStatusHistories()
 ```
 
 - **Descripción**: Asegura que solo haya un estado actual activo en la lista de estados.
+- **Excepciones**: `AppointmentDomainException` si tiene más de un estado activo en la lista de historial de estados.
 
 ## Estado y Transiciones
 
@@ -414,7 +383,8 @@ private void EnsureSingleCurrentStateActive()
 
 ### Policies
 
-- **No Aplica**
+- `IAppointmentCreationStrategyPolicy`: Define el contrato para la política de estrategia de creación de citas
+- `IAppointmentOverlapPolicy`:  Define el contrato para la política de superposición de citas
 
 ### Value Objects
 
@@ -428,3 +398,8 @@ private void EnsureSingleCurrentStateActive()
 ## Comentarios adicionales
 
 - **No Aplica**
+
+## ToDo List
+
+- [ ] `EventHandler`: Implementar event handler `AppointmentStatusHistoryCreatedDomainEvent(Id, CurrentState)` comprobar si es `AppointmentStatus.Pending`, generar `UserToken` y enviar correo electrónico de confirmación.
+- [ ] Definir tiempo para cancelación de citas expiradas en estado no final.
