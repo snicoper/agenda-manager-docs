@@ -94,6 +94,31 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
 
 ## Métodos
 
+### Constructor
+
+```csharp
+internal User(
+    UserId userId,
+    EmailAddress email,
+    PasswordHash passwordHash,
+    string? firstName,
+    string? lastName,
+    bool isActive = true,
+    bool emailConfirmed = false)
+```
+
+- **Descripción**: Constructor principal del usuario.
+- **Parámetros**:
+  - `userId`: Identificador único del usuario.
+  - `email`: Dirección de correo electrónico única del usuario.
+  - `passwordHash`: Hash de la contraseña del usuario.
+  - `firstName`: Nombre del usuario, puede ser `null`.
+  - `lastName`: Apellido del usuario, puede ser `null`.
+  - `isActive`: Estado de actividad del usuario.
+  - `emailConfirmed`: Estado de confirmación del email del usuario.
+- **Eventos**:
+  - `UserCreatedDomainEvent`: Se dispara cuando se crea un nuevo usuario.
+
 ### UpdatePassword
 
 ```csharp
@@ -137,10 +162,10 @@ public void UpdateRefreshToken(Token token)
 - **Eventos**:
   - `UserRefreshTokenUpdatedDomainEvent`: Se dispara cuando se actualiza el token de refresco del usuario.
 
-### SetEmailConfirmed
+### ConfirmEmail
 
 ```csharp
-public void SetEmailConfirmed()
+public void ConfirmEmail()
 ```
 
 - **Descripción**: Marca el correo electrónico del usuario como confirmado.
@@ -167,6 +192,34 @@ public void Deactivate()
 - **Eventos**:
   - `UserDeactivatedDomainEvent`: Se dispara cuando se desactiva el usuario.
 
+## CreateUserToken
+
+```csharp
+public Result<UserToken> CreateUserToken(UserTokenType type, TimeSpan validityPeriod)
+```
+
+- **Descripción**: Crea un nuevo token de usuario.
+- **Parámetros**:
+  - `type`: Tipo de token.
+  - `validityPeriod`: Duración de validez del token.
+- **Eventos**:
+  - `UserTokenCreatedDomainEvent(userToken.Id)`: Se dispara cuando se crea un nuevo token de usuario.
+- **Retorno**: `Result<UserToken>`: Resultado que contiene el nuevo token de usuario.
+
+### ConsumeUserToken
+
+```csharp
+public Result ConsumeUserToken(UserTokenId userTokenId, string tokenValue)
+```
+
+- **Descripción**: Consume un token de usuario.
+- **Parámetros**:
+  - `userTokenId`: Identificador del token de usuario.
+  - `tokenValue`: Valor del token.
+- **Eventos**:
+  - `UserTokenConsumedDomainEvent(userToken.Id)`: Se dispara cuando se consume un token de usuario.
+- **Retorno**: `Result`: Resultado que indica si el token fue consumido o no.
+
 ### AddUserToken
 
 ```csharp
@@ -179,30 +232,48 @@ public void AddUserToken(Token token)
 - **Eventos**:
   - `UserTokenAddedDomainEvent`: Se dispara cuando se agrega un token de usuario.
 
-### Create
+### RemoveUserToken
 
 ```csharp
-internal static User Create(
-    UserId userId,
-    EmailAddress email,
-    PasswordHash passwordHash,
-    string? firstName,
-    string? lastName,
-    bool isActive = true,
-    bool emailConfirmed = false)
+public void RemoveUserToken(UserToken userToken)
 ```
 
-- **Descripción**: Crea una nueva instancia de `User`.
+- **Descripción**: Elimina un token de usuario.
 - **Parámetros**:
-  - `userId`: Identificador único del usuario.
-  - `email`: Dirección de correo electrónico única del usuario.
-  - `passwordHash`: Hash de la contraseña del usuario.
-  - `firstName`: Nombre del usuario, puede ser `null`.
-  - `lastName`: Apellido del usuario, puede ser `null`.
-  - `isActive`: Estado de
+  - `userToken`: Token de usuario a eliminar.
 - **Eventos**:
-  - `UserCreatedDomainEvent`: Se dispara cuando se crea un nuevo usuario.
-- **Retorno**: Una nueva instancia de `User`.
+  - `UserTokenRemovedDomainEvent`: Se dispara cuando se elimina un token de usuario.
+
+### HasRole
+
+```csharp
+public bool HasRole(Role role)
+```
+
+- **Descripción**: Verifica si el usuario tiene un rol específico.
+- **Parámetros**:
+  - `role`: Rol a verificar.
+- **Retorno**: `bool`: `true` si el usuario tiene el rol, `false` en caso contrario.
+
+### HasPermission
+
+```csharp
+public bool HasPermission(PermissionId permissionId)
+```
+
+- **Descripción**: Verifica si el usuario tiene un permiso específico.
+- **Parámetros**:
+  - `permissionId`: Identificador del permiso a verificar.
+- **Retorno**: `bool`: `true` si el usuario tiene el permiso, `false` en caso contrario.
+
+### GetAllPermissions
+
+```csharp
+public IReadOnlyList<Permission> GetAllPermissions()
+```
+
+- **Descripción**: Obtiene todos los permisos del usuario.
+- **Retorno**: `IReadOnlyList<Permission>`: Lista de permisos del usuario.
 
 ### Update
 

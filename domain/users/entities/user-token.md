@@ -18,9 +18,6 @@ Los tokens son de un solo uso y tienen un tiempo de vida limitado definido en su
   - Eliminar tokens después de su uso.
   - Eliminar tokens expirados.
 
-- **Eventos de Dominio**:
-  - Disparar eventos de dominio cuando se realicen cambios significativos en el user token.
-
 - **Validación y seguridad**:
   - Validar la autenticidad de los tokens
   - Asegurar que los tokens solo se usen una vez
@@ -59,7 +56,7 @@ Los tokens son de un solo uso y tienen un tiempo de vida limitado definido en su
 ### Create
 
 ```csharp
-public static UserToken Create(UserTokenId id, UserId userId, Token token, UserTokenType type)
+internal static UserToken Create(UserTokenId id, UserId userId, Token token, UserTokenType type)
 ```
 
 - **Descripción**: Crea una nueva instancia de `UserToken`.
@@ -68,37 +65,12 @@ public static UserToken Create(UserTokenId id, UserId userId, Token token, UserT
   - `userId`: Identificador único del usuario asociado al token.
   - `token`: El token generado para la acción específica.
   - `type`: Tipo de token, como `PasswordReset` o `EmailConfirmation`.
-- **Eventos**: `UserTokenCreatedDomainEvent` disparado cuando se crea un nuevo token.
 - **Retorno**: Un nuevo `UserToken`.
-
-### CreateEmailConfirmation
-
-```csharp
-public static Result<UserToken> CreateEmailConfirmation(UserId userId, TimeSpan? validityPeriod = null)
-```
-
-- **Descripción**: Crea un nuevo token de confirmación de email.
-- **Parámetros**:
-  - `userId`: Identificador único del usuario asociado al token.
-  - `validityPeriod`: Duración del token. Por defecto, 7 días.
-- **Retorno**: Un nuevo `Result<UserToken>` con el nuevo token de confirmación de email.
-
-### CreatePasswordReset
-
-```csharp
-public static Result<UserToken> CreatePasswordReset(UserId userId, TimeSpan? validityPeriod = null)
-```
-
-- **Descripción**: Crea un nuevo token de restablecimiento de contraseña.
-- **Parámetros**:
-  - `userId`: Identificador único del usuario asociado al token.
-  - `validityPeriod`: Duración del token. Por defecto, 1 hora.
-- **Retorno**: Un nuevo `Result<UserToken>` con el nuevo token de restablecimiento de contraseña.
 
 ### Consume
 
 ```csharp
-public Result Consume(string tokenValue)
+internal Result Consume(string tokenValue)
 ```
 
 - **Descripción**: Consume el token para la operación correspondiente.
@@ -149,34 +121,3 @@ El token pasa por los siguientes estados:
 - `UserTokenType`: Tipo de token para diferentes acciones (`EmailVerification`, `PasswordReset`).
 
 ## Ejemplos de Uso
-
-```csharp
-// Usando el método Create original
-var passwordResetToken = UserToken.Create(
-    id: UserTokenId.Create(),
-    userId: user.Id,
-    token: Token.Generate(TimeSpan.FromHours(1)),
-    type: UserTokenType.PasswordReset);
-
-// Usando los nuevos métodos factory
-var passwordResetResult = UserToken.CreatePasswordReset(
-    userId: user.Id,
-    validityPeriod: TimeSpan.FromHours(2));
-
-if (passwordResetResult.IsSuccess)
-{
-    var token = passwordResetResult.Value;
-    // Usar el token...
-}
-
-// Ejemplo de consumo de token
-var consumeResult = token.Consume("token-value-here");
-if (consumeResult.IsSuccess)
-{
-    // Token consumido correctamente
-}
-else
-{
-    // Manejar el error (token expirado o inválido)
-}
-```

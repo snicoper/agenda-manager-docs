@@ -12,23 +12,26 @@ Un `Role` es una entidad que representa un rol de usuario en el sistema. Los rol
 ### Responsabilidades
 
 - **Estado**:
+
   - Por defecto el sistema debe tener roles predefinidos, como "Administrator", "Employee", "Customer", etc y estos roles deben ser marcados `Editable` como `false` para que no puedan ser modificados por los usuarios.
 
 - **Eventos de Dominio**:
+
   - Disparar eventos de dominio cuando se realicen cambios significativos en el role.
 
 - **Validación**:
+
   - Asegurarse de que `Name` y `Description` no exceden la longitud permitida.
 
   ## Propiedades
 
-| Propiedad     | Tipo                | Acceso          | Descripción                           |
-|---------------|---------------------|-----------------|---------------------------------------|
-| `Id`          | `RoleId`            | get             | Identificador único del rol.          |
-| `Name`        | `string`            | get/private set | Nombre del rol.                       |
-| `Description` | `string`            | get/private set | Descripción del rol.                  |
-| `Editable`    | `bool`              | get/private set | Indica si el rol es editable.         |
-| `Permissions` | `List<Permission>`  | get/private set | Lista de permisos asociados al rol.   |
+| Propiedad     | Tipo               | Descripción                         |
+| ------------- | ------------------ | ----------------------------------- |
+| `Id`          | `RoleId`           | Identificador único del rol.        |
+| `Name`        | `string`           | Nombre del rol.                     |
+| `Description` | `string`           | Descripción del rol.                |
+| `IsEditable`  | `bool`             | Indica si el rol es editable.       |
+| `Permissions` | `List<Permission>` | Lista de permisos asociados al rol. |
 
 ## Invariantes
 
@@ -40,20 +43,24 @@ Un `Role` es una entidad que representa un rol de usuario en el sistema. Los rol
 ## Reglas de Negocio
 
 - **Unicidad de Identidad**:
+
   - El `RoleId` debe ser único en toda la aplicación.
   - El `Name` debe ser único en toda la aplicación.
   - El `Description` debe ser único en toda la aplicación.
 
 - **Estado Editable**:
+
   - Un rol **NO** puede cambiar su estado de editable (`Editable`).
   - Un role `Editable` con estado a `false` nunca puede ser eliminado.
   - Todos los roles creados por personal autorizado deben tener `Editable` con estado a `true`.
 
 - **Permisos**:
+
   - Un rol puede tener múltiples permisos, pero no permisos duplicados.
   - Los permisos asociados a un rol deben permitir acciones específicas dentro del sistema.
 
 - **Actualización de Name y Description**:
+
   - Un rol puede cambiar su nombre y descripción, pero solo si el rol es editable.
 
 - **Integridad**:
@@ -64,16 +71,19 @@ Un `Role` es una entidad que representa un rol de usuario en el sistema. Los rol
 El sistema define cuatro roles inmutables (`Editable = false`) que no pueden ser modificados:
 
 - **Administrator**:
+
   - Acceso total al sistema
   - Gestión de usuarios, roles y configuración del sistema
   - Asignado típicamente a administradores del sistema
 
 - **Employee**
+
   - Personal interno de la empresa
   - Acceso a funciones operativas básicas
   - No implica capacidad de ser asignado como recurso
 
 - **Customer**:
+
   - Acceso limitado al sistema
   - Destinatarios de los servicios
   - Pueden ver sus propias citas e historial
@@ -87,6 +97,19 @@ El sistema define cuatro roles inmutables (`Editable = false`) que no pueden ser
 > **Nota**: Estos roles son predefinidos por el sistema y no pueden ser modificados ni eliminados.
 
 ## Métodos
+
+### Constructor
+
+```csharp
+internal Role(RoleId roleId, string name, string description, bool isEditable = false)
+```
+
+- **Descripción**: Crea una nueva instancia de `Role`.
+  - `roleId`: Identificador único del rol.
+  - `name`: Nombre del rol.
+  - `description`: Descripción del rol.
+  - `isEditable`: Indica si el rol es editable.
+- **Eventos**: Lanza el evento `RoleCreatedDomainEvent`.
 
 ### UpdateRole
 
@@ -148,10 +171,12 @@ private static void GuardAgainstInvalidDescription(string description)
 La clase `Role` tiene los siguientes estados y transiciones:
 
 - **Estados Iniciales**:
+
   - **Estado Inicial**: Al crear un nuevo rol, el estado inicial es:
     - `Editable`: `false`, por defecto el rol no es editable.
 
 - **Estados Posibles**
+
   - **Editable**:
     - `true`: El rol es editable.
     - `false`: El rol no es editable y no puede ser eliminado.
@@ -194,3 +219,4 @@ La clase `Role` tiene los siguientes estados y transiciones:
 ```csharp
 // Crear un nuevo rol.
 var role = new Role(RoleId.Create(), "Admin", "Administrator role");
+```

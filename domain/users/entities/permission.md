@@ -20,16 +20,16 @@ Los permisos son inmutables una vez creados y su creación debe realizarse por e
 
 ## Propiedades
 
-| Nombre | Tipo             | Acceso          | Descripción                     |
-| ------ | ---------------- | ----------------|-------------------------------- |
-| `Id`   | `PermissionId`   | get             | Identificador único del permiso |
-| `Name` | `string`         | get/private set | Nombre del permiso              |
+| Nombre | Tipo           | Descripción                     |
+| ------ | -------------- | ------------------------------- |
+| `Id`   | `PermissionId` | Identificador único del permiso |
+| `Name` | `string`       | Nombre del permiso              |
 
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento
 - El `Name` del permiso no puede ser nulo o vacío
-- El ``Name`` del permiso no puede exceder los 100 caracteres
+- El `Name` del permiso no puede exceder los 100 caracteres
 - El `Name` del permiso debe tener un sufijo (`:create`, `:read`, `:update`, `:delete`) al final
   - Ejemplos validos:
     - `user:create`
@@ -40,6 +40,7 @@ Los permisos son inmutables una vez creados y su creación debe realizarse por e
 ## Reglas de negocio
 
 - **Inmutabilidad de los Permisos**:
+
   - Los permisos son inmutables una vez creados, no se podrán modificar o eliminar.
 
 - **Unicidad de Identidad**:
@@ -48,22 +49,30 @@ Los permisos son inmutables una vez creados y su creación debe realizarse por e
 
 ## Métodos
 
+### Constructor
+
+```csharp
+internal Permission(PermissionId permissionId, string name)
+```
+
+- **Descripción**: Crea una nueva instancia de `Permission`.
+  - `permissionId`: Identificador único del permiso.
+  - `name`: Nombre del permiso.
+- **Eventos**: `PermissionCreatedDomainEvent`: Evento de dominio que se dispara cuando se crea un nuevo permiso.
+
 ### GuardAgainstInvalidName
 
 ```csharp
 private static void GuardAgainstInvalidName(string name)
 ```
 
-- **Descripción**:  Valida el nombre del permiso.
+- **Descripción**: Valida el nombre del permiso.
   - `name`: Nombre del permiso.
 - **Excepciones**: `PermissionDomainException` si el nombre no cumple con las reglas de negocio
 
 ## Estado y Transiciones
 
-La entidad Permission es inmutable y no tiene transiciones de estado después de su creación. Una vez creado un permiso:
-    - No puede modificarse su nombre
-    - No puede eliminarse
-    - No puede modificarse su Id
+La entidad Permission es inmutable y no tiene transiciones de estado después de su creación. Una vez creado un permiso: - No puede modificarse su nombre - No puede eliminarse - No puede modificarse su Id
 
 ## Dependencias
 
@@ -99,3 +108,7 @@ La entidad Permission es inmutable y no tiene transiciones de estado después de
 - **No Aplica**
 
 ## Ejemplos de Uso
+
+```csharp
+// Crear un nuevo permiso
+var permission = new Permission(PermissionId.Create(), "user:create");
