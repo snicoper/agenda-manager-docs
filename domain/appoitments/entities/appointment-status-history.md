@@ -26,15 +26,15 @@ Entidad que representa el historial de estados de una cita en el sistema. Cada i
 
 ## Propiedades
 
-| Nombre         | Tipo                         | Descripción                                               |
-| -------------- | ---------------------------- | --------------------------------------------------------- |
-| Id             | `AppointmentStatusHistoryId` | Identificador único de la historia de estado de la cita   |
-| AppointmentId  | `AppointmentId`              | Identificador único de la cita                            |
-| Appointment    | `Appointment`                | Cita asociada a la historia de estado                     |
-| Period         | `Period`                     | Período de tiempo asociado a la historia de estado        |
-| CurrentState   | `AppointmentCurrentState`    | Estado actual de la cita                                  |
-| IsCurrentState | `bool`                       | Indica si el estado actual es el estado actual de la cita |
-| Description    | `string?`                    | Descripción del estado actual                             |
+| Nombre           | Tipo                         | Descripción                                               |
+| ---------------- | ---------------------------- | --------------------------------------------------------- |
+| `Id`             | `AppointmentStatusHistoryId` | Identificador único de la historia de estado de la cita   |
+| `AppointmentId`  | `AppointmentId`              | Identificador único de la cita                            |
+| `Appointment`    | `Appointment`                | Cita asociada a la historia de estado                     |
+| `Period`         | `Period`                     | Período de tiempo asociado a la historia de estado        |
+| `CurrentState`   | `AppointmentCurrentState`    | Estado actual de la cita                                  |
+| `IsCurrentState` | `bool`                       | Indica si el estado actual es el estado actual de la cita |
+| `Description`    | `string?`                    | Descripción del estado actual                             |
 
 ## Invariantes
 
@@ -54,11 +54,13 @@ Entidad que representa el historial de estados de una cita en el sistema. Cada i
 ## Casos de Uso
 
 1. **Registro de Nuevo Estado**
+
    - Cuando una cita cambia de estado
    - Captura del momento exacto del cambio
    - Registro opcional de motivo/descripción
 
 2. **Consulta de Historial**
+
    - Visualización de la progresión de estados
    - Análisis de tiempos entre cambios de estado
    - Auditoría de cambios
@@ -87,7 +89,7 @@ internal static AppointmentStatusHistory Create(
   - `period`: Período de tiempo asociado a la historia de estado.
   - `state`: Estado actual de la cita.
   - `description`: Descripción del estado actual.
-**Retorno**: Nueva instancia de `AppointmentStatusHistory`.
+    **Retorno**: Nueva instancia de `AppointmentStatusHistory`.
 
 ### DeactivateCurrentState
 
