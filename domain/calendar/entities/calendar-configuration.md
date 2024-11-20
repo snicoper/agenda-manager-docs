@@ -26,9 +26,25 @@ Las opciones de cada configuración están definidas en `CalendarConfigurationKe
 
 Configuraciones que solo permiten seleccionar entre un conjunto predefinido de valores:
 
-- AppointmentCreationStrategy (Direct, RequireConfirmation)
-- AppointmentOverlappingStrategy (AllowOverlapping, RejectIfOverlapping)
-- HolidayCreateStrategy (RejectIfOverlapping, CancelOverlapping, AllowOverlapping)
+- `AppointmentCreationStrategy`
+  - **Descripción**: Determina la estrategia de creación de citas.
+  - **Opciones** Direct, RequireConfirmation
+  - **Default**: Direct
+
+- `AppointmentOverlappingStrategy`:
+  - **Descripción**: Determina cómo se manejan los solapamientos de citas.
+  - **Opciones** AllowOverlapping, RejectIfOverlapping
+  - **Default**: RejectIfOverlapping
+
+- `HolidayCreateStrategy`
+  - **Descripción**: Determina como se manejan los días festivos con los solapamientos de citas
+  - **Opciones** AllowOverlapping, RejectIfOverlapping, CancelOverlapping
+  - **Default**: RejectIfOverlapping
+
+- `ResourcesSchedulesValidationStrategy`
+  - **Descripción**: Determina si requiere validación con los horarios de los recursos.
+  - **Opciones** Validate, DoNotValidate
+  - **Default**: Validate
 
 ### Configuraciones de Valor Único (UnitValue)
 
