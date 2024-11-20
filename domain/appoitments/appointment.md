@@ -5,8 +5,6 @@
 - **Tipo**: Entidad de Dominio Sellada (sealed)
 - **Herencia**: `AggregateRoot`
 
-- (*) Pendiente de revisión.
-
 ## Descripción General
 
 Un `Appointment` representa una cita programada en el sistema que pertenece a un calendario específico. Es la unidad central de reserva que conecta un servicio concreto con un usuario en un período de tiempo determinado. Gestiona todo el ciclo de vida de la cita, incluyendo su programación, estados y finalización, asegurando que se cumplan todas las reglas de negocio y restricciones del calendario asociado.
@@ -49,6 +47,7 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 - Una cita siempre debe estar programada para una fecha/hora futura
 
 - **Period**:
+
   - Aplica las reglas del value object `Period`
     - `Start` debe ser mayor o igual a la fecha/hora actual
     - `End` debe ser mayor o igual a `Start`
@@ -58,6 +57,7 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 - La lista del historial de estados, solo puede tener un `AppointmentStatusHistory.IsCurrentState` como `true`
 
 - **Resources**:
+
   - La lista de recursos asignados nunca debe ser `null` o vacía
   - Los recursos asignados deben ser válidos y estar disponibles durante el período
 
@@ -66,6 +66,7 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 - Una cita completada no puede volver a estados activos
 
 - **RequiresRescheduling**:
+
   - Si `RequireConfirmation` está activo, la cita debe tener un token válido asociado
   - Cuando se consuma el token de confirmación, se debe eliminar el token de la base de datos
 
@@ -82,6 +83,7 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 Determina el estado inicial de una cita al crearla:
 
 - **Direct**
+
   - Las citas se crean directamente en estado `Accepted`
   - No requiere confirmación adicional
 
@@ -96,6 +98,7 @@ Determina el estado inicial de una cita al crearla:
 Determina la estrategia de validación de solapamiento de citas cuando se crea o edita una nueva cita:
 
 - **AllowOverlapping**
+
   - Permite solapamiento de citas
   - No realiza validaciones solapamiento con otras citas
 
@@ -108,6 +111,7 @@ Determina la estrategia de validación de solapamiento de citas cuando se crea o
 Determina la estrategia de validación de la disponibilidad de recursos cuando se crea o edita una nueva cita:
 
 - **Validate**:
+
   - Valida la disponibilidad de recursos seleccionados en la cita
   - Si no hay disponibilidad, la cita no sera creada o editada
 
@@ -155,18 +159,21 @@ stateDiagram-v2
         Can return to Pending/Accepted
         based on creation strategy
     end note
-  ```
+```
 
 #### Estados Posibles
 
 - **Estados Iniciales**:
+
   - `Pending`: Esperando confirmación del cliente
   - `Accepted`: Confirmada y programada
 
 - **Estados Especiales**:
+
   - `RequiresRescheduling`: Requiere reprogramación
 
 - **Estados Activos**:
+
   - `Waiting`: El cliente está en espera sea físicamente presente o no
   - `InProgress`: En proceso, la cita está en curso sea físicamente presente o no
 
@@ -187,7 +194,7 @@ stateDiagram-v2
 #### Validaciones por Estado
 
 - `Pending`: Debe tener token de confirmación válido si aplica
-- `Waiting`: Solo dentro del período de la cita (*)
+- `Waiting`: Solo dentro del período de la cita
 - `InProgress`: Solo si estaba en estado `Waiting`
 - `Completed`: Solo si estaba en estado `InProgress`
 - `Cancelled`: Permitido desde cualquier estado no final
@@ -205,15 +212,18 @@ stateDiagram-v2
 - La lista de recursos no puede ser nula o vacía en ningún momento
 
 - Obtener estrategia de creación
+
   - Establecer un estado inicial valido `Pending` o `Accepted` según la estrategia de creación
 
 - Validación días festivos de un calendario
 
 - Obtener estrategia de solapamiento de citas
+
   - Si se permite solapamiento, no se realizan validaciones adicionales
   - Si no se permite solapamiento, se realizan validaciones adicionales
 
 - Obtener estrategia de validación de horarios de los recursos
+
   - Si se valida, se realizan validaciones adicionales
   - Si no se valida, no se realizan validaciones adicionales
 
@@ -430,6 +440,7 @@ private void GuardAgainstMultipleCurrentStatesInStatusHistories()
 ### Directas
 
 - **Entidades Base**:
+
   - `AggregateRoot`: Base class que designa esta entidad como raíz de agregado, proporcionando control transaccional y consistencia del agregado
     - Hereda capacidades de auditoría (`AuditableEntity`)
     - Hereda gestión de eventos de dominio (`Entity`)
@@ -451,7 +462,7 @@ private void GuardAgainstMultipleCurrentStatesInStatusHistories()
 ### Policies
 
 - `IAppointmentCreationStrategyPolicy`: Define el contrato para la política de estrategia de creación de citas
-- `IAppointmentOverlapPolicy`:  Define el contrato para la política de superposición de citas
+- `IAppointmentOverlapPolicy`: Define el contrato para la política de superposición de citas
 
 ### Value Objects
 
@@ -468,6 +479,7 @@ private void GuardAgainstMultipleCurrentStatesInStatusHistories()
 
 ## ToDo List
 
+- [ ] Definir como guardar el token de confirmación de citas.
 - [ ] `EventHandler`: Implementar event handler `AppointmentStatusHistoryCreatedDomainEvent(Id, CurrentState)` comprobar si es `AppointmentStatus.Pending`, generar `UserToken` y enviar correo electrónico de confirmación.
 - [ ] Definir tiempo para cancelación de citas expiradas en estado no final.
 - [ ] Definir tiempo de expiración para el token de confirmación de citas.

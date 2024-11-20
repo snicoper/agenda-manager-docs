@@ -421,25 +421,3 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 La entidad `User` no puede ser instanciada fuera de un contexto de dominio. Para crear un nuevo usuario, se debe utilizar el método `CreateUserAsync` del service model `UserManager`.
 
 ## Ejemplos de Uso
-
-```csharp
-// Crear un nuevo usuario a partir de un identificador único.
-var user = new User(
-    userId: UserId.From(Guid.Parse("123e4567-e89b-12d3-a456-426614174000")),
-    emailAddress: EmailAddress.From("john.doe@example.com"),
-    passwordHash: PasswordHash.FromHashed("PasswordHash"),
-    firstName: "John",
-    LastName: "Doe",
-    isActive: true,
-    emailConfirmed: true)
-
-// Crear un nuevo usuario con un identificador único aleatorio.
-var user = new User(
-    userId: UserId.create(),
-    emailAddress: EmailAddress.From("john.doe@example.com"),
-    passwordHash: PasswordHash.FromHashed("PasswordHash"),
-    firstName: "John",
-    LastName: "Doe",
-    isActive: true,
-    emailConfirmed: true)
-```
