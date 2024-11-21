@@ -51,18 +51,18 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
 
   ## Propiedades
 
-| Propiedad          | Tipo                            | Acceso          | Descripción                                        |
-| ------------------ | ------------------------------- | --------------- | -------------------------------------------------- |
-| `UserId`           | `UserId`                        | get             | Identificador único del usuario.                   |
-| `PasswordHash`     | `PasswordHash`                  | get/private set | Hash de la contraseña del usuario.                 |
-| `Email`            | `EmailAddress`                  | get/private set | Dirección de correo electrónico única del usuario. |
-| `IsEmailConfirmed` | `bool`                          | get/private set | Estado de confirmación del email del usuario.      |
-| `FirstName`        | `string?`                       | get/private set | Nombre del usuario, puede ser `null`.              |
-| `LastName`         | `string?`                       | get/private set | Apellido del usuario, puede ser `null`.            |
-| `IsActive`         | `bool`                          | get/private set | Estado de actividad del usuario.                   |
-| `RefreshToken`     | `Token?`                        | get/private set | Token de refresco de autorización del usuario.     |
-| `UserRoles`        | `IReadOnlyCollection<UserRole>` | get/private set | Lista de roles asociados al usuario.               |
-| `Tokens`           | `IReadOnlyCollection<Token>`    | get/private set | Lista de tokens asociados al usuario.              |
+| Propiedad          | Tipo                      | Descripción                                        |
+| ------------------ | ------------------------- | -------------------------------------------------- |
+| `UserId`           | `UserId`                  | Identificador único del usuario.                   |
+| `PasswordHash`     | `PasswordHash`            | Hash de la contraseña del usuario.                 |
+| `Email`            | `EmailAddress`            | Dirección de correo electrónico única del usuario. |
+| `IsEmailConfirmed` | `bool`                    | Estado de confirmación del email del usuario.      |
+| `FirstName`        | `string?`                 | Nombre del usuario, puede ser `null`.              |
+| `LastName`         | `string?`                 | Apellido del usuario, puede ser `null`.            |
+| `IsActive`         | `bool`                    | Estado de actividad del usuario.                   |
+| `RefreshToken`     | `Token?`                  | Token de refresco de autorización del usuario.     |
+| `UserRoles`        | `IReadOnlyList<UserRole>` | Lista de roles asociados al usuario.               |
+| `Tokens`           | `IReadOnlyList<Token>`    | Lista de tokens asociados al usuario.              |
 
 ## Invariantes
 
@@ -411,6 +411,7 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 ### Directas
 
 - **Entidades Base**:
+
   - `AggregateRoot`: Base class que designa esta entidad como raíz de agregado, proporcionando control transaccional y consistencia del agregado
     - Hereda capacidades de auditoría (`AuditableEntity`)
     - Hereda gestión de eventos de dominio (`Entity`)

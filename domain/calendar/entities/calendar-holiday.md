@@ -14,15 +14,18 @@
 ### Responsabilidades
 
 - **Gestión Temporal**:
+
   - Mantener la información del período festivo
   - Gestionar los días de la semana aplicables
   - Validar la coherencia temporal del holiday
 
 - **Eventos de Dominio**:
+
   - Notificar la creación y modificación de holidays
   - Informar cambios en el período o días aplicables
 
 - **Validación**:
+
   - Asegurar la validez del período temporal
   - Validar los días de la semana seleccionados
   - Verificar el formato y longitud de nombre y descripción
@@ -42,17 +45,17 @@
 
 ## Propiedades
 
-| Nombre         | Tipo                | Acceso           | Descripción                                               |
-| -------------- | ------------------- | ---------------------------------------------------------------------------- |
-| `Id`           | `CalendarHolidayId` | get              | Identificador único del holiday                           |
-| `CalendarId`   | `CalendarId`        | get/private set  | Identificador del calendario asociado                     |
-| `Calendar`     | `Calendar`          | get/private set  | Referencia al calendario asociado                         |
-| `SettingsId`   | `CalendarSettingsId`| get/private set  | Identificador de la configuración del calendario asociado |
-| `Settings`     | `CalendarSettings`  | get/private set  | Configuración del calendario asociado                     |
-| `Period`       | `Period`            | get/private set  | Periodo del holiday                                       |
-| `Weekdays`     | `Weekdays`          | get/private set  | Días de la semana del holiday                             |
-| `Name`         | `string`            | get/private set  | Nombre del holiday                                        |
-| `Description`  | `string`            | get/private set  | Descripción del holiday                                   |
+| Nombre        | Tipo                 | Descripción                                               |
+| ------------- | -------------------- | --------------------------------------------------------- |
+| `Id`          | `CalendarHolidayId`  | Identificador único del holiday                           |
+| `CalendarId`  | `CalendarId`         | Identificador del calendario asociado                     |
+| `Calendar`    | `Calendar`           | Referencia al calendario asociado                         |
+| `SettingsId`  | `CalendarSettingsId` | Identificador de la configuración del calendario asociado |
+| `Settings`    | `CalendarSettings`   | Configuración del calendario asociado                     |
+| `Period`      | `Period`             | Periodo del holiday                                       |
+| `Weekdays`    | `Weekdays`           | Días de la semana del holiday                             |
+| `Name`        | `string`             | Nombre del holiday                                        |
+| `Description` | `string`             | Descripción del holiday                                   |
 
 ## Invariantes
 
@@ -64,13 +67,16 @@
 ## Reglas de negocio
 
 - **Unicidad de Identificador**:
+
   - `Id` no puede ser `null` en ningún momento y debe ser único en toda la aplicación.
 
 - **Nombre y Descripción**:
+
   - El nombre del holiday debe ser único en toda la aplicación y debe tener entre 1 y 50 caracteres.
   - La descripción del holiday debe tener entre 1 y 500 caracteres.
 
 - **Reglas Temporales**:
+
   - El período debe tener una fecha de inicio válida
   - Si el período es recurrente, debe tener una fecha de fin
   - Los días de semana seleccionados deben ser coherentes con el período
@@ -178,7 +184,7 @@ private static void GuardAgainstInvalidDescription(string description)
 - `CalendarId`: Identificador único del calendario
 - `Period`: Representa un periodo de tiempo
 - `Weekdays`: Días de la semana del holiday
-ys.md): Representa los días de la semana
+  ys.md): Representa los días de la semana
 
 ## Comentarios adicionales
 

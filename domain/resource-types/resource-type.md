@@ -18,14 +18,17 @@ Un `ResourceType` sirve como plantilla para la creación de recursos específico
 ### Responsabilidades
 
 - **Clasificación**:
+
   - Definir si un tipo de recurso requiere un rol (recursos humanos) o no (recursos físicos)
   - Servir como base para la creación de recursos específicos
 
 - **Integridad**:
+
   - Mantener la consistencia en la definición de tipos de recursos
   - Asegurar que los tipos de recursos con rol tengan un rol válido
 
 - **Eventos de Dominio**:
+
   - Disparar eventos de dominio cuando se realicen cambios significativos en el tipo de recurso.
 
 - **Validación**:
@@ -33,13 +36,13 @@ Un `ResourceType` sirve como plantilla para la creación de recursos específico
 
 ## Propiedades
 
-| Propiedad     | Tipo             | Acceso          |Descripción                                            |
-|---------------|------------------|-----------------|-------------------------------------------------------|
-| `Id`          | `ResourceTypeId` | get             | Identificador único del tipo de recurso.              |
-| `Name`        | `string`         | get/private set | Nombre del tipo de recurso.                           |
-| `Description` | `string`         | get/private set | Descripción del tipo de recurso.                      |
-| `RoleId`      | `RoleId?`        | get/private set | Identificador del rol asociado al tipo de recurso.    |
-| `Resources`   | `List<Resource>` | get/private set | Colección de recursos asociados al tipo de recurso.   |
+| Propiedad     | Tipo                      | Descripción                                         |
+| ------------- | ------------------------- | --------------------------------------------------- |
+| `Id`          | `ResourceTypeId`          | Identificador único del tipo de recurso.            |
+| `Name`        | `string`                  | Nombre del tipo de recurso.                         |
+| `Description` | `string`                  | Descripción del tipo de recurso.                    |
+| `RoleId`      | `RoleId?`                 | Identificador del rol asociado al tipo de recurso.  |
+| `Resources`   | `IReadOnlyList<Resource>` | Colección de recursos asociados al tipo de recurso. |
 
 ## Invariantes
 
@@ -51,30 +54,36 @@ Un `ResourceType` sirve como plantilla para la creación de recursos específico
 ## Reglas de negocio
 
 - **Unicidad de Identificador**:
+
   - `Id` debe ser único en toda la aplicación.
   - `RoleId` si no es `null` debe ser único en toda la aplicación.
   - `Name` debe ser único en toda la aplicación.
 
 - **Nombre y Descripción**:
+
   - El nombre del tipo de recurso debe ser único en toda la aplicación y debe tener entre 1 y 50 caracteres.
   - La descripción del calendario debe tener entre 1 y 500 caracteres.
 
 - **Rol Asociado**:
+
   - Un `ResourceType` puede tener o no un rol asociado
   - Si tiene rol, representa un recurso que requiere personal (ejemplo: Odontólogo)
   - Si no tiene rol, representa un recurso físico (ejemplo: Gabinete)
 
 - **Eliminación**:
+
   - No se puede eliminar un `ResourceType` que tenga recursos asociados
   - No se puede eliminar un `ResourceType` que esté siendo usado en servicios
 
 - **Modificación**:
+
   - Un `ResourceType` solo permite modificar su nombre y descripción
   - El `RoleId` se establece en la creación y no puede ser modificado posteriormente
   - La modificación del nombre debe mantener la restricción de unicidad
   - La modificación de la descripción debe mantener las restricciones de longitud
 
 - **Gestión y Validaciones**:
+
   - Toda creación y modificación debe realizarse a través de `ResourceTypeManager`
   - Los métodos de creación y modificación del agregado son `internal` para forzar el uso del manager
   - El manager es responsable de:
@@ -177,6 +186,7 @@ private static void GuardAgainstInvalidDescription(string description)
 #### Clínica Dental
 
 - **Con Role**:
+
   - **Nombre**: "Odontólogo"
   - **Descripción**: "Profesional especializado en diagnóstico y tratamiento dental"
   - **Role**: Employee
@@ -189,6 +199,7 @@ private static void GuardAgainstInvalidDescription(string description)
 #### Empresa de Calesas
 
 - **Con Role**:
+
   - **Nombre**: "Cochero"
   - **Descripción**: "Conductor profesional de carruajes"
   - **Role**: Employee
@@ -206,3 +217,4 @@ var resourceType = ResourceType.Create(...);
 
 // ✅ Uso correcto a través del manager
 var resourceType = await resourceTypeManager.CreateResourceTypeAsync(...);
+```

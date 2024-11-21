@@ -112,3 +112,4 @@ La entidad Permission es inmutable y no tiene transiciones de estado después de
 ```csharp
 // Crear un nuevo permiso
 var permission = new Permission(PermissionId.Create(), "user:create");
+```

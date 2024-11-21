@@ -16,6 +16,7 @@ Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfi
 ### Responsabilidades
 
 - **Creación de un nuevo calendario**:
+
   - La creación de un nuevo calendario implica la creación de un nuevo `CalendarConfiguration` asociado.
   - El `CalendarConfiguration` se crea con la configuración predeterminada.
     - El valor por defecto de `HolidayCreateStrategy` cuando se crea un nuevo calendario debe ser `RejectIfOverlapping`.
@@ -24,15 +25,19 @@ Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfi
     - El valor por defecto de `IanaTimeZone` debe ser proporcionado por el usuario.
 
 - **Eventos de Dominio**:
+
   - Disparar eventos de dominio cuando se realicen cambios significativos en el calendario.
 
 - **Validación**:
+
   - Asegurarse de que el `Name` y `Description` cumplen con las restricciones de longitud.
 
 - **Gestión de Estado**:
+
   - Gestionar el estado activo o inactivo del calendario (`IsActive`).
 
 - **Gestión de Holidays**:
+
   - Mantener la colección de días festivos
   - Asegurar la consistencia al añadir o eliminar holidays
   - Emitir eventos de dominio relacionados con holidays
@@ -44,14 +49,14 @@ Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfi
 
 ## Propiedades
 
-| Propiedad        | Tipo                         |Descripción                                            |
-|------------------|------------------------------|-------------------------------------------------------|
-| `Id`             | `CalendarId`                 | Identificador único del calendario.                   |
-| `Name`           | `string`                     | Nombre del calendario.                                |
-| `Description`    | `string`                     | Descripción del calendario.                           |
-| `IsActive`       | `bool`                       | Indica si el calendario está activo.                  |
-| `Holidays`       | `List<CalendarHoliday>`      | Lista de vacaciones asociadas al calendario.          |
-| `Configurations` | `List<CalendarConfiguration>`| Lista de configuraciones asociadas al calendario.     |
+| Propiedad        | Tipo                                   | Descripción                                       |
+| ---------------- | -------------------------------------- | ------------------------------------------------- |
+| `Id`             | `CalendarId`                           | Identificador único del calendario.               |
+| `Name`           | `string`                               | Nombre del calendario.                            |
+| `Description`    | `string`                               | Descripción del calendario.                       |
+| `IsActive`       | `bool`                                 | Indica si el calendario está activo.              |
+| `Holidays`       | `IReadOnlyList<CalendarHoliday>`       | Lista de vacaciones asociadas al calendario.      |
+| `Configurations` | `IReadOnlyList<CalendarConfiguration>` | Lista de configuraciones asociadas al calendario. |
 
 ## Invariantes
 
@@ -63,18 +68,22 @@ Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfi
 ## Reglas de Negocio
 
 - **Unicidad de Identificador**:
+
   - `Id` debe ser único en toda la aplicación.
   - `Name` debe ser único en toda la aplicación.
 
 - **Gestión de Holidays**:
+
   - Un holiday debe pertenecer a un único calendario
-  - No puede haber holidays duplicados (misma fecha) en un calendario *
+  - No puede haber holidays duplicados (misma fecha) en un calendario \*
   - Los holidays se eliminan en cascada al eliminar el calendario
 
 - **Estado del Configurations**:
+
   - Un calendar siempre debe tener una lista de `CalendarConfiguration` asociados
 
 - **Nombre y Descripción**:
+
   - El nombre del calendario debe ser único en toda la aplicación y debe tener entre 1 y 50 caracteres.
   - La descripción del calendario debe tener entre 1 y 500 caracteres.
 
@@ -138,7 +147,7 @@ public void UpdateConfiguration(CalendarConfigurationId configurationId, string 
   - `configurationId`: El ID de la configuración a actualizar.
   - `category`: La categoría de la configuración.
   - `selectedKey`: La clave seleccionada de la configuración.
-**Eventos**: Lanza el evento `CalendarConfigurationUpdatedDomainEvent`.
+    **Eventos**: Lanza el evento `CalendarConfigurationUpdatedDomainEvent`.
 
 ### AddHoliday
 
@@ -222,6 +231,7 @@ private static void GuardAgainstInvalidDescription(string description)
 La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones y acciones realizadas dentro del sistema.
 
 - **IsActive**:
+
   - **`true`**: El calendario está activo se pueden mostrar y crear citas dentro de él.
   - **`false`**: El calendario está inactivo y no se pueden mostrar ni crear citas dentro de él.
 

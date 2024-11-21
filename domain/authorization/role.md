@@ -29,13 +29,13 @@ Un `Role` es una entidad que representa un rol de usuario en el sistema. Los rol
 
   ## Propiedades
 
-| Propiedad     | Tipo               | Descripción                         |
-| ------------- | ------------------ | ----------------------------------- |
-| `Id`          | `RoleId`           | Identificador único del rol.        |
-| `Name`        | `string`           | Nombre del rol.                     |
-| `Description` | `string`           | Descripción del rol.                |
-| `IsEditable`  | `bool`             | Indica si el rol es editable.       |
-| `Permissions` | `List<Permission>` | Lista de permisos asociados al rol. |
+| Propiedad     | Tipo                        | Descripción                         |
+| ------------- | --------------------------- | ----------------------------------- |
+| `Id`          | `RoleId`                    | Identificador único del rol.        |
+| `Name`        | `string`                    | Nombre del rol.                     |
+| `Description` | `string`                    | Descripción del rol.                |
+| `IsEditable`  | `bool`                      | Indica si el rol es editable.       |
+| `Permissions` | `IReadOnlyList<Permission>` | Lista de permisos asociados al rol. |
 
 ## Invariantes
 

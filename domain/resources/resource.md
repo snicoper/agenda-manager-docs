@@ -16,19 +16,23 @@ El agregado root `Resource` representa un recurso en el sistema de gestión de a
 ### Responsabilidades
 
 - **Gestión del Ciclo de Vida**:
+
   - Mantener la integridad de sus datos básicos (nombre, descripción, etc.)
   - Coordinar su creación, actualización y eliminación
   - Garantizar que su eliminación solo ocurra cuando no tenga citas asociadas
 
 - **Control de Propiedades**:
+
   - Solo permitir la modificación de nombre y descripción una vez creado el recurso
   - Mantener inmutables las demás propiedades tras la creación (TypeId, UserId, CalendarId)
 
 - **Coordinación con Calendario**:
+
   - Mantener la relación con el calendario asignado
   - Asegurar que siempre tenga un calendario válido asociado
 
 - **Gestión de Programaciones**:
+
   - Mantener la colección de programaciones (ResourceSchedule)
   - Servir como punto de entrada para la gestión de disponibilidad
 
@@ -38,24 +42,25 @@ El agregado root `Resource` representa un recurso en el sistema de gestión de a
 
 ## Propiedades
 
-| Propiedad           | Tipo                      | Acceso          | Descripción                                               |
-|---------------------|---------------------------|-----------------|-----------------------------------------------------------|
-| Id                  | `ResourceId`              | get             | Identificador único del recurso.                          |
-| UserId              | `UserId?`                 | get/private set | Identificador único del usuario propietario del recurso.  |
-| User                | `User?`                   | get/private set | Usuario propietario del recurso.                          |
-| CalendarId          | `CalendarId`              | get/private set | Identificador único del calendario asociado al recurso.   |
-| Calendar            | `Calendar`                | get/private set | Calendario asociado al recurso.                           |
-| TypeId              | `ResourceTypeId`          | get/private set | Identificador único del tipo de recurso.                  |
-| Name                | `string`                  | get/private set | Nombre del recurso.                                       |
-| Description         | `string`                  | get/private set | Descripción del recurso.                                  |
-| IsActive            | `bool`                    | get/private set | Indica si el recurso está activo o no.                    |
-| DeactivationReason  | `string?`                 | get/private set | Último motivo por el que se desactivó el recurso.         |
-| ColorScheme         | `string`                  | get/private set | Esquema de color del recurso.                             |
-| Schedules           | `List<ResourceSchedule>`  | get/private set | Programaciones asociadas al recurso.                      |
+| Propiedad          | Tipo                              | Descripción                                              |
+| ------------------ | --------------------------------- | -------------------------------------------------------- |
+| Id                 | `ResourceId`                      | Identificador único del recurso.                         |
+| UserId             | `UserId?`                         | Identificador único del usuario propietario del recurso. |
+| User               | `User?`                           | Usuario propietario del recurso.                         |
+| CalendarId         | `CalendarId`                      | Identificador único del calendario asociado al recurso.  |
+| Calendar           | `Calendar`                        | Calendario asociado al recurso.                          |
+| TypeId             | `ResourceTypeId`                  | Identificador único del tipo de recurso.                 |
+| Name               | `string`                          | Nombre del recurso.                                      |
+| Description        | `string`                          | Descripción del recurso.                                 |
+| IsActive           | `bool`                            | Indica si el recurso está activo o no.                   |
+| DeactivationReason | `string?`                         | Último motivo por el que se desactivó el recurso.        |
+| ColorScheme        | `string`                          | Esquema de color del recurso.                            |
+| Schedules          | `IReadOnlyList<ResourceSchedule>` | Programaciones asociadas al recurso.                     |
 
 ## Invariantes
 
 - **Unicidad de Identificador**:
+
   - `Id` no puede ser `null` en ningún momento
   - `UserId` puede ser `null` o no, pero si no es `null` debe ser un valor válido
   - `CalendarId` no puede ser `null` en ningún momento
@@ -73,16 +78,19 @@ El agregado root `Resource` representa un recurso en el sistema de gestión de a
 ## Reglas de negocio
 
 - **Proceso de Creación de Recurso**:
+
   - El proceso de creación de un recurso implica la asignación de un tipo de recurso al recurso
   - Si el tipo de recurso tiene un RoleId asignado, requiere la asignación de un usuario con ese rol específico
   - Si el tipo de recurso no tiene RoleId asignado, el UserId debe ser null
   - Una vez creado, estas asignaciones son inmutables
 
 - **Proceso de Actualización de Recurso**:
+
   - Solo se permite la modificación del nombre y descripción del recurso
   - No se permite modificar el tipo de recurso, usuario o calendario asignado
 
 - **Proceso de Eliminación de Recurso**:
+
   - Solo se puede eliminar un recurso si no tiene citas asignadas, independientemente del estado de las mismas
   - La eliminación es física (se elimina completamente de la base de datos)
   - Antes de la eliminación, el sistema debe verificar la ausencia total de citas asociadas
@@ -166,7 +174,7 @@ public Result UpdateSchedule(ResourceScheduleId scheduleId)
 - **Excepciones**:
 - **Eventos**:
   - `ResourceScheduleUpdatedDomainEvent`: Evento que se dispara cuando se actualiza una programación del recurso.
-**Retorno**: `Result` Resultado de la operación.
+    **Retorno**: `Result` Resultado de la operación.
 
 ### Create
 
@@ -195,7 +203,7 @@ internal static Resource Create(
 - **Excepciones**:
 - **Eventos**:
   - `ResourceCreatedDomainEvent`: Evento que se dispara cuando se crea un nuevo recurso.
-**Retorno**: La instancia de `Resource` creada.
+    **Retorno**: La instancia de `Resource` creada.
 
 ### Update
 
@@ -243,6 +251,7 @@ private static void GuardAgainstInvalidDescription(string description)
 ### Directas
 
 - **Entidades Base**:
+
   - `AggregateRoot`: Base class que designa esta entidad como raíz de agregado, proporcionando control transaccional y consistencia del agregado
     - Hereda capacidades de auditoría (`AuditableEntity`)
     - Hereda gestión de eventos de dominio (`Entity`)

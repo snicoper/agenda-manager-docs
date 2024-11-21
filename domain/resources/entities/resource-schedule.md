@@ -22,23 +22,28 @@ Los horarios tipo `Unavailable` tienen precedencia sobre los `Available`, permit
 ### Responsabilidades
 
 - **Gestión de la Disponibilidad**:
+
   - Mantener y gestionar los períodos de disponibilidad del recurso
   - Coordinar la precedencia entre horarios disponibles y no disponibles
   - Validar que los días de la semana especificados sean válidos
   - Controlar el estado de activación del horario
 
 - **Gestión del Ciclo de Vida**:
+
   - Mantener la integridad de sus datos (período, tipo, días disponibles)
   - Coordinar la creación, actualización y eliminación de horarios
   - Emitir eventos de dominio cuando los cambios para que afectados sean notificados
   - Gestionar las transiciones de estado activo/inactivo
 
 - **Gestión de Cambios**:
+
   - Emitir eventos de dominio para notificar cambios en la programación
-  - Mantener la trazabilidad de las modificaciones realizadas *
+  - Mantener la trazabilidad de las modificaciones realizadas \*
 
 - **Estados de Actividad**:
+
   - **Activo** (`IsActive = true`):
+
     - Estado inicial por defecto al crear un horario
     - Estado operativo normal
     - Participa en la validación de disponibilidad del recurso
@@ -50,19 +55,19 @@ Los horarios tipo `Unavailable` tienen precedencia sobre los `Available`, permit
 
 ## Propiedades
 
-| Propiedad           | Tipo                      | Acceso          | Descripción                                               |
-|---------------------|---------------------------|-----------------|-----------------------------------------------------------|
-| `Id`                | `ResourceScheduleId`      | get             | Identificador único de la programación de recurso.        |
-| `ResourceId`        | `ResourceId`              | get/private set | Identificador del recurso asociado a la programación.     |
-| `Resource`          | `Resource`                | get/private set | Recurso asociado a la programación.                       |
-| `CalendarId`        | `CalendarId`              | get/private set | Identificador del calendario asociado a la programación.  |
-| `Calendar`          | `Calendar`                | get/private set | Calendario asociado a la programación.                    |
-| `Period`            | `Period`                  | get/private set | Período de disponibilidad del recurso.                    |
-| `Type`              | `ResourceScheduleType`    | get/private set | Tipo de programación de recurso.                          |
-| `WeekDays`          | `AvailableDays`           | get/private set | Días de la semana en los que el recurso está disponible.  |
-| `Name`              | `string`                  | get/private set | Nombre de la programación de recurso.                     |
-| `Description`       | `string?`                 | get/private set | Descripción de la programación de recurso.                |
-| `IsActive`          | `bool`                    | get/private set | Estado de activación del horario.                         |
+| Propiedad     | Tipo                   | Descripción                                              |
+| ------------- | ---------------------- | -------------------------------------------------------- |
+| `Id`          | `ResourceScheduleId`   | Identificador único de la programación de recurso.       |
+| `ResourceId`  | `ResourceId`           | Identificador del recurso asociado a la programación.    |
+| `Resource`    | `Resource`             | Recurso asociado a la programación.                      |
+| `CalendarId`  | `CalendarId`           | Identificador del calendario asociado a la programación. |
+| `Calendar`    | `Calendar`             | Calendario asociado a la programación.                   |
+| `Period`      | `Period`               | Período de disponibilidad del recurso.                   |
+| `Type`        | `ResourceScheduleType` | Tipo de programación de recurso.                         |
+| `WeekDays`    | `AvailableDays`        | Días de la semana en los que el recurso está disponible. |
+| `Name`        | `string`               | Nombre de la programación de recurso.                    |
+| `Description` | `string?`              | Descripción de la programación de recurso.               |
+| `IsActive`    | `bool`                 | Estado de activación del horario.                        |
 
 ## Invariantes
 
@@ -80,13 +85,16 @@ Los horarios tipo `Unavailable` tienen precedencia sobre los `Available`, permit
 ## Reglas de Negocio
 
 - **Gestión de Modificaciones**:
+
   - La edición solo permite modificar: `AvailableDays`, `Period`, `Name` y `Description`
   - Al modificar un horario, se emitirá un evento de dominio para notificar cambios en la programación
 
 - **Eliminación**:
+
   - Al eliminar un horario, se emitirá un evento de dominio para notificar cambios en la programación
 
 - **Adición de No Disponibilidad**:
+
   - Al añadir un horario tipo `Unavailable`, se emitirá un evento de dominio para notificar cambios en la programación
 
 - **Gestión de Estado Activo**:
@@ -137,7 +145,7 @@ internal bool Update(Period period, string name, string? description, WeekDays a
   - `name`: Nombre de la programación de recurso.
   - `description`: Descripción de la programación de recurso.
   - `availableDays`: Días de la semana en los que el recurso está disponible.
-**Retorno**: `true` si hubo actualización, `false` en caso contrario.
+    **Retorno**: `true` si hubo actualización, `false` en caso contrario.
 
 ### Activate
 
@@ -194,6 +202,7 @@ private void GuardAgainstInvalidDescription(string? description)
 ### Directas
 
 - **Entidades Base**:
+
   - `AggregateRoot`: Base class que designa esta entidad como raíz de agregado, proporcionando control transaccional y consistencia del agregado
     - Hereda capacidades de auditoría (`AuditableEntity`)
     - Hereda gestión de eventos de dominio (`Entity`)
@@ -227,6 +236,7 @@ private void GuardAgainstInvalidDescription(string? description)
 El `Period` es un Value Object que encapsula dos aspectos fundamentales de un intervalo de tiempo:
 
 1. **Componente de Fecha**:
+
    - Representa el rango de fechas en el calendario (ej: 01/01/2024 - 31/12/2024)
    - Permite definir períodos largos de disponibilidad
 
