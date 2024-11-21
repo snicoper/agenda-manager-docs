@@ -5,6 +5,10 @@
 - **Tipo**: Entidad de Dominio Sellada (sealed)
 - **Herencia**: `AggregateRoot`
 
+## ToDo List
+
+- [ ] Revisar la documentación para incluir que los recursos de tipo `User` deben tener un rol `AssignableStaff`
+
 ## Descripción General
 
 El agregado root `Resource` representa un recurso en el sistema de gestión de agenda. Define la naturaleza y características base de los recursos que pueden ser gestionados en el sistema. Cada tipo de recurso puede representar tanto recursos humanos (que requieren un rol) como recursos físicos (sin rol asociado).

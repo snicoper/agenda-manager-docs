@@ -1,7 +1,7 @@
 # Permisos de Usuario
 
 - **Entity**: `Permission`
-- **Namespace**: `AgendaManager.Domain.Users.Entities`
+- **Namespace**: `AgendaManager.Domain.Authorization.Entities`
 - **Tipo**: Entidad de Dominio Sellada (sealed)
 - **Herencia**: `AuditableEntity`
 
