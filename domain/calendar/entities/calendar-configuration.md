@@ -1,24 +1,23 @@
 # User
 
 - **Aggregate Root**: `CalendarConfiguration`
-- **Namespace**: `AgendaManager.Domain.Calendars`
+- **Namespace**: `AgendaManager.Domain.Calendars.Entities`
 - **Tipo**: Entidad de Dominio Sellada (sealed)
 - **Herencia**: `Entity`
 
-## Vista General
+## Descripción
+
+Esta entidad se utiliza para almacenar las configuraciones específicas de un calendario. Las configuraciones son específicas para cada calendario y pueden ser modificadas por el usuario. Las opciones de cada configuración están definidas en `CalendarConfigurationKeys`, que actúa como un registro central de todas las configuraciones posibles y sus valores permitidos.
+
+### Vista General
 
 Las configuraciones de calendario permiten personalizar el comportamiento de cada calendario en la aplicación. Cada calendario tiene un conjunto de configuraciones que determinan cómo manejar:
 
 - Creación y gestión de citas
+- Comprobar si requiere validar los recursos antes de crear una cita
 - Manejo de solapamientos
 - Gestión de días festivos
 - Configuración de zona horaria
-
-## Descripción General
-
-Esta entidad se utiliza para almacenar las configuraciones específicas de un calendario. Las configuraciones son específicas para cada calendario y pueden ser modificadas por el usuario.
-
-Las opciones de cada configuración están definidas en `CalendarConfigurationKeys`, que actúa como un registro central de todas las configuraciones posibles y sus valores permitidos.
 
 ## Tipos de Configuración
 
@@ -37,7 +36,7 @@ Configuraciones que solo permiten seleccionar entre un conjunto predefinido de v
   - **Default**: RejectIfOverlapping
 
 - `HolidayCreateStrategy`
-  - **Descripción**: Determina como se manejan los días festivos con los solapamientos de citas
+  - **Descripción**: Determina como se manejan los días festivos con los solapamientos de citas ya creadas.
   - **Opciones** AllowOverlapping, RejectIfOverlapping, CancelOverlapping
   - **Default**: RejectIfOverlapping
 
@@ -66,10 +65,7 @@ Configuraciones que aceptan un valor personalizado con validación específica:
 
 - **Validación de valores UnitValue**:
   - Para configuraciones con `Key = 'UnitValue'`, validar que el valor proporcionado cumple con el formato esperado (ej: formato de zona horaria IANA).
-  - La creación de una nueva configuración no deberá permitir generar un lambda para la validación de los valores.
-
-- **Validación**:
-  - Asegurarse de que el `Name` y `Description` cumplen con las restricciones de longitud.
+  - La creación de una nueva configuración deberá permitir generar un lambda para la validación de los valores.
 
   ## Propiedades
 
@@ -118,9 +114,6 @@ internal static CalendarConfiguration Create(
   - `category`: Categoría de la configuración.
   - `selectedKey`: Clave seleccionada de la configuración.
 - **Retorna**: Nueva instancia de `CalendarConfiguration`.
-- **Validaciones**:
-  - Verifica que la configuración sea válida según `CalendarConfigurationKeys`.
-  - Comprueba las restricciones de longitud y formato.
 
 ### Update
 
@@ -133,9 +126,6 @@ internal bool Update(string category, string selectedKey)
   - `category`: Categoría de la configuración.
   - `selectedKey`: Nueva clave seleccionada para la configuración.
 - **Retorna**: `true` si la configuración fue actualizada, `false` si no hubo cambios.
-- **Validaciones**:
-  - Verifica que la nueva configuración sea válida.
-  - Comprueba si realmente hay cambios antes de actualizar.
 
 ### IsUnitValueConfiguration
 
@@ -145,7 +135,6 @@ internal bool IsUnitValueConfiguration()
 
 - **Descripción**: Verifica si la configuración es de tipo `UnitValue`.
 - **Retorna**: `true` si la configuración es de tipo `UnitValue`, `false` en caso contrario.
-- **Uso**: Útil para determinar si la configuración acepta valores personalizados.
 
 ### GuardAgainstInvalidConfiguration
 
@@ -159,10 +148,6 @@ private void GuardAgainstInvalidConfiguration(string category, string selectedKe
   - `selectedKey`: Clave seleccionada de la configuración.
 - **Excepciones**:
   - `CalendarConfigurationDomainException`: Si la configuración no es válida.
-- **Validaciones**:
-  - Verifica que la categoría exista.
-  - Comprueba que el selectedKey sea válido para la categoría.
-  - Para UnitValue, aplica la validación específica.
 
 ### GuardAgainstInvalidCategory
 
@@ -175,10 +160,6 @@ private void GuardAgainstInvalidCategory(string category)
   - `category`: Categoría de la configuración.
 - **Excepciones**:
   - `CalendarConfigurationDomainException`: Si la categoría no es válida.
-- **Validaciones**:
-  - No puede ser null.
-  - Longitud entre 1 y 100 caracteres.
-  - Debe existir en CalendarConfigurationKeys.
 
 ### GuardAgainstInvalidSelectedKey
 
@@ -191,10 +172,6 @@ private void GuardAgainstInvalidSelectedKey(string selectedKey)
   - `selectedKey`: Clave seleccionada de la configuración.
 - **Excepciones**:
   - `CalendarConfigurationDomainException`: Si la clave seleccionada no es válida.
-- **Validaciones**:
-  - No puede ser null.
-  - Longitud entre 1 y 100 caracteres.
-  - Para configuraciones no-UnitValue, debe estar en las opciones permitidas.
 
 ### HasChanges
 
@@ -207,8 +184,6 @@ private bool HasChanges(string category, string selectedKey)
   - `category`: Nueva categoría de la configuración.
   - `selectedKey`: Nueva clave seleccionada de la configuración.
 - **Retorna**: `true` si la configuración ha cambiado, `false` en caso contrario.
-
-Cuarta parte:
 
 ## Estado y Transiciones
 
