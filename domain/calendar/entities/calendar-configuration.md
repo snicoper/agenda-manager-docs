@@ -14,7 +14,7 @@ Esta entidad se utiliza para almacenar las configuraciones específicas de un ca
 Las configuraciones de calendario permiten personalizar el comportamiento de cada calendario en la aplicación. Cada calendario tiene un conjunto de configuraciones que determinan cómo manejar:
 
 - Creación y gestión de citas
-- Comprobar si requiere validar los recursos antes de crear una cita
+- Comprobar si requiere validar los horarios de los recursos antes de crear una cita
 - Manejo de solapamientos
 - Gestión de días festivos
 - Configuración de zona horaria
@@ -25,25 +25,28 @@ Las configuraciones de calendario permiten personalizar el comportamiento de cad
 
 Configuraciones que solo permiten seleccionar entre un conjunto predefinido de valores:
 
-- `AppointmentCreationStrategy`
-  - **Descripción**: Determina la estrategia de creación de citas.
-  - **Opciones** Direct, RequireConfirmation
-  - **Default**: Direct
+- `AppointmentConfirmationStrategy`
+
+  - **Descripción**: Define el estado inicial de las citas al ser creadas: automáticamente aceptadas (Accepted) o pendientes de confirmación por email (Pending)
+  - **Opciones** AutoAccept, RequireConfirmation
+  - **Default**: AutoAccept
 
 - `AppointmentOverlappingStrategy`:
-  - **Descripción**: Determina cómo se manejan los solapamientos de citas.
+
+  - **Descripción**: Define cómo gestionar los conflictos temporales al crear o modificar citas: permitir la creación aunque existan solapamientos con otras citas, o rechazarla
   - **Opciones** AllowOverlapping, RejectIfOverlapping
   - **Default**: RejectIfOverlapping
 
-- `HolidayCreateStrategy`
-  - **Descripción**: Determina como se manejan los días festivos con los solapamientos de citas ya creadas.
+- `HolidayConflictStrategy`
+
+  - **Descripción**: Define cómo gestionar los conflictos cuando un día festivo se solapa con citas existentes: permitir que coexistan, rechazar la operación, o cancelar automáticamente las citas afectadas
   - **Opciones** AllowOverlapping, RejectIfOverlapping, CancelOverlapping
   - **Default**: RejectIfOverlapping
 
-- `ResourcesSchedulesValidationStrategy`
-  - **Descripción**: Determina si requiere validación con los horarios de los recursos.
-  - **Opciones** Validate, NotValidate
-  - **Default**: Validate
+- `ResourceAvailabilityStrategy`
+  - **Descripción**: Define si se validan los horarios de disponibilidad de los recursos requeridos al crear una cita. Los requisitos del servicio siempre se comprueban, pero la validación de los horarios puede ser opcional
+  - **Opciones** ValidateSchedules, IgnoreSchedules
+  - **Default**: ValidateSchedules
 
 ### Configuraciones de Valor Único (UnitValue)
 
@@ -54,16 +57,19 @@ Configuraciones que aceptan un valor personalizado con validación específica:
 ### Responsabilidades
 
 - **Creación de una nueva configuración**:
+
   - Añadir los valores por defecto de las opciones de configuración.
   - Los valores con una `Key` -> `UnitValue`, se deberá proporcionar un valor obtenido por un usuario.
 
 - **Actualización de una configuración**:
+
   - Comprobar si la categoría de configuración existe en `CalendarConfigurationKeys.Metadata.Options`.
   - Se deberán proporcionar la `Category` y `SelectedKey` de la configuración a editar.
   - Se deberá comprobar si la `Category` y `SelectedKey` existen en `CalendarConfigurationKeys.Metadata.Options`.
     - Si la `Category` tiene una `Key` `UnitValue`, dependerá de la configuración que se haya asignado en `CalendarConfigurationKeys`.
 
 - **Validación de valores UnitValue**:
+
   - Para configuraciones con `Key = 'UnitValue'`, validar que el valor proporcionado cumple con el formato esperado (ej: formato de zona horaria IANA).
   - La creación de una nueva configuración deberá permitir generar un lambda para la validación de los valores.
 
@@ -88,6 +94,7 @@ Configuraciones que aceptan un valor personalizado con validación específica:
 ## Reglas de negocio
 
 - **Unicidad de Identificador**:
+
   - `Id` debe ser único en toda la aplicación.
   - `CalendarId` y `Category` deben ser únicos en toda la aplicación.
 
@@ -194,6 +201,7 @@ private bool HasChanges(string category, string selectedKey)
 ### Directas
 
 - **Entidades Base**:
+
   - `AuditableEntity`: Base class que proporciona capacidades de auditoría
     - Hereda gestión de eventos de dominio (`Entity`)
 
@@ -256,8 +264,8 @@ var configurations = CalendarConfigurationKeys.Metadata.Options.Values
 
 ## Glosario
 
-- **Category**: Identifica un grupo de configuraciones relacionadas (ej: AppointmentCreationStrategy)
-- **SelectedKey**: El valor específico elegido para una configuración (ej: Direct)
+- **Category**: Identifica un grupo de configuraciones relacionadas (ej: IAppointmentConfirmationStrategyPolicy)
+- **SelectedKey**: El valor específico elegido para una configuración (ej: AutoAccept)
 - **UnitValue**: Configuración que acepta un valor personalizado con validación (ej: IanaTimeZone)
 - **DefaultKey**: Valor predeterminado para una configuración cuando se crea un nuevo calendario
 
@@ -281,12 +289,12 @@ public class ConfigurationOption
 
 Esta es una representación de la tabla `CalendarConfigurations` en la base de datos:
 
-|Id                                   | CalendarId                           | Category                       | SelectedKey         |
-|------------------------------------ | ------------------------------------ | ------------------------------ | ------------------- |
-|2728eefe-7fab-4363-b9f9-6553aaf9cf35 | 6c8926c3-aed5-4ff5-960b-39def35143fc | AppointmentOverlappingStrategy | RejectIfOverlapping |
-|3ab3370e-bfc7-4edf-8049-d99be824ced7 | 6c8926c3-aed5-4ff5-960b-39def35143fc | IanaTimeZone                   | Europe/Madrid       |
-|ab7e15a4-2ef1-430f-b283-3daf3e4361ec | 6c8926c3-aed5-4ff5-960b-39def35143fc | AppointmentCreationStrategy    | Direct              |
-|b23980da-5021-4e2f-8c0e-159e6477f47c | 6c8926c3-aed5-4ff5-960b-39def35143fc | HolidayCreateStrategy          | RejectIfOverlapping |
+| Id                                   | CalendarId                           | Category                               | SelectedKey         |
+| ------------------------------------ | ------------------------------------ | -------------------------------------- | ------------------- |
+| 2728eefe-7fab-4363-b9f9-6553aaf9cf35 | 6c8926c3-aed5-4ff5-960b-39def35143fc | AppointmentOverlappingStrategy         | RejectIfOverlapping |
+| 3ab3370e-bfc7-4edf-8049-d99be824ced7 | 6c8926c3-aed5-4ff5-960b-39def35143fc | IanaTimeZone                           | Europe/Madrid       |
+| ab7e15a4-2ef1-430f-b283-3daf3e4361ec | 6c8926c3-aed5-4ff5-960b-39def35143fc | IAppointmentConfirmationStrategyPolicy | AutoAccept              |
+| b23980da-5021-4e2f-8c0e-159e6477f47c | 6c8926c3-aed5-4ff5-960b-39def35143fc | HolidayConflictStrategy                | RejectIfOverlapping |
 
 ### Guía: Añadir una Nueva Configuración
 

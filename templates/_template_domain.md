@@ -5,6 +5,10 @@
 - **Tipo**: Entidad de Dominio Sellada (sealed)
 - **Herencia**: `AggregateRoot`
 
+## ToDo List
+
+- **No Aplica**
+
 ## Descripción General
 
 - **No Aplica**
@@ -61,9 +65,5 @@
 - **No Aplica**
 
 ## Ejemplos de Uso
-
-- **No Aplica**
-
-## ToDo List
 
 - **No Aplica**

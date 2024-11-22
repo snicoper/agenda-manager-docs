@@ -1,4 +1,4 @@
-# User
+# AuditRecord
 
 - **Aggregate Root**: `AuditRecord`
 - **Namespace**: `AgendaManager.Domain.AuditRecords`

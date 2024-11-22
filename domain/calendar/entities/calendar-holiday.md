@@ -3,9 +3,11 @@
 - **Aggregate Root**: `CalendarHoliday`
 - **Namespace**: `AgendaManager.Domain.Calendars.Entities`
 - **Tipo**: Entidad de Dominio Sellada (sealed)
-- **Herencia**: `AggregateRoot`
+- **Herencia**: `AuditableEntity`
 
-> **TODO**: Considerar si `RejectIfOverlapping` es true, ver que estado pueden cambiar los estados de las citas.
+## ToDo List
+
+- **No Aplica**
 
 ## Descripción General
 
@@ -27,13 +29,14 @@
 - **Validación**:
 
   - Asegurar la validez del período temporal
-  - Validar los días de la semana seleccionados
   - Verificar el formato y longitud de nombre y descripción
 
 - **Solapamiento con Appointments**:
+
   - El solapamiento con appointments debe ser verificado antes de la creación o modificación de un holiday
-  - La decisión de solapamiento debe ser tomada por quien utiliza el sistema
+  - La decisión de solapamiento debe ser tomada por quien utiliza el sistema a través de una configuración
   - La opción de cómo manejar el solapamiento debe ser configurable en `CalendarSettings`
+  - La categoría para manejar es `HolidayConflictStrategy`
   - Las posibles estrategias de manejo del solapamiento son:
     - `RejectIfOverlapping`: Rechaza la creación/modificación del holiday si existen citas solapadas
     - `CancelOverlapping`: Cancela automáticamente las citas que se solapan y crea/modifica el holiday
@@ -113,7 +116,11 @@ public static CalendarHoliday Create(
   - `weekdays`: Días de la semana del holiday
   - `name`: Nombre del holiday
   - `description`: Descripción del holiday
-- **Eventos**: `CalendarHolidayCreatedDomainEvent`: Evento de creación del holiday
+- **Eventos**:
+  - `CalendarHolidayCreatedDomainEvent(calendarHolidayId)`:
+  - **Descripción**: Evento de creación del holiday
+  - **Parámetros**:
+    - `calendarHolidayId`: Identificador del holiday
 - **Retorno**: `CalendarHoliday` con los valores proporcionados.
 
 ### Update
@@ -128,7 +135,11 @@ public void Update(Period period, WeekDays weekDays, string name, string descrip
   - `weekdays`: Días de la semana del holiday
   - `name`: Nombre del holiday
   - `description`: Descripción del holiday
-- **Eventos**: `CalendarHolidayUpdatedDomainEvent`: Evento de actualización del holiday
+- **Eventos**:
+  - `CalendarHolidayUpdatedDomainEvent`:
+  - **Descripción**: Evento de actualización del holiday
+  - **Parámetros**:
+    - `calendarHolidayId`: Identificador del holiday
 
 ### GuardAgainstInvalidName
 
@@ -139,7 +150,7 @@ private static void GuardAgainstInvalidName(string name)
 - **Descripción**: Valida que el nombre del holiday no sea nulo o vacío
 - **Parámetros**:
   - `name`: Nombre del holiday
-- **Eventos**: `CalendarHolidayDomainException`: Evento de excepción de Dominio
+- **Excepciones**: `CalendarHolidayDomainException`: Cuando el nombre es nulo, vacío o o excede los 50 caracteres
 
 ### GuardAgainstInvalidDescription
 
@@ -150,7 +161,7 @@ private static void GuardAgainstInvalidDescription(string description)
 - **Descripción**: Valida que la descripción del holiday no exceda los 500 caracteres
 - **Parámetros**:
   - `description`: Descripción del holiday
-- **Excepciones**: `CalendarHolidayDomainException`: Evento de excepción de dominio
+- **Excepciones**: `CalendarHolidayDomainException`: Cuando la descripción es nula, vacía o excede los 500 caracteres
 
 ## Estado y Transiciones
 
@@ -166,7 +177,7 @@ private static void GuardAgainstInvalidDescription(string description)
 
 ### Entidades
 
-- **Calendar**: Referencia al calendario asociado
+- `Calendar`: Referencia al calendario asociado
 
 ### Servicios
 
@@ -184,7 +195,6 @@ private static void GuardAgainstInvalidDescription(string description)
 - `CalendarId`: Identificador único del calendario
 - `Period`: Representa un periodo de tiempo
 - `Weekdays`: Días de la semana del holiday
-  ys.md): Representa los días de la semana
 
 ## Comentarios adicionales
 

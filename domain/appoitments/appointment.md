@@ -78,11 +78,11 @@ Un `Appointment` representa una cita programada en el sistema que pertenece a un
 
 ### Estrategias de Configuración
 
-#### AppointmentCreationStrategy
+#### AppointmentConfirmationStrategy
 
 Determina el estado inicial de una cita al crearla:
 
-- **Direct**
+- **AutoAccept**
 
   - Las citas se crean directamente en estado `Accepted`
   - No requiere confirmación adicional
@@ -106,16 +106,17 @@ Determina la estrategia de validación de solapamiento de citas cuando se crea o
   - Rechaza citas que se solapan
   - Realiza validaciones solapamiento con otras citas
 
-#### ResourcesScheduleValidationStrategy
+#### ResourceAvailabilityStrategy
 
 Determina la estrategia de validación de la disponibilidad de recursos cuando se crea o edita una nueva cita:
 
-- **Validate**:
+- **ValidateSchedules**:
 
   - Valida la disponibilidad de recursos seleccionados en la cita
   - Si no hay disponibilidad, la cita no sera creada o editada
 
-- **DoNotValidate**:
+- **IgnoreSchedules**:
+
   - No valida la disponibilidad de recursos seleccionados en la cita
   - La cita se crea o edita sin importar la disponibilidad de los recursos
 
@@ -124,42 +125,6 @@ Determina la estrategia de validación de la disponibilidad de recursos cuando s
 ## Ciclo de Vida
 
 ### Estados y Transiciones
-
-```mermaid
-stateDiagram-v2
-    [*] --> Pending: Create with\nRequireConfirmation
-    [*] --> Accepted: Create Direct
-
-    Pending --> Accepted: Confirm
-    Pending --> Cancelled: Cancel
-    Pending --> RequiresRescheduling: Request\nReschedule
-
-    Accepted --> Waiting: Client\nArrival
-    Accepted --> Cancelled: Cancel
-    Accepted --> RequiresRescheduling: Request\nReschedule
-
-    RequiresRescheduling --> Pending: Reschedule with\nConfirmation
-    RequiresRescheduling --> Accepted: Reschedule\nDirect
-    RequiresRescheduling --> Cancelled: Cancel
-
-    Waiting --> InProgress: Start
-    Waiting --> Cancelled: Cancel
-
-    InProgress --> Completed: Finish
-
-    Completed --> [*]
-    Cancelled --> [*]
-
-    note right of Pending
-        Requires valid token
-        if confirmation enabled
-    end note
-
-    note right of RequiresRescheduling
-        Can return to Pending/Accepted
-        based on creation strategy
-    end note
-```
 
 #### Estados Posibles
 
@@ -338,8 +303,8 @@ internal static Result<Appointment> Create(
   - `resources`: Recursos asignados a la cita.
 - **Eventos**:
   - `AppointmentCreatedDomainEvent(appointment.Id)` si la creación es exitosa.
-    - **Parámetros**:
-      - `id`: Identificador de la cita.
+  - **Parámetros**:
+    - `id`: Identificador de la cita.
   - Ver método `AddNewCurrentStatus`.
 - **Retorna**: Resultado de la operación, que puede ser un objeto `Appointment` o un error.
 
@@ -461,7 +426,7 @@ private void GuardAgainstMultipleCurrentStatesInStatusHistories()
 
 ### Policies
 
-- `IAppointmentCreationStrategyPolicy`: Define el contrato para la política de estrategia de creación de citas
+- `IAppointmentConfirmationStrategyPolicy`: Define el contrato para la política de estrategia de creación de citas
 - `IAppointmentOverlapPolicy`: Define el contrato para la política de superposición de citas
 
 ### Value Objects

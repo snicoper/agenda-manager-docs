@@ -5,7 +5,7 @@
 - **Tipo**: Entidad de Dominio Sellada (sealed)
 - **Herencia**: `AuditableEntity`
 
-## Descripción
+## Descripción General
 
 La clase `UserToken` representa un token de seguridad temporal asociado a un usuario para operaciones que requieren verificación adicional, como la confirmación de email o el restablecimiento de contraseña. Esta entidad forma parte del agregado `User`.
 
