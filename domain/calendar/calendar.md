@@ -7,11 +7,11 @@
 
 ## Descripción
 
-Representa un calendario que actúa como contenedor lógico para appointments, resources, etc.
+Representa un calendario que actúa como contenedor lógico para appointments, resources y services.
 
 Este agregado no mantiene referencias directas a sus entidades relacionadas para mantener la consistencia y simplicidad del modelo.
 
-Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfiguration` y `Calendar` -> `CalendarHoliday`, que es una relación de uno a muchos y se utiliza para representar los días festivos asociados al calendario.
+El calendario gestiona distintas configuraciones que afectan al comportamiento de diferentes situaciones:
 
 ### Responsabilidades
 
@@ -19,10 +19,7 @@ Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfi
 
   - La creación de un nuevo calendario implica la creación de un nuevo `CalendarConfiguration` asociado.
   - El `CalendarConfiguration` se crea con la configuración predeterminada.
-    - El valor por defecto de `HolidayCreateStrategy` cuando se crea un nuevo calendario debe ser `RejectIfOverlapping`.
-    - El valor por defecto de `AppointmentCreationStrategy` cuando se crea un nuevo calendario debe ser `Direct`.
-    - El valor por defecto de `AppointmentOverlappingStrategy` cuando se crea un nuevo calendario debe ser `RejectIfOverlapping`.
-    - El valor por defecto de `IanaTimeZone` debe ser proporcionado por el usuario.
+    - Ver [CalendarConfiguration](./entities/calendar-configuration.md#Configuraciones-con-Opciones-Predefinidas) para más detalles.
 
 - **Eventos de Dominio**:
 
@@ -43,9 +40,10 @@ Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfi
   - Emitir eventos de dominio relacionados con holidays
 
 - **Gestión de Configurations**:
+
   - Gestionar la asociación con `CalendarConfiguration`
   - Cada `CalendarConfiguration` representa una configuración específica del calendario.
-  - Emitir eventos de dominio relacionados con `CalendarConfiguration` cuando se realicen cambios.
+  - Emitir eventos de dominio relacionados con la configuración del calendario.
 
 ## Propiedades
 
@@ -64,6 +62,8 @@ Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfi
 - `Name` no puede ser nulo y debe tener entre 1 y 50 caracteres.
 - `Description` no puede ser nulo y debe tener entre 1 y 500 caracteres.
 - `IsActive` debe ser `true` o `false`.
+- `Holidays` no puede ser nulo.
+- `Configurations` no puede ser nulo y debe tener la configuration predeterminada.
 
 ## Reglas de Negocio
 
@@ -75,12 +75,12 @@ Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfi
 - **Gestión de Holidays**:
 
   - Un holiday debe pertenecer a un único calendario
-  - No puede haber holidays duplicados (misma fecha) en un calendario \*
+  - No puede haber holidays duplicados (misma fecha) en un calendario
   - Los holidays se eliminan en cascada al eliminar el calendario
 
 - **Estado del Configurations**:
 
-  - Un calendar siempre debe tener una lista de `CalendarConfiguration` asociados
+  - Un calendar siempre debe tener una lista de `CalendarConfiguration` asociados con las configuraciones predeterminadas.
 
 - **Nombre y Descripción**:
 
@@ -88,11 +88,12 @@ Las excepciones son la relación de uno a muchos de `Calendar` -> `CalendarConfi
   - La descripción del calendario debe tener entre 1 y 500 caracteres.
 
 - **Eliminación de Calendario**:
-  - No se puede eliminar un `Calendar` si tiene alguna cita (`Appointment`) asociada.
-  - No se puede eliminar un `Calendar` si tiene algún día festivo (`CalendarHoliday`) asociado.
-  - No se puede eliminar un `Calendar` si tiene algún recurso (`Resource`) asignado.
-  - No se puede eliminar un `Calendar` si tiene algún servicio (`Service`) asignado.
-  - No se puede eliminar un `Calendar` si tiene algún horario de recurso (`ResourceSchedule`) asignado.
+
+  - No se puede eliminar un calendario si tiene alguna cita (`Appointment`) asociada.
+  - No se puede eliminar un calendario si tiene algún recurso (`Resource`) asignado.
+  - No se puede eliminar un calendario si tiene algún servicio (`Service`) asignado.
+  - Deberá eliminar los días festivos asociados al calendario al eliminar el calendario.
+  - Deberá eliminar las configuraciones asociadas al calendario al eliminar el calendario.
 
 ## Métodos
 
@@ -103,7 +104,11 @@ public void Activate()
 ```
 
 - **Descripción**: Activa el calendario.
-- **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
+- **Eventos**:
+  - `CalendarActivatedDomainEvent(Id)`
+  - **Descripción**: Lanza el eventos al activar el calendario.
+  - **Parámetros**:
+    - `Id`: El identificador del calendario.
 
 ### Deactivate
 
@@ -112,7 +117,11 @@ public void Deactivate()
 ```
 
 - **Descripción**: Desactiva el calendario.
-- **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
+- **Eventos**:
+  - `CalendarDeactivatedDomainEvent(Id)`
+  - **Descripción**: Lanza el eventos al desactivar el calendario.
+  - **Parámetros**:
+    - `Id`: El identificador del calendario.
 
 ### AddConfiguration
 
@@ -123,7 +132,12 @@ public void AddConfiguration(CalendarConfiguration configuration)
 - **Descripción**: Agrega una nueva configuración al calendario.
 - **Parámetros**:
   - `configuration`: La configuración a agregar.
-- **Eventos**: Lanza el evento `CalendarConfigurationAddedDomainEvent`.
+- **Eventos**:
+  - `CalendarConfigurationAddedDomainEvent(Id, configuration.Id)`
+  - **Descripción**: Lanza el evento al agregar una nueva configuración al calendario.
+  - **Parámetros**:
+    - `Id`: El identificador del calendario.
+    - `calendarConfiguration.Id`: El identificador de la configuración agregada.
 
 ### RemoveConfiguration
 
@@ -134,7 +148,12 @@ public void RemoveConfiguration(CalendarConfiguration configuration)
 - **Descripción**: Elimina una configuración del calendario.
 - **Parámetros**:
   - `configuration`: La configuración a eliminar.
-- **Eventos**: Lanza el evento `CalendarConfigurationRemovedDomainEvent`.
+- **Eventos**:
+  - `CalendarConfigurationRemovedDomainEvent(Id, configuration.Id)`
+  - **Descripción**: Lanza el evento al eliminar una configuración del calendario.
+  - **Parámetros**:
+    - `Id`: El identificador del calendario.
+    - `configuration.Id`: El identificador de la configuración eliminada.
 
 ### UpdateConfiguration
 
@@ -147,49 +166,64 @@ public void UpdateConfiguration(CalendarConfigurationId configurationId, string 
   - `configurationId`: El ID de la configuración a actualizar.
   - `category`: La categoría de la configuración.
   - `selectedKey`: La clave seleccionada de la configuración.
-    **Eventos**: Lanza el evento `CalendarConfigurationUpdatedDomainEvent`.
+- **Eventos**:
+  - `CalendarConfigurationUpdatedDomainEvent(Id, configuration.Id)`.
+  - **Descripción**: Lanza el evento al actualizar una configuración del calendario.
+  - **Parámetros**:
+    - `Id`: El identificador del calendario.
+    - `configuration.Id`: El identificador de la configuración actualizada.
+- **Excepciones**:
+  - `CalendarConfigurationNotFoundException`: Si la configuración no se encuentra.
 
 ### AddHoliday
 
 ```csharp
-public void AddHoliday(CalendarHoliday calendarHoliday)
+public void AddHoliday(CalendarHoliday holiday)
 ```
 
 - **Descripción**: Agrega una nueva vacación al calendario.
 - **Parámetros**:
-  - `calendarHoliday`: La vacación a agregar.
-- **Eventos**: Lanza el evento `CalendarHolidayAddedDomainEvent`.
+  - `holiday`: La vacación a agregar.
+- **Eventos**:
+  - `CalendarHolidayAddedDomainEvent(Id, holiday.Id)`
+  - **Descripción**: Lanza el evento al agregar una nueva vacación al calendario.
+  - **Parámetros**:
+    - `Id`: El identificador del calendario.
+    - `holiday.Id`: El identificador de la vacación agregada.
 
 ### RemoveHoliday
 
 ```csharp
-public void RemoveHoliday(CalendarHoliday calendarHoliday)
+public void RemoveHoliday(CalendarHoliday holiday)
 ```
 
 - **Descripción**: Elimina una vacación del calendario.
 - **Parámetros**:
-  - `calendarHoliday`: La vacación a eliminar.
-- **Eventos**: Lanza el evento `CalendarHolidayRemovedDomainEvent`.
+  - `holiday`: La vacación a eliminar.
+- **Eventos**:
+  - `CalendarHolidayRemovedDomainEvent(Id, holiday.Id)`
+  - **Descripción**: Lanza el evento al eliminar una vacación del calendario.
+  - **Parámetros**:
+    - `Id`: El identificador del calendario.
+    - `holiday.Id`: El identificador de la vacación eliminada.
 
 ### Create
 
 ```csharp
-internal static Calendar Create(
-    CalendarId id,
-    CalendarSettings settings,
-    string name,
-    string description,
-    bool active = true)
+internal static Calendar Create(CalendarId id, string name, string description, bool active = true)
 ```
 
 - **Descripción**: Crea un nuevo calendario con los valores proporcionados.
 - **Parámetros**:
   - `id`: Identificador único del calendario.
-  - `settings`: Configuración del calendario.
   - `name`: Nombre del calendario.
   - `description`: Descripción del calendario.
   - `active`: Indica si el calendario está activo.
-- **Eventos**: Lanza el evento `CalendarCreatedDomainEvent`.
+- **Eventos**:
+  - `CalendarCreatedDomainEvent(Id)`
+  - **Descripción**: Lanza el evento al crear un nuevo calendario.
+  - **Parámetros**:
+    - `Id`: Identificador único del calendario.
 - **Retorno**: El calendario creado.
 
 ### Update
@@ -202,7 +236,11 @@ internal void Update(string name, string description)
 - **Parámetros**:
   - `name`: Nombre del calendario.
   - `description`: Descripción del calendario.
-- **Eventos**: Lanza el evento `CalendarUpdatedDomainEvent`.
+- **Eventos**:
+  - `CalendarUpdatedDomainEvent(Id)`
+  - **Descripción**: Lanza el evento al actualizar el calendario.
+  - **Parámetros**:
+    - `Id`: Identificador único del calendario.
 
 ### GuardAgainstInvalidName
 
@@ -265,6 +303,11 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
 - `CalendarManager`: Clase que proporciona métodos para interactuar con el calendario.
 
 ### Policies
+
+- `CalendarNameValidationPolicy`: Interfaz que define la política para verificar si un calendario existe por nombre.
+- `IHasAppointmentsInCalendarPolicy`: Interfaz que define la política para verificar si un calendario tiene citas.
+- `IHasResourcesInCalendarPolicy`: Interfaz que define la política para verificar si un calendario tiene recursos.
+- `IHasServicesInCalendarPolicy`: Interfaz que define la política para verificar si un calendario tiene servicios.
 
 ### Value Objects
 

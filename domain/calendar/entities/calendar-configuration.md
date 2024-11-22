@@ -43,7 +43,7 @@ Configuraciones que solo permiten seleccionar entre un conjunto predefinido de v
 
 - `ResourcesSchedulesValidationStrategy`
   - **Descripción**: Determina si requiere validación con los horarios de los recursos.
-  - **Opciones** Validate, DoNotValidate
+  - **Opciones** Validate, NotValidate
   - **Default**: Validate
 
 ### Configuraciones de Valor Único (UnitValue)

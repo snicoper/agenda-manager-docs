@@ -5,6 +5,11 @@
 - **Tipo**: Entidad de Dominio Sellada (sealed)
 - **Herencia**: `AuditableEntity`
 
+## ToDo list
+
+- [ ] Revisar **Consideraciones de Rendimiento**
+
+
 ## Descripción General
 
 Entidad que representa el historial de estados de una cita en el sistema. Cada instancia captura un cambio de estado específico en un momento determinado, manteniendo así un registro completo y auditable de la evolución de la cita a lo largo de su ciclo de vida. Esta entidad es fundamental para:
@@ -166,7 +171,3 @@ var statusHistory = AppointmentStatusHistory.Create(
 // Desactivación de estado actual
 currentStatusHistory.DeactivateCurrentState();
 ```
-
-## ToDo list
-
-- [ ] Revisar **Consideraciones de Rendimiento**
