@@ -426,7 +426,7 @@ private void GuardAgainstMultipleCurrentStatesInStatusHistories()
 
 ### Policies
 
-- `IAppointmentConfirmationStrategyPolicy`: Define el contrato para la política de estrategia de creación de citas
+- `IAppointmentConfirmationStrategyPolicy`: Define el contrato para la política de confirmación de citas
 - `IAppointmentOverlapPolicy`: Define el contrato para la política de superposición de citas
 
 ### Value Objects

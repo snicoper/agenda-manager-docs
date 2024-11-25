@@ -225,18 +225,17 @@ public void Deactivate()
 ## CreateUserToken
 
 ```csharp
-public Result<UserToken> CreateUserToken(UserTokenType type, TimeSpan validityPeriod)
+public Result<UserToken> CreateUserToken(UserTokenType type)
 ```
 
 - **Descripción**: Crea un nuevo token de usuario.
 - **Parámetros**:
   - `type`: Tipo de token.
-  - `validityPeriod`: Duración de validez del token.
 - **Eventos**:
-  - `UserTokenCreatedDomainEvent(userToken.Id)`:
+  - `UserTokenCreatedDomainEvent(userToken)`:
     - **Descripción**: Se dispara cuando se crea un nuevo token de usuario.
     - **Parámetros**:
-      - `userTokenId`: Identificador del nuevo token de usuario.
+      - `userToken`: Token de usuario creado.
 - **Retorno**: `Result<UserToken>`: Resultado que contiene el nuevo token de usuario.
 
 ### ConsumeUserToken

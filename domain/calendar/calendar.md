@@ -304,7 +304,6 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
 
 ### Policies
 
-- `CalendarNameValidationPolicy`: Interfaz que define la política para verificar si un calendario existe por nombre.
 - `IHasAppointmentsInCalendarPolicy`: Interfaz que define la política para verificar si un calendario tiene citas.
 - `IHasResourcesInCalendarPolicy`: Interfaz que define la política para verificar si un calendario tiene recursos.
 - `IHasServicesInCalendarPolicy`: Interfaz que define la política para verificar si un calendario tiene servicios.
