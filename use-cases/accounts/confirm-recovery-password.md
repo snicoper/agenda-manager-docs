@@ -47,3 +47,4 @@ Permitir a los usuarios confirmar su contraseña si la han olvidado.
 - [x] El formulario valida campos antes de enviar
 - [x] Se muestran mensajes de error apropiados
 - [x] Se redirige correctamente tras validación del token
+- [x] El botón de restableces se deshabilita durante el proceso

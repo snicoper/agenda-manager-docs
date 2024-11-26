@@ -63,3 +63,4 @@ Las validaciones siguen las reglas definidas en:
 - [x] Se almacena el access_token y refresh_token JWT en localStorage
 - [x] Se redirige correctamente tras login exitoso
 - [x] Tiempos de sesión correctos
+- [x] El botón de inicio de sesión se deshabilita durante el proceso

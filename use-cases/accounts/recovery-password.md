@@ -63,3 +63,4 @@ Permitir a los usuarios recuperar su contraseña si la han olvidado.
 
 - [x] El formulario valida campos antes de enviar
 - [x] Se muestran mensajes de error o éxito apropiados
+- [x] El botón de recuperación se deshabilita durante el proceso
