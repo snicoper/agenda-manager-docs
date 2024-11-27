@@ -14,15 +14,15 @@ Permitir a los usuarios recuperar su contraseña si la han olvidado.
 
 ## Flujo Principal
 
-1. El usuario accede a la página de recuperación de contraseña
-2. El sistema muestra el formulario con:
-   - Campo para email
-   - Botón "Recuperar Contraseña"
-   - Botón con enlace a "Inicia Sesión"
-3. El usuario introduce su email
-4. El sistema valida el email
-5. El sistema notifica en base al resultado la validación
-6. El sistema envía un correo electrónico con un enlace para recuperar la contraseña
+- El usuario accede a la página de recuperación de contraseña
+- El sistema muestra el formulario con:
+  - Campo para email
+  - Botón "Recuperar Contraseña"
+  - Botón con enlace a "Inicia Sesión"
+- El usuario introduce su email
+- El sistema valida el email
+- El sistema notifica en base al resultado la validación
+- El sistema envía un correo electrónico con un enlace para recuperar la contraseña
 
 ## Respuesta al Usuario
 

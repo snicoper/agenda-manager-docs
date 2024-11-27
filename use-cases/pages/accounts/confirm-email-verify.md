@@ -48,6 +48,6 @@ Verificar el correo electrónico de un usuario.
 - [x] El sistema valida que el usuario esté activo
 - [x] El sistema valida que el usuario no ha verificado su cuenta
 - [x] El sistema valida que el token no ha expirado
-- [x] El sistema elimina el token de la base de datos en caso de que sea válido
+- [x] El sistema elimina el token de la base de datos si existe sea válido o no
 - [x] El sistema muestra un mensaje de éxito y un botón "Iniciar sesión"
 - [x] El sistema muestra un mensaje de error en caso de fallar la verificación

@@ -10,15 +10,15 @@ Permitir a los usuarios acceder a la aplicación mediante sus credenciales (emai
 
 ## Flujo Principal
 
-1. El usuario accede a la página de login
-2. El sistema muestra el formulario con:
-   - Campo para email
-   - Campo para contraseña
-   - Botón "Iniciar Sesión"
-   - Enlace "¿Olvidaste tu contraseña?"
-3. El usuario introduce sus credenciales
-4. El sistema valida las credenciales
-5. El sistema redirige al dashboard
+- El usuario accede a la página de login
+- El sistema muestra el formulario con:
+  - Campo para email
+  - Campo para contraseña
+  - Botón "Iniciar Sesión"
+  - Enlace "¿Olvidaste tu contraseña?"
+- El usuario introduce sus credenciales
+- El sistema valida las credenciales
+- El sistema redirige al dashboard
 
 ## Flujos Alternativos
 
@@ -42,10 +42,6 @@ Permitir a los usuarios acceder a la aplicación mediante sus credenciales (emai
 Las validaciones siguen las reglas definidas en:
 
 - [User](../../domain//users/user.md)
-
-## Mockups
-
-![Form login](../assets/form-login.png)
 
 ## Notas Técnicas
 

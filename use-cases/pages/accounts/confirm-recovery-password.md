@@ -10,15 +10,16 @@ Permitir a los usuarios confirmar su contraseña si la han olvidado.
 
 ## Flujo Principal
 
-1. El usuario accede a la página de recuperación de contraseña desde el correo electrónico
-2. El sistema muestra el formulario con:
-   - Campo para insertar la nueva contraseña
-   - Campo para repetir la nueva contraseña
-   - Botón "Restablecer"
-   - Botón con enlace a "Inicia Sesión"
-3. El usuario introduce la nueva contraseña y la repite
-4. El sistema valida la nueva contraseña
-5. El sistema notifica al usuario el resultado de la validación
+- El usuario accede a la página de recuperación de contraseña desde el correo electrónico
+- El sistema muestra el formulario con:
+  - Campo para insertar la nueva contraseña
+  - Campo para repetir la nueva contraseña
+  - Botón "Restablecer"
+  - Botón con enlace a "Inicia Sesión"
+- El usuario introduce la nueva contraseña y la repite
+- El sistema valida la nueva contraseña
+- El sistema notifica al usuario el resultado de la validación
+- El sistema elimina el token de la base de datos si existe, sea cual sea el resultado
 
 ## Flujos Alternativos
 
