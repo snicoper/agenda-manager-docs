@@ -229,6 +229,12 @@ private void GuardAgainstInvalidDescription(string? description)
 - `CalendarId`: Identificador del calendario asociado a la programación.
 - `Period`: Período de disponibilidad del recurso.
 
+## Errores
+
+- **Identifier**: `NotFound` Se lanza cuando no se encuentra una entidad específica.
+  - **Code**: `ResourceScheduleErrors.NotFound`
+  - **Description**: The resource schedule was not found.
+
 ## Comentarios adicionales
 
 ### Funcionamiento de Period

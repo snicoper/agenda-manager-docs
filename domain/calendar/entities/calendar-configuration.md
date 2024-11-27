@@ -224,6 +224,14 @@ private bool HasChanges(string category, string selectedKey)
 - `CalendarConfigurationId`: Identificador único de la configuración.
 - `CalendarId`: Identificador único del calendario.
 
+### Errores
+
+### Unexpected
+
+- **Identifier**: `KeyNotFound` Sel lanza cuando no se encuentra una configuración con la clave especificada.
+  - **Code**: `CalendarConfigurationErrors.KeyNotFound`
+  - **Description**: Key not found.
+
 ## Ejemplos de Uso
 
 ### Consultar configuración

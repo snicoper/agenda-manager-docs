@@ -120,4 +120,26 @@ El token pasa por los siguientes estados:
 - `Token`: Token específico para la acción.
 - `UserTokenType`: Tipo de token para diferentes acciones (`EmailVerification`, `PasswordReset`).
 
+## Errores
+
+### NotFound
+
+- **Identifier**: `UserTokenNotFound` Se lanza cuando se intenta acceder a un token que no existe.
+  - **Code**: `UserTokenErrors.UserTokenNotFound`
+  - **Description**: The user token was not found.
+
+### Conflict
+
+- **Identifier**: `InvalidToken` Se lanza cuando se intenta consumir un token inválido.
+  - **Code**: `UserTokenErrors.InvalidToken`
+  - **Description**: The user token is invalid.
+
+- **Identifier**: `TokenHasExpired` Se lanza cuando se intenta consumir un token expirado.
+  - **Code**: `UserTokenErrors.TokenHasExpired`
+  - **Description**: The user token has expired.
+
+- **Identifier**: `UserTokenNotFoundOrExpired` Se lanza cuando se intenta consumir un token que no existe o ha expirado.
+  - **Code**: `UserTokenErrors.UserTokenNotFoundOrExpired`
+  - **Description**: The user token was not found or has expired.
+
 ## Ejemplos de Uso

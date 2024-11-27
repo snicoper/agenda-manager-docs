@@ -277,6 +277,30 @@ private static void GuardAgainstInvalidDescription(string description)
 - `ResourceTypeId`: Identificador único del tipo de recurso
 - `ColorScheme`: Esquema de color del recurso
 
+## Errores
+
+### NotFound
+
+- **Identifier**: `NotFound` Se lanza cuando se intenta acceder a un recurso que no existe.
+  - **Code**: `ResourceErrors.NotFound`
+  - **Description**: The resource was not found.
+
+### Validation
+
+- **Identifier**: `NameAlreadyExists` Se lanza cuando un recurso con un nombre específico ya existe.
+  - **Code**: `Name`
+  - **Description**: A resource with the specified name already exists.
+
+- **Identifier**: `DescriptionAlreadyExists` Se lanza cuando un recurso con una descripción específica ya existe.
+  - **Code**: `Description`
+  - **Description**: A resource with the specified description already exists.
+
+### Conflict
+
+- **Identifier**: `ResourceNotAvailable` Se lanza cuando un recurso no está disponible.
+  - **Code**: `ResourceErrors.ResourceNotAvailable`
+  - **Description**: The resource is not available.
+
 ## Comentarios adicionales
 
 - **No Aplica**

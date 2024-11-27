@@ -26,22 +26,21 @@ Permitir a los usuarios acceder a la aplicación mediante sus credenciales (emai
 
 - El sistema muestra mensaje de error: "Email o contraseña incorrectos"
 - El sistema mantiene el email introducido
-- El sistema limpia el campo de contraseña
+- El sistema mantiene el campo de contraseña
 
 ### Usuario Bloqueado
 
 - El sistema muestra mensaje: "Tu cuenta está bloqueada. Contacta con soporte"
-- Se proporciona enlace al formulario de contacto
 
 ### Usuario pendiente de confirmación
 
-- El sistema muestra mensaje: "Tu cuenta no está confirmada. Revisa tu correo"
+- Redirección a la página de confirmación de correo para enviar un nuevo código de confirmación
 
 ## Validaciones
 
 Las validaciones siguen las reglas definidas en:
 
-- [User](../../domain//users/user.md)
+- [User](../../domain/users/user.md)
 
 ## Mockups
 
@@ -58,6 +57,7 @@ Las validaciones siguen las reglas definidas en:
 
 ## Criterios de Aceptación
 
+- [x] Permisos de acceso correctos
 - [x] El formulario valida campos antes de enviar
 - [x] Se muestran mensajes de error apropiados
 - [x] Se almacena el access_token y refresh_token JWT en localStorage

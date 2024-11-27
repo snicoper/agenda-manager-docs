@@ -22,23 +22,27 @@ Permitir a los usuarios recuperar su contraseña si la han olvidado.
    - Botón con enlace a "Inicia Sesión"
 3. El usuario introduce su email
 4. El sistema valida el email
-5. El sistema notifica al usuario de que se ha enviado un correo electrónico con un enlace para recuperar la contraseña
+5. El sistema notifica en base al resultado de la validación
 6. El sistema envía un correo electrónico con un enlace para recuperar la contraseña
 
-## Flujos Alternativos
+## Respuesta al Usuario
 
-### Credenciales Inválidas
+### Email encontrado
 
-- El sistema muestra mensaje de error: "Email no encontrado"
+- El sistema muestra mensaje: "Se ha enviado un correo electrónico con un enlace para recuperar su contraseña"
+
+### Email no encontrado
+
+- El sistema muestra mensaje de error: "Usuario no encontrado"
 
 ### Usuario Bloqueado
 
-- El sistema muestra mensaje: "Tu cuenta está bloqueada. Contacta con soporte"
+- El sistema muestra mensaje: "Su cuenta está bloqueada. Contacte con soporte"
 - Se proporciona enlace al formulario de contacto
 
 ### Usuario pendiente de confirmación
 
-- El sistema muestra mensaje: "Tu cuenta no está confirmada. Revisa tu correo"
+- El sistema muestra mensaje: "Su cuenta no está confirmada. Revise su correo"
 
 ## Validaciones
 

@@ -456,6 +456,50 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
   - Registra el cambio de `IsActive` en la tabla `AuditRecord`
   - Registra: `userId`, `oldValue: true`, `newValue: false`
 
+## Errores
+
+### NotFound
+
+- **Identifier**: `UserNotFound` Se lanza cuando el usuario no se encuentra.
+  - **Code**: `UserErrors.UserNotFound`
+  - **Description**: The user was not found.
+
+### Conflict
+
+- **Identifier**: `InvalidCredentials` Se lanza cuando las credenciales proporcionadas son inválidas.
+  - **Code**: `UserErrors.InvalidCredentials`
+  - **Description***: `The provided credentials are invalid.`
+
+- **Identifier**: `UserIsNotActive` Se lanza cuando el usuario no está activo.
+  - **Code**: `UserErrors.UserIsNotActive`
+  - **Description**: The user is not active.
+
+- **Identifier**: `EmailIsNotConfirmed` Se lanza cuando el email no está confirmado.
+  - **Code**: `UserErrors.EmailIsNotConfirmed`
+  - **Description**: The email is not confirmed.
+
+- **Identifier**: `RoleAlreadyExists` Se lanza cuando el usuario ya tiene el rol especificado.
+  - **Code**: `UserErrors.RoleAlreadyExists`
+  - **Description**: The user already has the specified role.
+
+- **Identifier**: `RoleDoesNotExist` Se lanza cuando el usuario no tiene el rol especificado.
+  - **Code**: `UserErrors.RoleDoesNotExist`
+  - **Description**: The user does not have the specified role.
+
+- **Identifier**: `UserAlreadyConfirmedEmail` Se lanza cuando el usuario ya ha confirmado su email.
+  - **Code**: `UserErrors.UserAlreadyConfirmedEmail`
+  - **Description**: The user has already confirmed their email.
+
+### Validación
+
+- **Identifier**: `EmailAlreadyExists` Se lanza cuando el email ya existe.
+  - **Code**: `Email`
+  - **Description**: The email already exists.
+
+- **Identifier**: `InvalidFormatPassword` Se lanza cuando la contraseña no cumple con la política de contraseña.
+  - **Code**: `Password`
+  - **Description**: Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit and one special character.
+
 ## Comentarios adicionales
 
 - La entidad `User` no puede ser instanciada fuera de un contexto de dominio. Para crear un nuevo usuario, se debe utilizar el método `CreateUserAsync` del service model `UserManager`.

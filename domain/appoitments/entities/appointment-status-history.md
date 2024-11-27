@@ -9,7 +9,6 @@
 
 - [ ] Revisar **Consideraciones de Rendimiento**
 
-
 ## Descripción General
 
 Entidad que representa el historial de estados de una cita en el sistema. Cada instancia captura un cambio de estado específico en un momento determinado, manteniendo así un registro completo y auditable de la evolución de la cita a lo largo de su ciclo de vida. Esta entidad es fundamental para:
@@ -142,6 +141,34 @@ private static void AgainstInvalidDescription(string? description)
 - `AppointmentId`: Identificador único de la cita.
 - `Period`: Período de tiempo asociado a la historia de estado.
 - `AppointmentCurrentState`: Estado actual de la cita.
+
+### Errores
+
+### Conflict
+
+- **Identifier**: `OnlyPendingAndAcceptedAllowed` Se lanza cuando se intenta cambiar el estado de una cita que no está en estado pendiente o aceptado.
+  - **Code**: `AppointmentStatusChangeErrors.OnlyPendingAndAcceptedAllowed`
+  - **Description**: Only pending and accepted appointments can be changed.
+
+- **Identifier**: `OnlyPendingAllowed` Se lanza cuando se intenta cambiar el estado de una cita que no está en estado pendiente.
+  - **Code**: `AppointmentStatusChangeErrors.OnlyPendingAllowed`
+  - **Description**: Only pending appointments can be changed.
+
+- **Identifier**: `OnlyPendingAndReschedulingAllowed` Se lanza cuando se intenta cambiar el estado de una cita que no está en estado pendiente o reprogramado.
+  - **Code**: `AppointmentStatusChangeErrors.OnlyPendingAndReschedulingAllowed`
+  - **Description**: Only pending and rescheduling appointments can be changed.
+
+- **Identifier**: `AlreadyCancelledOrCompleted` Se lanza cuando se intenta cambiar el estado de una cita que ya está cancelada o completada.
+  - **Code**: `AppointmentStatusChangeErrors.AlreadyCancelledOrCompleted`
+  - **Description**: The appointment is already cancelled or completed.
+
+- **Identifier**: `OnlyWaitingAllowed` Se lanza cuando se intenta cambiar el estado de una cita que no está en estado de espera.
+  - **Code**: `AppointmentStatusChangeErrors.OnlyWaitingAllowed`
+  - **Description**: Only waiting appointments can be changed.
+
+- **Identifier**: `OnlyInProgressAllowed` Se lanza cuando se intenta cambiar el estado de una cita que no está en estado en progreso.
+  - **Code**: `AppointmentStatusChangeErrors.OnlyInProgressAllowed`
+  - **Description**: Only in progress appointments can be changed.
 
 ## Comentarios adicionales
 

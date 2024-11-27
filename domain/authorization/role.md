@@ -250,6 +250,30 @@ La clase `Role` tiene los siguientes estados y transiciones:
 - `RoleId`: Identificador único del rol.
 - `PermissionId`: Identificador único del permiso.
 
+## Errores
+
+### NotFound
+
+- **Identifier**: `RoleNotFound` Se lanza cuando se intenta acceder a un rol que no existe.
+  - **Code**: `RoleErrors.RoleNotFound`
+  - **Descripción**: The role was not found.
+
+### Validation
+
+- **Identifier**: `RoleNameAlreadyExists` Se lanza cuando un rol con el mismo nombre ya existe.
+  - **Code**: `Name`
+  - **Descripción**: The role name already exists.
+
+### Conflict
+
+- **Identifier**: `PermissionAlreadyExistsInRole` Se lanza cuando un permiso ya existe en un rol.
+  - **Code**: `RoleErrors.PermissionAlreadyExistsInRole`
+  - **Descripción**: The permission already exists in the role.
+
+- **Identifier**: `PermissionNotFoundInRole` Se lanza cuando un permiso no existe en un rol.
+  - **Code**: `RoleErrors.PermissionNotFoundInRole`
+  - **Descripción**: The permission was not found in the role.
+
 ## Comentarios adicionales
 
 - **No Aplica**

@@ -312,6 +312,34 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
 
 - `CalendarId`: Identificador único del calendario.
 
+## Errores
+
+### NotFound
+
+- **Identifier**: `CalendarNotFound` Se lanza cuando se intenta acceder a un calendario que no existe.
+  - **Code**: `CalendarErrors.CalendarNotFound`
+  - **Description**: The calendar was not found.
+
+### Validation
+
+- **Identifier**: `NameAlreadyExists` Se lanza cuando un nombre de calendario ya existe.
+  - **Code**: `Name`
+  - **Description**: The calendar name already exists.
+
+### Conflict
+
+- **Identifier**: `CannotDeleteCalendarWithAppointments` Se lanza cuando se intenta eliminar un calendario que tiene citas.
+  - **Code**: `CalendarErrors.CannotDeleteCalendarWithAppointments`
+  - **Description**: The calendar cannot be deleted because it has appointments.
+
+- **Identifier**: `CannotDeleteCalendarWithServices` Se lanza cuando se intenta eliminar un calendario que tiene servicios.
+  - **Code**: `CalendarErrors.CannotDeleteCalendarWithServices`
+  - **Description**: The calendar cannot be deleted because it has services.
+
+- **Identifier**: `CannotDeleteCalendarWithResources` Se lanza cuando se intenta eliminar un calendario que tiene recursos.
+  - **Code**: `CalendarErrors.CannotDeleteCalendarWithResources`
+  - **Description**: The calendar cannot be deleted because it has resources.
+
 ## Comentarios adicionales
 
 - Los métodos `Create` y `Update` son `internal` para forzar el uso del `CalendarManager`

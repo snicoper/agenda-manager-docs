@@ -103,6 +103,20 @@ La entidad Permission es inmutable y no tiene transiciones de estado después de
 
 - `PermissionId`: Identificador único del permiso.
 
+## Errores
+
+### NotFound
+
+- **Identifier**: `PermissionNotFound` Se lanza cuando un permiso no existe.
+  - **Code**: `PermissionErrors.PermissionNotFound`
+  - **Descripción**: The permission was not found.
+
+### Validation
+
+- **Identifier**: `PermissionNameAlreadyExists` Se lanza cuando un permiso con el mismo nombre ya existe.
+  - **Code**: `Name`
+  - **Descripción**: The permission name already exists.
+
 ## Comentarios adicionales
 
 - **No Aplica**

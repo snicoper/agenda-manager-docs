@@ -196,6 +196,18 @@ private static void GuardAgainstInvalidDescription(string description)
 - `Period`: Representa un periodo de tiempo
 - `Weekdays`: Días de la semana del holiday
 
+### Errores
+
+### Conflict
+
+- **Identifier**: `CreateOverlappingReject` Se lanza cuando se intenta crear un holiday que se solapa con citas existentes
+  - **Code**: `CalendarHolidayErrors.CreateOverlappingReject`
+  - **Description**: Cannot create a holiday that overlaps with existing appointments
+
+- **Identifier**: `HolidaysOverlap` Se lanza cuando un holiday se solapa con otro holiday existente.
+  - **Code**: `CalendarHolidayErrors.HolidaysOverlap`
+  - **Description**: Cannot create a holiday that overlaps with existing holidays.
+
 ## Comentarios adicionales
 
 Para crear o actualizar un nuevo `CalendarHoliday`, require de `CalendarManager` para la creación de un nuevo `CalendarHoliday`.

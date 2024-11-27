@@ -170,6 +170,30 @@ internal bool Update(
 - `CalendarId`: Identificador del calendario asociado al servicio
 - `ColorScheme`: ColorScheme del servicio
 
+## Errores
+
+### NotFound
+
+- **Identifier**: `ServiceNotFound` Se lanza cuando se intenta acceder a un servicio que no existe.
+  - **Code**: `ServiceErrors.ServiceNotFound`
+  - **Descripción**: A service with the specified identifier was not found.
+
+### Conflict
+
+- **Identifier**: `HasAssociatedAppointments` Se lanza cuando un servicio tiene asociadas citas.
+  - **Code**: `ServiceErrors.HasAssociatedAppointments`
+  - **Descripción**: The service has associated appointments and it is not possible to delete it.
+
+- **Identifier**: `ResourceRequirementsMismatch` Se lanza cuando los requisitos de recursos no coinciden.
+  - **Code**: `ResourceRequirementsMismatch`
+  - **Descripción**: The provided resources do not match the exact requirements of the service.
+
+### Validation
+
+- **Identifier**: `NameAlreadyExists` Se lanza cuando un nombre de servicio ya existe.
+  - **Code**: `Name`
+  - **Descripción**: A service with the same name already exists.
+
 ## Comentarios adicionales
 
 - **No Aplica**

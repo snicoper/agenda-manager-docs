@@ -5,6 +5,14 @@
 - **Tipo**: Entidad de Dominio Sellada (sealed)
 - **Herencia**: `AggregateRoot`
 
+## ToDo List
+
+- [ ] Definir como guardar el token de confirmación de citas.
+- [ ] `EventHandler`: Implementar event handler `AppointmentStatusHistoryCreatedDomainEvent(Id, CurrentState)` comprobar si es `AppointmentStatus.Pending`, generar `UserToken` y enviar correo electrónico de confirmación.
+- [ ] Definir tiempo para cancelación de citas expiradas en estado no final.
+- [ ] Definir tiempo de expiración para el token de confirmación de citas.
+- [ ] Dar una vuelta al eliminar si hacer una eliminación lógica o física, para temas de auditoría.
+
 ## Descripción General
 
 Un `Appointment` representa una cita programada en el sistema que pertenece a un calendario específico. Es la unidad central de reserva que conecta un servicio concreto con un usuario en un período de tiempo determinado. Gestiona todo el ciclo de vida de la cita, incluyendo su programación, estados y finalización, asegurando que se cumplan todas las reglas de negocio y restricciones del calendario asociado.
@@ -438,14 +446,42 @@ private void GuardAgainstMultipleCurrentStatesInStatusHistories()
 - `Period`: Representa un periodo de tiempo
 - `AppointmentCurrentState`: Representa el estado actual de una cita
 
+### Errores
+
+### Conflict
+
+- **Identifier**: `OnlyPendingAndAcceptedAllowed` Se lanza cuando se intenta actualizar un estado que no sea `Pending` o `Accepted`
+  - **Code**: `AppointmentErrors.OnlyPendingAndAcceptedAllowed`
+  - **Description**: Invalid status, only pending and accepted allowed.
+
+- **Identifier**: `MissingCreationStrategy` Se lanza cuando no se proporciona una estrategia de creación
+  - **Code**: `AppointmentErrors.MissingCreationStrategy`
+  - **Description**: Missing creation strategy.
+
+- **Identifier**: `AppointmentStatusInvalidForUpdate` Se lanza cuando se intenta actualizar una cita con un estado invalido
+  - **Code**: `AppointmentErrors.AppointmentStatusInvalidForUpdate`
+  - **Description**: Invalid status for update.
+
+- **Identifier**: `AppointmentsOverlapping` Se lanza cuando una cita se superpone con otra cita
+  - **Code**: `AppointmentErrors.AppointmentsOverlapping`
+  - **Description**: Appointments overlapping.
+
+- **Identifier**: `AppointmentStatusInvalidForDelete` Se lanza cuando se intenta eliminar una cita con un estado invalido
+  - **Code**: `AppointmentErrors.AppointmentStatusInvalidForDelete`
+  - **Description**: Invalid status for delete.
+
+### Validation
+
+- **Identifier**: `NoResourcesProvided` Se lanza cuando no se proporcionan recursos para la cita
+  - **Code**: `Resources`
+  - **Description**: No resources provided for this appointment.
+
+### NotFound
+
+- **Identifier**: `AppointmentNotFound` Se lanza cuando se intenta acceder a una cita que no existe
+  - **Code**: `AppointmentErrors.AppointmentNotFound`
+  - **Description**: Appointment not found.
+
 ## Comentarios adicionales
 
 - **No Aplica**
-
-## ToDo List
-
-- [ ] Definir como guardar el token de confirmación de citas.
-- [ ] `EventHandler`: Implementar event handler `AppointmentStatusHistoryCreatedDomainEvent(Id, CurrentState)` comprobar si es `AppointmentStatus.Pending`, generar `UserToken` y enviar correo electrónico de confirmación.
-- [ ] Definir tiempo para cancelación de citas expiradas en estado no final.
-- [ ] Definir tiempo de expiración para el token de confirmación de citas.
-- [ ] Dar una vuelta al eliminar si hacer una eliminación lógica o física, para temas de auditoría.
