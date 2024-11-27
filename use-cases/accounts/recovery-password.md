@@ -3,7 +3,6 @@
 ## ToDo List
 
 - [ ] Mejorar diseño de la página
-- [ ] Mensajes del sistema en español
 
 ## Objetivo
 
@@ -22,49 +21,44 @@ Permitir a los usuarios recuperar su contraseña si la han olvidado.
    - Botón con enlace a "Inicia Sesión"
 3. El usuario introduce su email
 4. El sistema valida el email
-5. El sistema notifica en base al resultado de la validación
+5. El sistema notifica en base al resultado la validación
 6. El sistema envía un correo electrónico con un enlace para recuperar la contraseña
 
 ## Respuesta al Usuario
 
 ### Email encontrado
 
-- El sistema muestra mensaje: "Se ha enviado un correo electrónico con un enlace para recuperar su contraseña"
+- El sistema muestra mensaje: "Se ha enviado un correo electrónico con un enlace para recuperar la contraseña"
 
 ### Email no encontrado
 
-- El sistema muestra mensaje de error: "Usuario no encontrado"
+- El sistema muestra mensaje de error: "El correo electrónico no está registrado"
 
-### Usuario Bloqueado
+### Usuario no activo
 
-- El sistema muestra mensaje: "Su cuenta está bloqueada. Contacte con soporte"
+- El sistema muestra mensaje: "Su cuenta no está activa. Contacte con el administrador"
 - Se proporciona enlace al formulario de contacto
 
 ### Usuario pendiente de confirmación
 
-- El sistema muestra mensaje: "Su cuenta no está confirmada. Revise su correo"
+- El sistema muestra mensaje: "Su cuenta esta pendiente de confirmación. Revise su correo"
 
 ## Validaciones
 
 - El email debe ser un email válido
 - Verifica que el email existe en la base de datos
-- Verifica que el usuario no está bloqueado
-- Verifica que el usuario no está pendiente de confirmación
-
-## Mockups
-
-![Form recovery password](../assets/recovery-password-form.png)
-![Form email not found](../assets/recovery-password-email-not-fount.png)
-![Form email not found](../assets/recovery-password-success.png)
+- Verifica que la cuenta del usuario está activa
+- Verifica que la cuanta del usuario está pendiente de confirmación
 
 ## Notas Técnicas
 
 - Ruta: `/accounts/recovery-password`
 - API Endpoint: `POST /api/v1/accounts/recovery-password`
-- Muestra un mensaje e de éxito o error
+- Muestra un mensaje de de éxito o error
 
 ## Criterios de Aceptación
 
 - [x] El formulario valida campos antes de enviar
 - [x] Se muestran mensajes de error o éxito apropiados
 - [x] El botón de recuperación se deshabilita durante el proceso
+- [x] El usuario puede volver a la página de inicio de sesión

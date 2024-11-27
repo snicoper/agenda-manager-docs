@@ -13,16 +13,16 @@ Permitir a los usuarios confirmar su contraseña si la han olvidado.
 1. El usuario accede a la página de recuperación de contraseña desde el correo electrónico
 2. El sistema muestra el formulario con:
    - Campo para insertar la nueva contraseña
-   - Campo para confirmar la nueva contraseña
+   - Campo para repetir la nueva contraseña
    - Botón "Restablecer"
    - Botón con enlace a "Inicia Sesión"
-3. El usuario introduce la nueva contraseña
+3. El usuario introduce la nueva contraseña y la repite
 4. El sistema valida la nueva contraseña
-5. El sistema notifica al usuario de que la contraseña ha sido cambiada en caso de éxito
+5. El sistema notifica al usuario el resultado de la validación
 
 ## Flujos Alternativos
 
-### Credenciales Inválidas
+### Token inválido o expirado
 
 - El sistema muestra mensaje de error: "Token inválido o expirado"
 
@@ -30,11 +30,6 @@ Permitir a los usuarios confirmar su contraseña si la han olvidado.
 
 - El token debe ser un token válido y no expirado
 - Verifica que la contraseña cumple con las reglas de seguridad
-
-## Mockups
-
-![Form login](../assets/confirm-recovery-password-form.png)
-![Form login](../assets/confirm-recovery-password-invalid.png)
 
 ## Notas Técnicas
 
@@ -45,6 +40,6 @@ Permitir a los usuarios confirmar su contraseña si la han olvidado.
 ## Criterios de Aceptación
 
 - [x] El formulario valida campos antes de enviar
+- [x] El botón de restableces se deshabilita durante el proceso
 - [x] Se muestran mensajes de error apropiados
 - [x] Se redirige correctamente tras validación del token
-- [x] El botón de restableces se deshabilita durante el proceso

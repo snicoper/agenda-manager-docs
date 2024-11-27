@@ -60,6 +60,8 @@
 
 - **No Aplica**
 
+## Errores
+
 ## Comentarios adicionales
 
 - **No Aplica**

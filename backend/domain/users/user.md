@@ -493,12 +493,14 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 ### Validación
 
 - **Identifier**: `EmailAlreadyExists` Se lanza cuando el email ya existe.
-  - **Code**: `Email`
+  - **Code**: `UserErrors.EmailAlreadyExists`
   - **Description**: The email already exists.
+  - **FieldName**: `Email`
 
 - **Identifier**: `InvalidFormatPassword` Se lanza cuando la contraseña no cumple con la política de contraseña.
-  - **Code**: `Password`
+  - **Code**: `UserErrors.InvalidFormatPassword`
   - **Description**: Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit and one special character.
+  - **FieldName**: `Password`
 
 ## Comentarios adicionales
 

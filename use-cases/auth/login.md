@@ -42,10 +42,6 @@ Las validaciones siguen las reglas definidas en:
 
 - [User](../../domain/users/user.md)
 
-## Mockups
-
-![Form login](../assets/form-login.png)
-
 ## Notas Técnicas
 
 - Ruta: `/auth/login`
