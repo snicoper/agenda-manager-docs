@@ -40,7 +40,7 @@ Un `Role` es una entidad que representa un rol de usuario en el sistema. Los rol
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento.
-- `Name` no puede ser `null` en ningún momento ni exceder la longitud permitida.
+- `Name` no puede ser `null` en ningún momento ni exceder la longitud permitida, debe ser único en toda la aplicación..
 - `Description` no puede ser `null` en ningún momento ni exceder la longitud permitida.
 - `Editable` debe ser un valor booleano (`true` o `false`) consistente.
 
@@ -67,7 +67,13 @@ Un `Role` es una entidad que representa un rol de usuario en el sistema. Los rol
 
   - Un rol puede cambiar su nombre y descripción, pero solo si el rol es editable.
 
+- **Eliminación de Roles**:
+
+  - Un rol no puede ser eliminado si tiene usuarios asignados.
+  - Un rol no puede ser eliminado si no es editable.
+
 - **Integridad**:
+
   - Un rol no puede ser eliminado si tiene usuarios asignados.
 
 ## Roles Predefinidos
@@ -93,10 +99,12 @@ El sistema define cuatro roles inmutables (`Editable = false`) que no pueden ser
   - Pueden ver sus propias citas e historial
 
 - **AssignableStaff**:
+
   - Pueden ser asignados como recursos de tipo `Staff`
   - Independiente del rol Employee
   - Permite tanto empleados internos como colaboradores externos
   - Requerido para la asignación de recursos en la programación
+  - Este rol especial no es visible en la interfaz de usuario y no tiene permisos asignados.
 
 > **Nota**: Estos roles son predefinidos por el sistema y no pueden ser modificados ni eliminados.
 
@@ -267,6 +275,7 @@ La clase `Role` tiene los siguientes estados y transiciones:
 ### Conflict
 
 - **Identifier**: `PermissionAlreadyExistsInRole` Se lanza cuando un permiso ya existe en un rol.
+
   - **Code**: `RoleErrors.PermissionAlreadyExistsInRole`
   - **Descripción**: The permission already exists in the role.
 
