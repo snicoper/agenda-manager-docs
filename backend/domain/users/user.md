@@ -49,28 +49,32 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
 
   - Asegurarse de que `FirstName` y `LastName` no exceden la longitud permitida.
 
+- **IsAssignableResource**
+
+  - Determinar si el usuario puede ser asignado como recurso.
+
   ## Propiedades
 
-| Propiedad          | Tipo                      | Descripción                                        |
-| ------------------ | ------------------------- | -------------------------------------------------- |
-| `UserId`           | `UserId`                  | Identificador único del usuario.                   |
-| `PasswordHash`     | `PasswordHash`            | Hash de la contraseña del usuario.                 |
-| `Email`            | `EmailAddress`            | Dirección de correo electrónico única del usuario. |
-| `IsEmailConfirmed` | `bool`                    | Estado de confirmación del email del usuario.      |
-| `FirstName`        | `string?`                 | Nombre del usuario, puede ser `null`.              |
-| `LastName`         | `string?`                 | Apellido del usuario, puede ser `null`.            |
-| `IsActive`         | `bool`                    | Estado de actividad del usuario.                   |
-| `RefreshToken`     | `Token?`                  | Token de refresco de autorización del usuario.     |
-| `UserRoles`        | `IReadOnlyList<UserRole>` | Lista de roles asociados al usuario.               |
-| `Tokens`           | `IReadOnlyList<Token>`    | Lista de tokens asociados al usuario.              |
+| Propiedad              | Tipo                      | Descripción                                         |
+| ---------------------- | ------------------------- | --------------------------------------------------- |
+| `UserId`               | `UserId`                  | Identificador único del usuario.                    |
+| `PasswordHash`         | `PasswordHash`            | Hash de la contraseña del usuario.                  |
+| `Email`                | `EmailAddress`            | Dirección de correo electrónico única del usuario.  |
+| `IsEmailConfirmed`     | `bool`                    | Estado de confirmación del email del usuario.       |
+| `FirstName`            | `string?`                 | Nombre del usuario, puede ser `null`.               |
+| `LastName`             | `string?`                 | Apellido del usuario, puede ser `null`.             |
+| `IsActive`             | `bool`                    | Estado de actividad del usuario.                    |
+| `IsAssignableResource` | `bool`                    | Indica si el usuario puede ser asignado a recursos. |
+| `RefreshToken`         | `Token?`                  | Token de refresco de autorización del usuario.      |
+| `UserRoles`            | `IReadOnlyList<UserRole>` | Lista de roles asociados al usuario.                |
+| `Tokens`               | `IReadOnlyList<Token>`    | Lista de tokens asociados al usuario.               |
 
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento
 - `Email` no puede ser `null` en ningún momento y debe ser un formato de email válido
 - `PasswordHash` no puede ser `null` o vacío en ningún momento
-- `IsEmailConfirmed` y `IsActive` debe ser un valor booleano (`true` o `false`) consistente
-- `IsActive` debe ser un valor booleano (`true` o `false`) consistente
+- `IsEmailConfirmed`, `IsActive` y `IsAssignableResource` debe ser un valor booleano (`true` o `false`) consistente
 - `FirstName` puede ser `null`, pero si está presente, no debe exceder los 256 caracteres
 - `LastName` puede ser `null`, pero si está presente, no debe exceder los 256 caracteres
 - `UserRoles` debe ser una colección de UserRole que puede ser vacía pero nunca `null`
@@ -116,6 +120,7 @@ internal User(
     string? firstName,
     string? lastName,
     bool isActive = true,
+    bool isAssignableResource = false,
     bool emailConfirmed = false)
 ```
 
@@ -127,6 +132,7 @@ internal User(
   - `firstName`: Nombre del usuario, puede ser `null`.
   - `lastName`: Apellido del usuario, puede ser `null`.
   - `isActive`: Estado de actividad del usuario.
+  - `isAssignableResource`: Indica si el usuario puede ser asignado a recursos.
   - `emailConfirmed`: Estado de confirmación del email del usuario.
 - **Eventos**:
   - `UserCreatedDomainEvent(userId)`:
@@ -467,22 +473,27 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 ### Conflict
 
 - **Identifier**: `InvalidCredentials` Se lanza cuando las credenciales proporcionadas son inválidas.
+
   - **Code**: `UserErrors.InvalidCredentials`
-  - **Description***: `The provided credentials are invalid.`
+  - **Description\***: `The provided credentials are invalid.`
 
 - **Identifier**: `UserIsNotActive` Se lanza cuando el usuario no está activo.
+
   - **Code**: `UserErrors.UserIsNotActive`
   - **Description**: The user is not active.
 
 - **Identifier**: `EmailIsNotConfirmed` Se lanza cuando el email no está confirmado.
+
   - **Code**: `UserErrors.EmailIsNotConfirmed`
   - **Description**: The email is not confirmed.
 
 - **Identifier**: `RoleAlreadyExists` Se lanza cuando el usuario ya tiene el rol especificado.
+
   - **Code**: `UserErrors.RoleAlreadyExists`
   - **Description**: The user already has the specified role.
 
 - **Identifier**: `RoleDoesNotExist` Se lanza cuando el usuario no tiene el rol especificado.
+
   - **Code**: `UserErrors.RoleDoesNotExist`
   - **Description**: The user does not have the specified role.
 
@@ -493,6 +504,7 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 ### Validación
 
 - **Identifier**: `EmailAlreadyExists` Se lanza cuando el email ya existe.
+
   - **Code**: `UserErrors.EmailAlreadyExists`
   - **Description**: The email already exists.
   - **FieldName**: `Email`

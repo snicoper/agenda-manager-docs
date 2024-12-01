@@ -99,14 +99,6 @@ El sistema define cuatro roles inmutables (`Editable = false`) que no pueden ser
   - Destinatarios de los servicios
   - Pueden ver sus propias citas e historial
 
-- **AssignableStaff**:
-
-  - Pueden ser asignados como recursos de tipo `Staff`
-  - Independiente del rol Employee
-  - Permite tanto empleados internos como colaboradores externos
-  - Requerido para la asignación de recursos en la programación
-  - Este rol especial no es visible en la interfaz de usuario y no tiene permisos asignados.
-
 > **Nota**: Estos roles son predefinidos por el sistema y no pueden ser modificados ni eliminados.
 
 ## Métodos
