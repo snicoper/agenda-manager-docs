@@ -20,10 +20,10 @@ Los permisos son inmutables una vez creados y su creación debe realizarse por e
 
 ## Propiedades
 
-| Nombre | Tipo           | Descripción                     |
-| ------ | -------------- | ------------------------------- |
-| `Id`   | `PermissionId` | Identificador único del permiso |
-| `Name` | `string`       | Nombre del permiso              |
+| Nombre      | Tipo           | Descripción                                               |
+| ----------- | -------------- | --------------------------------------------------------- |
+| `Id`        | `PermissionId` | Identificador único del permiso                           |
+| `Name`      | `string`       | Nombre del permiso                                        |
 
 ## Invariantes
 
@@ -46,6 +46,43 @@ Los permisos son inmutables una vez creados y su creación debe realizarse por e
 - **Unicidad de Identidad**:
   - `Id` debe ser único en toda la aplicación.
   - `Name` no puede repetirse en ningún momento dentro de la aplicación.
+
+### Añadir Nuevos Módulos al Sistema de Permisos
+
+Cuando se añade un nuevo módulo al sistema, se debe considerar:
+
+1. **Evaluación de Permisos Necesarios**:
+   - Determinar si el módulo necesita control de permisos
+   - Si es funcionalidad del sistema (como UserToken), no debe añadirse al sistema de permisos
+   - Para módulos de negocio, evaluar qué operaciones necesitan control (CRUD completo vs permisos específicos)
+
+2. **Estructura de Permisos**:
+   - Por defecto, los módulos siguen el patrón CRUD (`create`, `read`, `update`, `delete`)
+   - Si el módulo requiere un conjunto diferente de permisos, debe documentarse y justificarse
+
+3. **Nomenclatura**:
+   - Los permisos siguen el formato `ModuleName:Action`
+   - Ejemplo: `NewModule:read`, `NewModule:create`
+
+4. **Actualización de Documentación**:
+   - Añadir el nuevo módulo a esta lista de permisos predefinidos
+   - Documentar cualquier comportamiento especial o restricción
+
+### Permisos Predefinidos
+
+- `Appointment` - (`create`, `read`, `update`, `delete`)
+- `AppointmentStatus` - (`create`, `read`, `update`, `delete`)
+- `AuditRecord` - (`read`)
+- `Calendar` - (`create`, `read`, `update`, `delete`)
+- `CalendarHoliday` - (`create`, `read`, `update`, `delete`)
+- `CalendarConfiguration` - (`create`, `read`, `update`, `delete`)
+- `Resource` - (`create`, `read`, `update`, `delete`)
+- `ResourceSchedule` - (`create`, `read`, `update`, `delete`)
+- `ResourceType` - (`create`, `read`, `update`, `delete`)
+- `Service` - (`create`, `read`, `update`, `delete`)
+- `User` - (`create`, `read`, `update`, `delete`)
+- `Role` - (`create`, `read`, `update`, `delete`)
+- `Permission` - (`create`, `read`, `update`, `delete`)
 
 ## Métodos
 
@@ -118,8 +155,6 @@ La entidad Permission es inmutable y no tiene transiciones de estado después de
   - **Descripción**: The permission name already exists.
 
 ## Comentarios adicionales
-
-- **No Aplica**
 
 ## Ejemplos de Uso
 

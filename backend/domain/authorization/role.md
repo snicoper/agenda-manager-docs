@@ -57,6 +57,7 @@ Un `Role` es una entidad que representa un rol de usuario en el sistema. Los rol
   - Un rol **NO** puede cambiar su estado de editable (`IsEditable`).
   - Un role `IsEditable` con estado a `false` nunca puede ser eliminado.
   - Todos los roles creados por personal autorizado deben tener `IsEditable` con estado a `true`.
+  - No permite añadir nuevos permisos al rol con `IsEditable` con estado a `false`.
 
 - **Permisos**:
 
