@@ -276,6 +276,10 @@ La clase `Role` tiene los siguientes estados y transiciones:
   - **Code**: `RoleErrors.PermissionNotFoundInRole`
   - **Descripción**: The permission was not found in the role.
 
+- ***Identifier**: `RoleHasUsersAssigned` Se lanza cuando un rol tiene usuarios asignados.
+  - **Code**: `RoleErrors.RoleHasUsersAssigned`
+  - **Descripción**: This role has assigned users.
+
 ## Comentarios adicionales
 
 - **No Aplica**
