@@ -2,8 +2,6 @@
 
 ## ToDo List
 
-- [ ] Mejorar diseño de la página
-
 ## Objetivo
 
 Permitir a los usuarios recuperar su contraseña si la han olvidado.

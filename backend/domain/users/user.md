@@ -26,11 +26,6 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
   - Gestionar tokens de recuperación de contraseña.
   - Gestionar tokens de confirmación de email.
 
-- **Gestión de Información Personal**:
-
-  - Almacenar y validar la dirección de correo electrónico.
-  - Gestionar los datos opcionales como `FirstName` y `LastName`.
-
 - **Gestión de Estado**:
 
   - Manejar el estado de confirmación del email (`IsEmailConfirmed`).
@@ -41,13 +36,13 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
   - Añadir y remover roles asociados al usuario.
   - Proveer una colección de roles asignados al usuario.
 
+- **Profile**:
+
+  - Gestionar el perfil del usuario (`UserProfile`).
+
 - **Eventos de Dominio**:
 
   - Disparar eventos de dominio cuando se realicen cambios significativos en el usuario.
-
-- **Validación**:
-
-  - Asegurarse de que `FirstName` y `LastName` no exceden la longitud permitida.
 
 - **IsAssignableResource**
 
@@ -61,8 +56,6 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
 | `PasswordHash`         | `PasswordHash`            | Hash de la contraseña del usuario.                  |
 | `Email`                | `EmailAddress`            | Dirección de correo electrónico única del usuario.  |
 | `IsEmailConfirmed`     | `bool`                    | Estado de confirmación del email del usuario.       |
-| `FirstName`            | `string?`                 | Nombre del usuario, puede ser `null`.               |
-| `LastName`             | `string?`                 | Apellido del usuario, puede ser `null`.             |
 | `IsActive`             | `bool`                    | Estado de actividad del usuario.                    |
 | `IsAssignableResource` | `bool`                    | Indica si el usuario puede ser asignado a recursos. |
 | `RefreshToken`         | `Token?`                  | Token de refresco de autorización del usuario.      |
@@ -75,8 +68,6 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
 - `Email` no puede ser `null` en ningún momento y debe ser un formato de email válido
 - `PasswordHash` no puede ser `null` o vacío en ningún momento
 - `IsEmailConfirmed`, `IsActive` y `IsAssignableResource` debe ser un valor booleano (`true` o `false`) consistente
-- `FirstName` puede ser `null`, pero si está presente, no debe exceder los 256 caracteres
-- `LastName` puede ser `null`, pero si está presente, no debe exceder los 256 caracteres
 - `UserRoles` debe ser una colección de UserRole que puede ser vacía pero nunca `null`
 - `UserTokens` debe ser una colección de tokens que puede ser vacía pero nunca `null`
 
@@ -100,13 +91,14 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
   - Un usuario puede tener múltiples roles, pero no roles duplicados.
   - Los roles asociados a un usuario deben permitir la correcta autorización dentro del sistema.
 
+- **Profile**:
+
+  - El perfil del usuario (`UserProfile`) debe ser gestionado de manera adecuada.
+  - Al crear un usuario, el perfil debe ser creado y asociado al usuario.
+
 - **Tokens de Actualización**:
 
   - `Token` debe ser único y gestionado de manera segura, asegurando que solo un token activo esté asociado con el usuario en cualquier momento.
-
-- **Actualización de Información Personal**:
-  - `FirstName` y `LastName` pueden actualizarse, pero deben respetar las limitaciones de longitud y no ser nulos si están presentes.
-  - El `Email` puede ser actualizado y debe seguir siendo único en la aplicación después de la actualización.
 
 ## Métodos
 
@@ -304,22 +296,6 @@ public bool HasRole(UserRole userRole)
   - `userRole`: UserRole a verificar.
 - **Retorno**: `bool`: `true` si el usuario tiene el rol, `false` de lo contrario.
 
-### Update
-
-```csharp
-internal void Update(string? firstName, string? lastName)
-```
-
-- **Descripción**: Actualiza el nombre y apellido del usuario.
-- **Parámetros**:
-  - `firstName`: Nuevo nombre del usuario.
-  - `lastName`: Nuevo apellido del usuario.
-    **Eventos**:
-  - `UserUpdatedDomainEvent(Id)`:
-    - **Descripción**: Se dispara cuando se actualiza el usuario.
-    - **Parámetros**:
-      - `userId`: Identificador único del usuario.
-
 ### AddRole
 
 ```csharp
@@ -349,29 +325,44 @@ public void RemoveRole(Role role)
     - **Parámetros**:
       - `userRole`: Rol eliminado del usuario.
 
-### GuardAgainstInvalidFirstName
+### AddProfile
 
 ```csharp
-private static void GuardAgainstInvalidFirstName(string? firstName)
+internal void AddProfile(UserProfile profile)
 ```
 
-- **Descripción**: Verifica que el nombre del usuario sea válido.
+- **Descripción**: Agrega un perfil al usuario.
+- **Parámetros**:
+  - `profile`: Perfil a agregar al usuario.
+- **Eventos**:
+  - `UserProfileAddedDomainEvent(userProfileId)`:
+  - **Descripción**: Se dispara cuando se agrega un perfil al usuario.
+  - **Parámetros**:
+    - `userProfileId`: Identificador del perfil agregado al usuario.
+
+### UpdateProfile
+
+```csharp
+internal void UpdateProfile(
+        string firstName,
+        string lastName,
+        PhoneNumber? phoneNumber = null,
+        Address? address = null,
+        IdentityDocument? identityDocument = null)
+```
+
+- **Descripción**: Actualiza el perfil del usuario.
 - **Parámetros**:
   - `firstName`: Nombre del usuario.
-- **Excepciones**:
-  - `UserDomainException`: Se lanza si el nombre del usuario es inválido.
-
-### GuardAgainstInvalidLastName
-
-```csharp
-private static void GuardAgainstInvalidLastName(string? lastName)
-```
-
-- **Descripción**: Verifica que el apellido del usuario sea válido.
-- **Parámetros**:
   - `lastName`: Apellido del usuario.
-- **Excepciones**:
-  - `UserDomainException`: Se lanza si el apellido del usuario es inválido.
+  - `phoneNumber`: Número de teléfono del usuario.
+  - `address`: Dirección del usuario.
+  - `identityDocument`: Documento de identidad del usuario.
+**Eventos**:
+  - `UserProfileUpdatedDomainEvent(Id)`:
+  - **Descripción**: Se dispara cuando se actualiza el perfil del usuario.
+  - **Parámetros**:
+  - `Id`: Identificador del usuario.
 
 ## Estado y Transiciones
 
@@ -422,6 +413,7 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
     - Hereda gestión de eventos de dominio (`Entity`)
 
 - `UserRole`: Representa un rol asignado a un usuario.
+- `UserProfile`: Representa el perfil de un usuario.
 
 ### Interfaces
 
@@ -443,6 +435,7 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 ### Value Objects
 
 - `UserId`: Identificador único del usuario.
+- `UserProfileId`: Identificador único del perfil del usuario.
 - `PasswordHash`: Hash de la contraseña del usuario.
 - `EmailAddress`: Dirección de correo electrónico del usuario.
 - `Token`: Token de actualización del usuario.
@@ -518,6 +511,7 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 
 - La entidad `User` no puede ser instanciada fuera de un contexto de dominio. Para crear un nuevo usuario, se debe utilizar el método `CreateUserAsync` del service model `UserManager`.
 - La entidad `User` no puede ser modificada después de ser creada. Para actualizar un usuario, se debe utilizar el método `UpdateUserAsync` del service model `UserManager`.
+- La creación de un nuevo usuario, creara un nuevo `UserProfile` desde el `UserManager`.
 
 ## Ejemplos de Uso
 
@@ -531,14 +525,5 @@ var user = userManager.CreateUserAsync(
   lastName: "Doe",
   isActive: true,
   isEmailConfirmed: false,
-  cancellationToken: cancellationToken);
-```
-
-```csharp
-// Actualizar la contraseña de un usuario
-var result = user.UpdatePassword(
-  user: user,
-  firstName: "Alice",
-  lastName: "Doe".
   cancellationToken: cancellationToken);
 ```
