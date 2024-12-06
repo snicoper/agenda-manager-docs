@@ -229,17 +229,11 @@ El UserProfile no tiene estados explícitos, pero su estado está implícitament
 
 ## Errores
 
-- `ArgumentNullException`:
-  - Cuando `userProfileId` es null
-  - Cuando `userId` es null
-  - Cuando `firstName` es null
-  - Cuando `lastName` es null
+### Conflict
 
-- `ArgumentException`:
-  - Cuando `firstName` está vacío o solo contiene espacios
-  - Cuando `lastName` está vacío o solo contiene espacios
-  - Cuando `firstName` o `lastName` exceden los 100 caracteres
-  - Cuando `firstName` o `lastName` contienen caracteres no válidos
+- **Identifiers**: `IdentityDocumentAlreadyExists` - Cuando se intenta crear un UserProfile con un IdentityDocument que ya existe en la base de datos
+  - **Code**: `UserProfile.IdentityDocumentAlreadyExists`
+  - **Description**: Identity document already exists.
 
 ## Comentarios adicionales
 
@@ -251,38 +245,3 @@ El UserProfile no tiene estados explícitos, pero su estado está implícitament
 - La edición del UserProfile se realiza a través de `UserProfileManager`
 
 ## Ejemplos de Uso
-
-- **Create**:
-
-```csharp
-public static UserProfile Create(
-    UserProfileId userProfileId,
-    UserId userId,
-    string firstName,
-    string lastName,
-    PhoneNumber? phoneNumber,
-    Address? address,
-    IdentityDocument? identityDocument)
-```
-
-- **Update**:
-
-```csharp
-internal UserProfile Update(
-    string firstName,
-    string lastName,
-    PhoneNumber? phoneNumber,
-    Address? address,
-    IdentityDocument? identityDocument)
-```
-
-- **HasChanges**:
-
-```csharp
-internal bool HasChanges(
-    string firstName,
-    string lastName,
-    PhoneNumber? phoneNumber,
-    Address? address,
-    IdentityDocument? identityDocument)
-```

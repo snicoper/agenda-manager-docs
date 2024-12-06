@@ -468,7 +468,7 @@ La clase `User` tiene diferentes estados que dependen de ciertas condiciones y a
 - **Identifier**: `InvalidCredentials` Se lanza cuando las credenciales proporcionadas son inválidas.
 
   - **Code**: `UserErrors.InvalidCredentials`
-  - **Description\***: `The provided credentials are invalid.`
+  - **Description**: `The provided credentials are invalid.`
 
 - **Identifier**: `UserIsNotActive` Se lanza cuando el usuario no está activo.
 
