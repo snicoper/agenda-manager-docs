@@ -79,7 +79,7 @@ Un `Role` es una entidad que representa un rol de usuario en el sistema. Los rol
 
 ## Roles Predefinidos
 
-El sistema define cuatro roles inmutables (`Editable = false`) que no pueden ser modificados:
+El sistema define tres roles inmutables (`Editable = false`) que no pueden ser modificados:
 
 - **Administrator**:
 

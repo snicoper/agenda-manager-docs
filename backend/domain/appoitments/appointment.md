@@ -134,6 +134,56 @@ Determina la estrategia de validación de la disponibilidad de recursos cuando s
 
 ### Estados y Transiciones
 
+### Diagrama de Estados
+
+```mermaid
+stateDiagram-v2
+    classDef initial fill:#c2e0c6,stroke:#0a0,stroke-width:2px
+    classDef active fill:#ffebba,stroke:#b37700,stroke-width:2px
+    classDef special fill:#ffd4d4,stroke:#cc0000,stroke-width:2px
+    classDef final fill:#666,stroke:#333,stroke-width:2px,color:#fff
+
+    [*] --> Pending: Create with\nRequireConfirmation
+    [*] --> Accepted: Create with\nAutoAccept
+
+    Pending --> Accepted: Confirm
+    Pending --> RequiresRescheduling: Request\nReschedule
+    Pending --> Cancelled: Cancel
+    Pending --> Waiting: Client\nArrives
+
+    Accepted --> RequiresRescheduling: Request\nReschedule
+    Accepted --> Cancelled: Cancel
+    Accepted --> Waiting: Client\nArrives
+
+    RequiresRescheduling --> Pending: Reschedule with\nRequireConfirmation
+    RequiresRescheduling --> Accepted: Reschedule with\nAutoAccept
+    RequiresRescheduling --> Cancelled: Cancel
+
+    Waiting --> InProgress: Start\nAppointment
+    Waiting --> Cancelled: Cancel
+
+    InProgress --> Completed: Complete
+    InProgress --> Cancelled: Cancel
+
+    Cancelled --> [*]
+    Completed --> [*]
+
+    note right of Pending
+        Can expire if not
+        confirmed in time
+    end note
+
+    note right of RequiresRescheduling
+        Previous schedule
+        is no longer valid
+    end note
+
+    class Pending,Accepted initial
+    class Waiting,InProgress active
+    class RequiresRescheduling special
+    class Cancelled,Completed final
+```
+
 #### Estados Posibles
 
 - **Estados Iniciales**:
