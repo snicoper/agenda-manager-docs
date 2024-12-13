@@ -44,30 +44,30 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
 
   - Disparar eventos de dominio cuando se realicen cambios significativos en el usuario.
 
-- **IsAssignableResource**
+- **IsCollaborator**
 
   - Determinar si el usuario puede ser asignado como recurso.
 
   ## Propiedades
 
-| Propiedad              | Tipo                      | Descripción                                         |
-| ---------------------- | ------------------------- | --------------------------------------------------- |
-| `UserId`               | `UserId`                  | Identificador único del usuario.                    |
-| `PasswordHash`         | `PasswordHash`            | Hash de la contraseña del usuario.                  |
-| `Email`                | `EmailAddress`            | Dirección de correo electrónico única del usuario.  |
-| `IsEmailConfirmed`     | `bool`                    | Estado de confirmación del email del usuario.       |
-| `IsActive`             | `bool`                    | Estado de actividad del usuario.                    |
-| `IsAssignableResource` | `bool`                    | Indica si el usuario puede ser asignado a recursos. |
-| `RefreshToken`         | `Token?`                  | Token de refresco de autorización del usuario.      |
-| `UserRoles`            | `IReadOnlyList<UserRole>` | Lista de roles asociados al usuario.                |
-| `Tokens`               | `IReadOnlyList<Token>`    | Lista de tokens asociados al usuario.               |
+| Propiedad          | Tipo                      | Descripción                                         |
+| ------------------ | ------------------------- | --------------------------------------------------- |
+| `UserId`           | `UserId`                  | Identificador único del usuario.                    |
+| `PasswordHash`     | `PasswordHash`            | Hash de la contraseña del usuario.                  |
+| `Email`            | `EmailAddress`            | Dirección de correo electrónico única del usuario.  |
+| `IsEmailConfirmed` | `bool`                    | Estado de confirmación del email del usuario.       |
+| `IsActive`         | `bool`                    | Estado de actividad del usuario.                    |
+| `IsCollaborator`   | `bool`                    | Indica si el usuario puede ser asignado a recursos. |
+| `RefreshToken`     | `Token?`                  | Token de refresco de autorización del usuario.      |
+| `UserRoles`        | `IReadOnlyList<UserRole>` | Lista de roles asociados al usuario.                |
+| `Tokens`           | `IReadOnlyList<Token>`    | Lista de tokens asociados al usuario.               |
 
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento
 - `Email` no puede ser `null` en ningún momento y debe ser un formato de email válido
 - `PasswordHash` no puede ser `null` o vacío en ningún momento
-- `IsEmailConfirmed`, `IsActive` y `IsAssignableResource` debe ser un valor booleano (`true` o `false`) consistente
+- `IsEmailConfirmed`, `IsActive` y `IsCollaborator` debe ser un valor booleano (`true` o `false`) consistente
 - `UserRoles` debe ser una colección de UserRole que puede ser vacía pero nunca `null`
 - `UserTokens` debe ser una colección de tokens que puede ser vacía pero nunca `null`
 
@@ -112,7 +112,7 @@ internal User(
     string? firstName,
     string? lastName,
     bool isActive = true,
-    bool isAssignableResource = false,
+    bool IsCollaborator = false,
     bool emailConfirmed = false)
 ```
 
@@ -124,7 +124,7 @@ internal User(
   - `firstName`: Nombre del usuario, puede ser `null`.
   - `lastName`: Apellido del usuario, puede ser `null`.
   - `isActive`: Estado de actividad del usuario.
-  - `isAssignableResource`: Indica si el usuario puede ser asignado a recursos.
+  - `IsCollaborator`: Indica si el usuario puede ser asignado a recursos.
   - `emailConfirmed`: Estado de confirmación del email del usuario.
 - **Eventos**:
   - `UserCreatedDomainEvent(userId)`:
@@ -358,7 +358,7 @@ internal void UpdateProfile(
   - `phoneNumber`: Número de teléfono del usuario.
   - `address`: Dirección del usuario.
   - `identityDocument`: Documento de identidad del usuario.
-**Eventos**:
+    **Eventos**:
   - `UserProfileUpdatedDomainEvent(Id)`:
   - **Descripción**: Se dispara cuando se actualiza el perfil del usuario.
   - **Parámetros**:
