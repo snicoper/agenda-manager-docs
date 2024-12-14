@@ -90,7 +90,7 @@ constructor() {
 
 - `show<TData>(component: Type<unknown>, options?: BladeOptions<TData>)`: Muestra el blade
 - `hide()`: Oculta el blade
-- `emitResult(result: unknown)`: Emite un resultado (llama a `hide()`)
+- `emitResult<TResult>(result: TResult)`: Emite un resultado (llama a `hide()`)
 
 #### Propiedades
 

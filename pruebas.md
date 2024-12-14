@@ -1,151 +1,68 @@
-Hola, estoy creado un componente blade, para añadir el contenido de componentes dentro (similar en funcionacionamiento a Azure)
-
-Este es el componente (omito el scss, ya que no es problemático)
+Este es el caso tipico de formulario en un componente
 
 ```ts
-// src\app\shared\components\blade\interfaces\blade-options.interface.ts
-export interface BladeOptions<TData = unknown> {
-  width?: string;
-  data?: TData;
-}
+export class RoleUpdateBladeComponent {
+  private readonly apiService = inject(AuthorizationApiService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly snackBarService = inject(SnackBarService);
 
-// src\app\shared\components\blade\services\blade.service.ts
-@Injectable({ providedIn: 'root' })
-export class BladeService {
-  private readonly isVisible$ = signal(false);
-  private readonly component$ = signal<Type<unknown> | null>(null);
-  private readonly options$ = signal<BladeOptions>({ width: '480px' });
-  private readonly outputResult$ = signal<unknown>(null);
+  readonly formState = {
+    form: this.formBuilder.group({}),
+    badRequest: undefined,
+    isSubmitted: false,
+    isLoading: false,
+  } as FormState;
 
-  readonly bladeState = computed(() => ({
-    isVisible: this.isVisible$(),
-    component: this.component$(),
-    options: this.options$(),
-    outputResult: this.outputResult$(),
-  }));
+  handleSubmit(): void {
+    this.formState.isSubmitted = true;
 
-  show<TData = unknown>(component: Type<unknown>, options?: BladeOptions<TData>): void {
-    this.component$.set(component);
-
-    if (options) {
-      this.options$.set({ ...this.options$(), ...options });
+    if (this.formState.form.invalid) {
+      return;
     }
 
-    this.isVisible$.set(true);
+    const request = this.formState.form.value as RoleUpdateRequest;
+    this.updateRole(request);
   }
 
-  handleOutputResult<TData = unknown>(result: TData): void {
-    this.outputResult$.set(result);
-  }
-
-  hide(): void {
-    this.isVisible$.set(false);
-    this.component$.set(null);
-    this.options$.set({ width: '480px' });
-  }
-}
-
-// src\app\shared\components\blade\blade.component.ts
-@Component({
-  selector: 'am-blade',
-  standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule],
-  templateUrl: './blade.component.html',
-  styleUrl: './blade.component.scss',
-})
-export class BladeComponent {
-  bladeService = inject(BladeService);
-
-  data = input<unknown>();
-
-  handleOutput(result: unknown): void {
-    this.bladeService.handleOutputResult(result);
-  }
-}
-```
-
-```html
-<!-- src\app\shared\components\blade\blade.component.html -->
-<div class="blade-container" [class.visible]="bladeService.bladeState().isVisible">
-  <div class="blade" [style.width]="bladeService.bladeState().options.width">
-    <div class="blade-header">
-      <button mat-icon-button (click)="bladeService.hide()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-
-    <div class="blade-content">
-      <ng-container
-        *ngComponentOutlet="
-          bladeService.bladeState().component;
-          inputs: { data: bladeService.bladeState().options.data };
-          outputs: { outputResult: handleOutput }
-        "
-      />
-    </div>
-  </div>
-</div>
-```
-
-Como funciona? creo un componente, por ejemplo para este caso es para la creación de un role nuevo.
-
-```ts
-// src\app\features\authorization\models\create-role-data.blade.ts
-export interface CreateRoleDataBlade {
-  roleId: string;
-}
-
-// src\app\features\authorization\components\role-create-blade\role-create-blade.component.ts
-export class RoleCreateBladeComponent {
-  private readonly bladeService = inject(BladeService);
-
-  outputResult = output<boolean>();
-
-   private create(request: CreateRoleRequest): void {
-    this.formState.isLoading = true;
-
+  private updateRole(request: RoleUpdateRequest): void {
     this.apiService
-      .createRole(request)
-      .pipe(finalize(() => (this.formState.isSubmitted = false)))
+      .updateRole(this.role.id, request)
+      .pipe(finalize(() => (this.formState.isLoading = false)))
       .subscribe({
-        next: (response) => {
-          if (response) {
-            this.snackBarService.success('Rol creado correctamente.');
-            this.bladeService.hide();
-            this.outputResult.emit(true);
-          }
+        next: () => {
+          this.snackBarService.success('Role actualizado correctamente.');
+          this.bladeService.emitResult<string>(this.role.id);
         },
-        error: (error) => (this.formState.badRequest = error.error),
+        error: (error) => {
+          if (error.status === HttpStatusCode.BadRequest || error.status === HttpStatusCode.Conflict) {
+            this.formState.badRequest = error.error;
+
+            return;
+          }
+
+          this.snackBarService.error('Ha ocurrido un error al actualizar el role.');
+        },
       });
   }
 
-  // Omito partes de código no relevantes.
-}
-```
+  private buildForm(): void {
+    const formContract = {
+      name: {
+        ...RoleFormConfig.name,
+        initialValue: this.role.name,
+      },
+      description: {
+        ...RoleFormConfig.description,
+        initialValue: this.role.description,
+      },
+    } as RoleFormContract;
 
-Ahora muestro desde donde se llama, igual, solo añado partes de código relevantes del componente.
-
-```ts
-// src\app\features\authorization\pages\role-list\role-list.component.ts
-export class RoleListComponent implements AfterViewInit {
-  private readonly bladeService = inject(BladeService);
-
-  constructor() {
-    effect(() => {
-      const result = this.bladeService.bladeState().outputResult;
-
-      if (result) {
-        this.loadRoles();
-      }
+    this.formState.form = this.formBuilder.group({
+      name: [formContract.name.initialValue, formContract.name.validators],
+      description: [formContract.description.initialValue, formContract.description.validators],
     });
   }
-
-  handleOpenCreateRoleBlade(): void {
-    this.bladeService.show(RoleCreateBladeComponent);
-  }
-
-  // Omito partes de código no relevantes.
 }
 ```
 
-El problema es que no emite o no recarga los roles cuando hace `this.outputResult.emit(true);` en `RoleCreateBladeComponent`
+En este caso, el `RoleFormContract` es para compartir validaciones con el create y el update
