@@ -1,135 +1,229 @@
-# Blade Component Documentation
+# Documentación del Componente Blade
 
-## Overview
+## Índice
 
-The Blade component provides a sliding panel that appears from the right side of the screen, similar to Azure Portal's blade system. It's useful for displaying forms, details, or any other content without leaving the current page.
+1. [Instalación](#instalación)
+2. [Uso Básico](#uso-básico)
+3. [API](#api)
+4. [Ejemplos](#ejemplos)
+5. [Mejores Prácticas](#mejores-prácticas)
 
-## Installation
+## Instalación
 
-1. Copy the blade component files to your project:
+### Estructura de Archivos
 
 ```shell
 shared/
   components/
-    blade/
+    interfaces/
+      blade-options.interface.ts
+    services/
       blade.service.ts
+    blade/
       blade.component.ts
       blade.component.html
       blade.component.scss
 ```
 
-2. Add the BladeComponent to your page-base component:
+## Uso Básico
 
-```html
-<am-blade />
-```
-
-## Usage
-
-### Basic Usage
+### Crear un Componente Blade
 
 ```typescript
-readonly bladeService = inject(BladeService)
+@Component({
+  selector: 'am-create-role-blade',
+  template: `
+    <div class="blade-content-container">
+      <h2 class="blade-title">Título</h2>
+      <div class="blade-body">
+        <!-- Contenido -->
+      </div>
+      <div class="blade-actions">
+        <!-- Acciones -->
+      </div>
+      <div class="blade-loading">
+        <!-- Loading -->
+      </div>
+    </div>
+  `
+})
+export class CreateRoleBladeComponent {
+  private readonly bladeService = inject(BladeService);
 
-openBlade() {
-  this.bladeService.show(YourComponent);
+  handleCloseBlade(): void {
+    this.bladeService.hide();
+  }
 }
 ```
 
-### With Custom Width
+### Mostrar el Blade
 
 ```typescript
-this.bladeService.show(YourComponent, { width: '800px' });
+private readonly bladeService = inject(BladeService);
+
+openBlade() {
+  this.bladeService.show(CreateRoleBladeComponent, {
+    width: '500px'
+  });
+}
+```
+
+### Manejar Resultados
+
+```typescript
+constructor() {
+  this.bladeService.result$
+    .pipe(takeUntilDestroyed())
+    .subscribe(result => {
+      if (result) {
+        this.loadData();
+      }
+    });
+}
 ```
 
 ## API
 
 ### BladeService
 
-#### Methods
+#### Métodos
 
-- `show(component: Type<unknown>, options?: BladeOptions): void`
-  - Opens the blade with the specified component
-  - Optional options object to customize the blade appearance
+- `show<TData>(component: Type<unknown>, options?: BladeOptions<TData>)`: Muestra el blade
+- `hide()`: Oculta el blade
+- `emitResult(result: unknown)`: Emite un resultado (llama a `hide()`)
 
-- `hide(): void`
-  - Closes the blade
+#### Propiedades
 
-#### Interfaces
+- `result`: Observable que emite cuando hay un resultado del blade
 
-```typescript
-interface BladeOptions {
-  width?: string;  // Default: '480px'
+### Clases CSS Útiles
+
+Ver: `src\styles\components\_blade.scss`
+
+```scss
+.blade-content-container {
+  // Contenedor principal del contenido.
+}
+
+.blade-title {
+  // Título del blade.
+}
+
+.blade-body {
+  // Contenido principal.
+}
+
+.blade-actions {
+  // Contenedor de acciones (botones).
+}
+
+.blade-loading {
+  // Cuando esta en loading los posibles llamadas a la API.
 }
 ```
 
-### Creating Components for the Blade
+## Ejemplos
 
-Components that will be displayed in the blade should follow this structure:
+### Formulario Simple
 
 ```typescript
 @Component({
-  selector: 'am-your-component',
+  selector: 'am-create-role-blade',
   template: `
-    <div class="blade-content-wrapper">
-      <h2 class="blade-title">Your Title</h2>
-      <!-- Your content here -->
+    <div class="blade-content-container">
+      <h2 class="blade-title">Crear Rol</h2>
+
+      <div class="blade-body">
+        <form [formGroup]="form">
+          <mat-form-field>
+            <input matInput placeholder="Nombre" formControlName="name">
+          </mat-form-field>
+        </form>
+      </div>
+
+      <div class="blade-actions">
+        <button mat-button (click)="handleCloseBlade()">Cancelar</button>
+        <button mat-raised-button (click)="handleSubmit()">
+          Guardar
+        </button>
+      </div>
     </div>
   `
 })
-export class YourComponent {
-  // Your component logic
-}
-```
+export class CreateRoleBladeComponent {
+  private readonly bladeService = inject(BladeService);
 
-## Styling
+  handleSubmit() {
+    // Lógica de guardado.
+    this.bladeService.emitResult(true);
+  }
 
-The blade comes with predefined styles including:
-
-- Smooth Material Design animations
-- Responsive layout (max-width: 90vw)
-- Customizable width through options
-- Styled scrollbar
-- Proper z-indexing
-
-## Example
-
-```typescript
-@Component({
-  selector: 'am-example',
-  template: `
-    <button (click)="openDetailsBlade()">Open Details</button>
-  `
-})
-export class ExampleComponent {
-  constructor(private bladeService: BladeService) {}
-
-  openDetailsBlade() {
-    this.bladeService.show(DetailsComponent, { width: '500px' });
+  handleCloseBlade() {
+    this.bladeService.hide();
   }
 }
 ```
 
-## Features
+### Pasar y Recibir Datos
 
-- 🚀 Dynamic component loading
-- 📱 Responsive design
-- 🎨 Material Design styling
-- 🔄 Smooth animations
-- 🛠️ Customizable width
-- 🎯 Simple API
+Interfaz:
 
-## Best Practices
+```typescript
+interface BladeOptions<TData = unknown> {
+  width?: string;    // Ancho del blade (default: '480px')
+  data?: TData;      // Datos que se quieren pasar al blade
+}
+```
 
-1. Let components manage their own content structure
-2. Use appropriate widths based on content type:
-   - Forms: 480px - 800px
-   - Details: 320px - 480px
-   - Complex views: Consider using percentages (e.g., '50vw')
-3. Remember the blade is meant for supplementary content - keep the main content in the primary view
+```typescript
+// Al abrir el blade.
+this.bladeService.show<EditRoleDataBlade>(EditRoleBladeComponent, {
+  data: { id: '1', name: 'Admin' }
+});
 
-## Dependencies
+// En el componente blade.
+export interface EditRoleDataBlade {
+  id: string;
+  name: string;
+}
 
-- @angular/core
-- @angular/common
-- @angular/material (for styling and icons)
+@Component({...})
+export class EditRoleBladeComponent {
+  // Acceder a la data:
+  this.bladeService.bladeState().options.data?.id;
+}
+```
+
+## Mejores Prácticas
+
+### Convenciones de Nombres
+
+- Usar el sufijo `-blade` en los nombres de componentes
+- Ejemplo: `create-role-blade.component.ts`
+
+### Estructura del Contenido
+
+- Usar siempre `blade-content-container` como contenedor principal
+- Dividir el contenido en título, cuerpo y acciones
+- Mantener las acciones al final del blade
+
+### Tips
+
+1. No sobrecargar el blade con demasiado contenido
+2. Usar el ancho apropiado según el contenido
+3. Mantener la jerarquía visual con títulos claros
+4. Proporcionar siempre una forma de cerrar/cancelar
+5. Limpiar las suscripciones usando `takeUntilDestroyed()`
+
+### Consideraciones de Rendimiento
+
+- No cargar datos innecesarios
+- Usar `OnPush` change detection cuando sea posible
+- Limpiar recursos al cerrar el blade
+
+### Cuándo Usar un Blade
+
+- Formularios de creación/edición
+- Paneles de detalles
+- Configuraciones
+- Cualquier contenido que no requiera navegación completa
