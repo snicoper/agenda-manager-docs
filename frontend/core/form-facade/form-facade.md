@@ -33,10 +33,13 @@ readonly loginForm = this.formFacade.createForm<LoginForm>({
     }
   },
   onSuccess: () => {
-    // Manejar éxito
+    // Manejar éxito.
+  },
+  reset: () => {
+    // Resetear formulario.
   },
   onError: (error) => {
-    // Manejar error
+    // Manejar error.
   }
 });
 ```
@@ -139,6 +142,7 @@ Proporciona una interfaz unificada para todo el sistema de formularios:
 // Una interfaz simple para un sistema complejo
 this.formFacade.createForm({
   fields: { ... },
+  reset: () => { ... },
   onSuccess: () => { ... },
   onError: () => { ... }
 });

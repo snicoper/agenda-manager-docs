@@ -132,22 +132,6 @@ internal User(
     - **Parámetros**:
       - `userId`: Identificador único del usuario.
 
-### UpdatePassword
-
-```csharp
-public Result UpdatePassword(PasswordHash newPasswordHash)
-```
-
-- **Descripción**: Actualiza la contraseña del usuario.
-- **Parámetros**:
-  - `newPasswordHash`: Hash de la nueva contraseña del usuario.
-- **Eventos**:
-  - `UserPasswordUpdatedDomainEvent(Id)`:
-    - **Descripción**: Se dispara cuando se actualiza la contraseña del usuario.
-    - **Parámetros**:
-      - `userId`: Identificador único del usuario.
-- **Retorno**: `Result`: Un resultado que indica si la actualización fue exitosa o no.
-
 ### UpdateEmail
 
 ```csharp
@@ -324,6 +308,22 @@ public void RemoveRole(Role role)
     - **Descripción**: Se dispara cuando se elimina un rol del usuario.
     - **Parámetros**:
       - `userRole`: Rol eliminado del usuario.
+
+### UpdatePassword
+
+```csharp
+internal Result UpdatePassword(PasswordHash newPasswordHash)
+```
+
+- **Descripción**: Actualiza la contraseña del usuario.
+- **Parámetros**:
+  - `newPasswordHash`: Hash de la nueva contraseña del usuario.
+- **Eventos**:
+  - `UserPasswordUpdatedDomainEvent(Id)`:
+    - **Descripción**: Se dispara cuando se actualiza la contraseña del usuario.
+    - **Parámetros**:
+      - `userId`: Identificador único del usuario.
+- **Retorno**: `Result`: Un resultado que indica si la actualización fue exitosa o no.
 
 ### AddProfile
 
