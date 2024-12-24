@@ -37,13 +37,13 @@ El agregado `UserProfile` representa la información de perfil de un usuario en 
 | Nombre             | Tipo                | Descripción                                                 |
 | ------------------ | ------------------- | ----------------------------------------------------------- |
 | `Id`               | `UserProfileId`     | Identificador único del perfil de usuario.                  |
+| `UserId`           | `UserId`            | Identificador único del usuario al que pertenece el perfil. |
+| `User`             | `User`              | Referencia al usuario al que pertenece el perfil.           |
 | `FirstName`        | `string`            | Nombre del usuario.                                         |
 | `LastName`         | `LastName`          | Apellidos del usuario.                                      |
 | `PhoneNumber`      | `PhoneNumber?`      | Número de teléfono del usuario.                             |
 | `Address`          | `Address?`          | Dirección del usuario.                                      |
 | `IdentityDocument` | `IdentityDocument?` | Documento de identidad del usuario.                         |
-| `UserId`           | `UserId`            | Identificador único del usuario al que pertenece el perfil. |
-| `User`             | `User`              | Referencia al usuario al que pertenece el perfil.           |
 
 ## Invariantes
 
@@ -52,7 +52,6 @@ El agregado `UserProfile` representa la información de perfil de un usuario en 
 - `LastName` no puede superar los 100 caracteres
 - `PhoneNumber` si no es `null` debe ser único en la base de datos
 - `Address` si no es `null` debe ser único en la base de datos
-- `IdentityDocument` si no es `null` debe ser único en la base de datos
 - `UserId` no puede ser `null`
 - Un User debe tener exactamente un UserProfile asociado
 - Un UserProfile debe tener exactamente un User asociado
@@ -63,7 +62,6 @@ El agregado `UserProfile` representa la información de perfil de un usuario en 
 
 - **Unicidad de Datos de Contacto**:
   - Si se proporciona un `PhoneNumber`, debe ser único en toda la aplicación
-  - Si se proporciona un `Address`, debe ser único en toda la aplicación
   - Si se proporciona un `IdentityDocument`, debe ser único por tipo y país
 
 - **Formato y Validación**:
@@ -234,6 +232,10 @@ El UserProfile no tiene estados explícitos, pero su estado está implícitament
 - **Identifiers**: `IdentityDocumentAlreadyExists` - Cuando se intenta crear un UserProfile con un IdentityDocument que ya existe en la base de datos
   - **Code**: `UserProfile.IdentityDocumentAlreadyExists`
   - **Description**: Identity document already exists.
+
+- **Identifiers**: `PhoneNumberAlreadyExists` - Cuando se intenta crear un UserProfile con un PhoneNumber que ya existe en la base de datos
+  - **Code**: `UserProfile.PhoneNumberAlreadyExists`
+  - **Description**: Phone number already exists.
 
 ## Comentarios adicionales
 

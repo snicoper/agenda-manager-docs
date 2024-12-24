@@ -1,5 +1,7 @@
 # Guía de uso: Form Facade y Patrones de Formularios
 
+> **NOTA**: No implementado, esta en una rama del repositorio.
+
 ## ¿Qué es?
 
 Una solución que simplifica la creación y gestión de formularios en Angular, combinando lo mejor de Reactive Forms con un manejo de estado unificado.
