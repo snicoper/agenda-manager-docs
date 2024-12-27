@@ -174,7 +174,7 @@ public void RemoveHoliday(CalendarHoliday holiday)
 ### UpdateSettings
 
 ```csharp
-public void UpdateSettings(CalendarSettings settings)
+public bool UpdateSettings(CalendarSettings settings)
 ```
 
 - **Descripción**: Actualiza la configuración del calendario.
@@ -185,6 +185,7 @@ public void UpdateSettings(CalendarSettings settings)
   - **Descripción**: Lanza el evento al actualizar la configuración del calendario.
   - **Parámetros**:
     - `Id`: Identificador único del calendario.
+- **Retorno**: `true` si la configuración se actualizó, `false` en caso contrario.
 
 ### Create
 
