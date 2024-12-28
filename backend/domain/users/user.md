@@ -44,10 +44,6 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
 
   - Disparar eventos de dominio cuando se realicen cambios significativos en el usuario.
 
-- **IsCollaborator**
-
-  - Determinar si el usuario puede ser asignado como recurso.
-
   ## Propiedades
 
 | Propiedad          | Tipo                      | Descripción                                         |
@@ -57,7 +53,6 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
 | `Email`            | `EmailAddress`            | Dirección de correo electrónico única del usuario.  |
 | `IsEmailConfirmed` | `bool`                    | Estado de confirmación del email del usuario.       |
 | `IsActive`         | `bool`                    | Estado de actividad del usuario.                    |
-| `IsCollaborator`   | `bool`                    | Indica si el usuario puede ser asignado a recursos. |
 | `RefreshToken`     | `Token?`                  | Token de refresco de autorización del usuario.      |
 | `UserRoles`        | `IReadOnlyList<UserRole>` | Lista de roles asociados al usuario.                |
 | `Tokens`           | `IReadOnlyList<Token>`    | Lista de tokens asociados al usuario.               |
@@ -67,7 +62,7 @@ El agregado root `User` representa a un usuario en el sistema de gestión de age
 - `Id` no puede ser `null` en ningún momento
 - `Email` no puede ser `null` en ningún momento y debe ser un formato de email válido
 - `PasswordHash` no puede ser `null` o vacío en ningún momento
-- `IsEmailConfirmed`, `IsActive` y `IsCollaborator` debe ser un valor booleano (`true` o `false`) consistente
+- `IsEmailConfirmed` y `IsActive` debe ser un valor booleano (`true` o `false`) consistente
 - `UserRoles` debe ser una colección de UserRole que puede ser vacía pero nunca `null`
 - `UserTokens` debe ser una colección de tokens que puede ser vacía pero nunca `null`
 
@@ -112,7 +107,6 @@ internal User(
     string? firstName,
     string? lastName,
     bool isActive = true,
-    bool IsCollaborator = false,
     bool emailConfirmed = false)
 ```
 
@@ -124,7 +118,6 @@ internal User(
   - `firstName`: Nombre del usuario, puede ser `null`.
   - `lastName`: Apellido del usuario, puede ser `null`.
   - `isActive`: Estado de actividad del usuario.
-  - `IsCollaborator`: Indica si el usuario puede ser asignado a recursos.
   - `emailConfirmed`: Estado de confirmación del email del usuario.
 - **Eventos**:
   - `UserCreatedDomainEvent(userId)`:

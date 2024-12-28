@@ -7,7 +7,7 @@
 
 ## Descripción General
 
-El agregado root `ResourceType` representa un tipo de recurso en el sistema de gestión de agenda. Define la naturaleza y características base de los recursos que pueden ser gestionados en el sistema. Cada tipo de recurso puede representar tanto recursos humanos (que requieren un rol) como recursos físicos (sin rol asociado).
+El agregado root `ResourceType` representa un tipo de recurso en el sistema de gestión de agenda. Define la naturaleza y características base de los recursos que pueden ser gestionados en el sistema. Cada tipo de recurso puede representar tanto recursos humanos como recursos no humano.
 
 Un `ResourceType` sirve como plantilla para la creación de recursos específicos y es fundamental para:
 
@@ -25,7 +25,6 @@ Un `ResourceType` sirve como plantilla para la creación de recursos específico
 - **Integridad**:
 
   - Mantener la consistencia en la definición de tipos de recursos
-  - Asegurar que los tipos de recursos con rol tengan un rol válido
 
 - **Eventos de Dominio**:
 
@@ -36,27 +35,27 @@ Un `ResourceType` sirve como plantilla para la creación de recursos específico
 
 ## Propiedades
 
-| Propiedad     | Tipo                      | Descripción                                         |
-| ------------- | ------------------------- | --------------------------------------------------- |
-| `Id`          | `ResourceTypeId`          | Identificador único del tipo de recurso.            |
-| `Name`        | `string`                  | Nombre del tipo de recurso.                         |
-| `Description` | `string`                  | Descripción del tipo de recurso.                    |
-| `RoleId`      | `RoleId?`                 | Identificador del rol asociado al tipo de recurso.  |
-| `Resources`   | `IReadOnlyList<Resource>` | Colección de recursos asociados al tipo de recurso. |
+| Propiedad     | Tipo                      | Descripción                                              |
+| ------------- | ------------------------- | -------------------------------------------------------- |
+| `Id`          | `ResourceTypeId`          | Identificador único del tipo de recurso.                 |
+| `Category`    | `ResourceCategory`        | Categoría del tipo de recurso (humano o físico).         |
+| `Name`        | `string`                  | Nombre del tipo de recurso.                              |
+| `Description` | `string`                  | Descripción del tipo de recurso.                         |
+| `Resources`   | `IReadOnlyList<Resource>` | Colección de recursos asociados al tipo de recurso.      |
+| `Services`    | `IReadOnlyList<Service>`  | Colección de servicios que requieren el tipo de recurso. |
 
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento
+- `Category` no puede ser `null` en ningún momento y debe ser uno de los valores de `ResourceCategory`
 - `Name` no puede ser `null` o vacío en ningún momento, no debe exceder los 50 caracteres
 - `Description` no puede ser `null` o vacío en ningún momento, no debe exceder los 500 caracteres
-- `RoleId` puede ser `null` o no, pero si no es `null` debe ser un valor válido
 
 ## Reglas de negocio
 
 - **Unicidad de Identificador**:
 
   - `Id` debe ser único en toda la aplicación.
-  - `RoleId` si no es `null` debe ser único en toda la aplicación.
   - `Name` debe ser único en toda la aplicación.
 
 - **Nombre y Descripción**:
@@ -64,11 +63,12 @@ Un `ResourceType` sirve como plantilla para la creación de recursos específico
   - El nombre del tipo de recurso debe ser único en toda la aplicación y debe tener entre 1 y 50 caracteres.
   - La descripción del calendario debe tener entre 1 y 500 caracteres.
 
-- **Rol Asociado**:
+- **Categoría**:
 
-  - Un `ResourceType` puede tener o no un rol asociado
-  - Si tiene rol, representa un recurso que requiere personal (ejemplo: Odontólogo)
-  - Si no tiene rol, representa un recurso físico (ejemplo: Gabinete)
+  - Un `ResourceType` puede ser uno de estos tipos:
+    - `Staff`: Recurso humano que requiere de un rol `Employee`
+    - `Place`: Espacio físico requerido para realizar
+    - `Equipment`: Equipo o recurso físico necesario para realizar
 
 - **Eliminación**:
 
@@ -78,7 +78,7 @@ Un `ResourceType` sirve como plantilla para la creación de recursos específico
 - **Modificación**:
 
   - Un `ResourceType` solo permite modificar su nombre y descripción
-  - El `RoleId` se establece en la creación y no puede ser modificado posteriormente
+  - La `Category` se establece en la creación y no puede ser modificado posteriormente
   - La modificación del nombre debe mantener la restricción de unicidad
   - La modificación de la descripción debe mantener las restricciones de longitud
 
@@ -88,7 +88,6 @@ Un `ResourceType` sirve como plantilla para la creación de recursos específico
   - Los métodos de creación y modificación del agregado son `internal` para forzar el uso del manager
   - El manager es responsable de:
     - Verificar la unicidad del nombre en la base de datos
-    - Validar la existencia y validez del rol si se especifica
     - Aplicar reglas de negocio que requieran consulta a base de datos
   - Esta restricción garantiza:
     - La aplicación de todas las validaciones de negocio
@@ -175,23 +174,29 @@ private static void GuardAgainstInvalidDescription(string description)
 ### Value Objects
 
 - `ResourceTypeId`: Representa el identificador único de un tipo de recurso.
-- `RoleId`: Representa el identificador único de un rol.
+
+## Enums
+
+- `ResourceCategory`: Enumeración que define las categorías de un tipo de recurso.
 
 ### Errores
 
 ### NotFound
 
 - **Identifier**: `ResourceTypeNotFound`
+
   - **Code**: `ResourceTypeErrors.ResourceTypeNotFound`
   - **Descripción**: Indica que un tipo de recurso no fue encontrado.
 
 ### Validation
 
 - **Identifier**: `NameAlreadyExists` Se lanza cuando el nombre del tipo de recurso ya existe.
+
   - **Code**: `Name`
   - **Description**: The name of the resource type already exists.
 
 - **Identifier**: `DescriptionExists` Se lanza cuando la descripción del tipo de recurso ya existe.
+
   - **Code**: `Description`
   - **Description**: The description of the resource type already exists.
 
@@ -207,12 +212,13 @@ private static void GuardAgainstInvalidDescription(string description)
 
   - **Nombre**: "Odontólogo"
   - **Descripción**: "Profesional especializado en diagnóstico y tratamiento dental"
-  - **Role**: Employee
+  - **Category**: `ResourceCategory.Staff`
 
 - **Sin Role**:
+
   - **Nombre**: "Gabinete Dental"
   - **Descripción**: "Sala equipada con unidad dental completa"
-  - **Role**: null
+  - **Category**: `ResourceCategory.Place`
 
 #### Empresa de Calesas
 
@@ -220,12 +226,13 @@ private static void GuardAgainstInvalidDescription(string description)
 
   - **Nombre**: "Cochero"
   - **Descripción**: "Conductor profesional de carruajes"
-  - **Role**: Employee
+  - **Category**: `ResourceCategory.Staff`
 
 - **Sin Role**:
+
   - **Nombre**: "Carruaje"
   - **Descripción**: "Vehículo de tracción animal para pasajeros"
-  - **Role**: null
+  - **Category**: `ResourceCategory.Equipment`
 
 ## Ejemplos de Uso
 
