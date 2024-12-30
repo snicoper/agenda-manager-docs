@@ -181,24 +181,26 @@ private static void GuardAgainstInvalidDescription(string description)
 
 ### Errores
 
-### NotFound
+#### Conflict
+
+- **Identifier**: `CannotDeleteResourceType`
+
+  - **Code**: `ResourceTypeErrors.CannotDeleteResourceType`
+  - **Descripción**: Cannot delete the resource type.
+
+#### NotFound
 
 - **Identifier**: `ResourceTypeNotFound`
 
   - **Code**: `ResourceTypeErrors.ResourceTypeNotFound`
   - **Descripción**: Indica que un tipo de recurso no fue encontrado.
 
-### Validation
+#### Validation
 
 - **Identifier**: `NameAlreadyExists` Se lanza cuando el nombre del tipo de recurso ya existe.
 
   - **Code**: `Name`
   - **Description**: The name of the resource type already exists.
-
-- **Identifier**: `DescriptionExists` Se lanza cuando la descripción del tipo de recurso ya existe.
-
-  - **Code**: `Description`
-  - **Description**: The description of the resource type already exists.
 
 ## Comentarios adicionales
 
