@@ -21,6 +21,7 @@ El calendario gestiona distintas configuraciones que afectan al comportamiento d
   - El `CalendarSettings` se crea con la configuración predeterminada.
     - Ver [CalendarSettings](./entities/calendar-configuration.md#Configuraciones-con-Opciones-Predefinidas) para más detalles.
   - En la creación de un calendario, se establece el `IanaTimeZone`, ver `CalendarManager`.
+  - En la creación de un calendario, se establece la lista de días de la semana disponibles, por defecto All.
 
 - **Eventos de Dominio**:
 
@@ -34,10 +35,16 @@ El calendario gestiona distintas configuraciones que afectan al comportamiento d
 
   - Gestionar el estado activo o inactivo del calendario (`IsActive`).
 
-- **Gestión de Holidays**:
+- **Gestión de Días de la Semana**:
 
-  - Mantener la colección de días festivos
-  - Asegurar la consistencia al añadir o eliminar holidays
+  - Mantener la lista de días de la semana disponibles en el calendario.
+  - Permitir la actualización de los días de la semana disponibles.
+  - Emitir eventos de dominio relacionados con los días de la semana disponibles.
+
+- **Gestión de excepciones (holidays)**:
+
+  - Mantiene una colección de períodos no laborables (holidays)
+  - Asegura que no haya solapamientos entre holidays
   - Emitir eventos de dominio relacionados con holidays
 
 - **Gestión de settings**:
@@ -55,6 +62,7 @@ El calendario gestiona distintas configuraciones que afectan al comportamiento d
 | `Name`        | `string`                         | Nombre del calendario.                       |
 | `Description` | `string`                         | Descripción del calendario.                  |
 | `IsActive`    | `bool`                           | Indica si el calendario está activo.         |
+| `Weekdays`    | `Weekdays`                       | Días de la semana del holiday                |
 | `Holidays`    | `IReadOnlyList<CalendarHoliday>` | Lista de vacaciones asociadas al calendario. |
 
 ## Invariantes
@@ -64,6 +72,7 @@ El calendario gestiona distintas configuraciones que afectan al comportamiento d
 - `Description` no puede ser nulo y debe tener entre 1 y 500 caracteres.
 - `IsActive` debe ser `true` o `false`.
 - `Holidays` no puede ser nulo.
+- `Weekdays` no puede ser nulo.
 - `CalendarSettings` no puede ser nulo y debe ser un `CalendarSettings` asociado **one-to-one**.
 
 ## Reglas de Negocio
@@ -112,6 +121,32 @@ private Calendar(CalendarId id, CalendarSettings settings, string name, string d
   - `name`: Nombre del calendario.
   - `description`: Descripción del calendario.
   - `isActive`: Indica si el calendario está activo.
+
+### IsAvailableDay
+
+```csharp
+public bool IsAvailableDay(DayOfWeek day)
+```
+
+- **Descripción**: Verifica si el día de la semana está disponible en el calendario.
+- **Parámetros**:
+  - `day`: Día de la semana.
+- **Retorno**: `true` si el día está disponible, `false` en caso contrario.
+
+### UpdateAvailableDays
+
+```csharp
+public void UpdateAvailableDays(WeekDays availableDays)
+```
+
+- **Descripción**: Actualiza los días de la semana disponibles en el calendario.
+- **Parámetros**:
+  - `availableDays`: Días de la semana disponibles.
+- **Eventos**:
+  - `CalendarAvailableDaysUpdatedDomainEvent(Id)`
+  - **Descripción**: Lanza el evento al actualizar los días de la semana disponibles en el calendario.
+  - **Parámetros**:
+    - `Id`: El identificador del calendario.
 
 ### Activate
 
@@ -293,6 +328,10 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
 - `CalendarId`: Identificador único del calendario.
 - `CalendarSettingsId`: Identificador único de la configuración del calendario.
 
+### Enums
+
+- `Weekdays`: Enumeración de los días de la semana.
+
 ## Errores
 
 ### NotFound
@@ -322,6 +361,10 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
 - **Identifier**: `CannotDeleteCalendarWithResources` Se lanza cuando se intenta eliminar un calendario que tiene recursos.
   - **Code**: `CalendarErrors.CannotDeleteCalendarWithResources`
   - **Description**: The calendar cannot be deleted because it has resources.
+
+- **Identifier**: `WeekDayNotAvailable` Se lanza cuando se intenta agregar un día festivo que no está disponible en el calendario.
+  - **Code**: `CalendarErrors.WeekDayNotAvailable`
+  - **Description**: The holiday cannot be added because the day is not available in the calendar.
 
 ## Comentarios adicionales
 

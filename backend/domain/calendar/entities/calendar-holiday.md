@@ -56,14 +56,12 @@
 | `SettingsId`  | `CalendarSettingsId` | Identificador de la configuración del calendario asociado |
 | `Settings`    | `CalendarSettings`   | Configuración del calendario asociado                     |
 | `Period`      | `Period`             | Periodo del holiday                                       |
-| `Weekdays`    | `Weekdays`           | Días de la semana del holiday                             |
 | `Name`        | `string`             | Nombre del holiday                                        |
 
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento
 - `Name` no puede ser `null` ni vacío en ningún momento y debe tener una longitud máxima de 50 caracteres
-- `Weekdays` debe de tener un valor distinto a `None`
 
 ## Reglas de negocio
 
@@ -99,7 +97,6 @@ public static CalendarHoliday Create(
     CalendarHolidayId calendarHolidayId,
     CalendarId calendarId,
     Period period,
-    WeekDays weekDays,
     string name)
 ```
 
@@ -109,7 +106,6 @@ public static CalendarHoliday Create(
   - `calendarId`: Identificador del calendario asociado
   - `name`: Nombre del holiday
   - `period`: Período del holiday
-  - `weekdays`: Días de la semana del holiday
   - `name`: Nombre del holiday
 - **Eventos**:
   - `CalendarHolidayCreatedDomainEvent(calendarHolidayId)`:
@@ -121,13 +117,12 @@ public static CalendarHoliday Create(
 ### Update
 
 ```csharp
-public void Update(Period period, WeekDays weekDays, string name)
+public void Update(Period period, string name)
 ```
 
 - **Descripción**: Actualiza los valores del holiday
 - **Parámetros**:
   - `period`: Período del holiday
-  - `weekdays`: Días de la semana del holiday
   - `name`: Nombre del holiday
 - **Eventos**:
   - `CalendarHolidayUpdatedDomainEvent`:
@@ -177,7 +172,6 @@ private static void GuardAgainstInvalidName(string name)
 - `CalendarHolidayId`: Identificador único del holiday
 - `CalendarId`: Identificador único del calendario
 - `Period`: Representa un periodo de tiempo
-- `Weekdays`: Días de la semana del holiday
 
 ### Errores
 
@@ -203,6 +197,5 @@ var calendarHoliday = CalendarHoliday.Create(
     calendarHolidayId: CalendarHolidayId.Create(),
     calendarId: CalendarId.From(Guid.Parse("00000000-0000-0000-0000-000000000000")),
     period: Period.From(DateTimeOffset.Now, DateTimeOffset.Now.AddDays(1)),
-    weekDays: WeekDays.Weekdays,
     name: "New name");
 ```
