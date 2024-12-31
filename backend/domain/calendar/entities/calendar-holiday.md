@@ -29,7 +29,7 @@
 - **Validación**:
 
   - Asegurar la validez del período temporal
-  - Verificar el formato y longitud de nombre y descripción
+  - Verificar el formato y longitud de nombre
 
 - **Solapamiento con Appointments**:
 
@@ -58,13 +58,11 @@
 | `Period`      | `Period`             | Periodo del holiday                                       |
 | `Weekdays`    | `Weekdays`           | Días de la semana del holiday                             |
 | `Name`        | `string`             | Nombre del holiday                                        |
-| `Description` | `string`             | Descripción del holiday                                   |
 
 ## Invariantes
 
 - `Id` no puede ser `null` en ningún momento
 - `Name` no puede ser `null` ni vacío en ningún momento y debe tener una longitud máxima de 50 caracteres
-- `Description` puede ser `null` o vacío, pero si está presente, no debe exceder los 500 caracteres
 - `Weekdays` debe de tener un valor distinto a `None`
 
 ## Reglas de negocio
@@ -73,10 +71,9 @@
 
   - `Id` no puede ser `null` en ningún momento y debe ser único en toda la aplicación.
 
-- **Nombre y Descripción**:
+- **Nombre**:
 
   - El nombre del holiday debe ser único en toda la aplicación y debe tener entre 1 y 50 caracteres.
-  - La descripción del holiday debe tener entre 1 y 500 caracteres.
 
 - **Reglas Temporales**:
 
@@ -103,8 +100,7 @@ public static CalendarHoliday Create(
     CalendarId calendarId,
     Period period,
     WeekDays weekDays,
-    string name,
-    string description)
+    string name)
 ```
 
 - **Descripción**: Crea una nueva instancia de `CalendarHoliday` con los valores proporcionados
@@ -115,7 +111,6 @@ public static CalendarHoliday Create(
   - `period`: Período del holiday
   - `weekdays`: Días de la semana del holiday
   - `name`: Nombre del holiday
-  - `description`: Descripción del holiday
 - **Eventos**:
   - `CalendarHolidayCreatedDomainEvent(calendarHolidayId)`:
   - **Descripción**: Evento de creación del holiday
@@ -126,7 +121,7 @@ public static CalendarHoliday Create(
 ### Update
 
 ```csharp
-public void Update(Period period, WeekDays weekDays, string name, string description)
+public void Update(Period period, WeekDays weekDays, string name)
 ```
 
 - **Descripción**: Actualiza los valores del holiday
@@ -134,7 +129,6 @@ public void Update(Period period, WeekDays weekDays, string name, string descrip
   - `period`: Período del holiday
   - `weekdays`: Días de la semana del holiday
   - `name`: Nombre del holiday
-  - `description`: Descripción del holiday
 - **Eventos**:
   - `CalendarHolidayUpdatedDomainEvent`:
   - **Descripción**: Evento de actualización del holiday
@@ -151,17 +145,6 @@ private static void GuardAgainstInvalidName(string name)
 - **Parámetros**:
   - `name`: Nombre del holiday
 - **Excepciones**: `CalendarHolidayDomainException`: Cuando el nombre es nulo, vacío o o excede los 50 caracteres
-
-### GuardAgainstInvalidDescription
-
-```csharp
-private static void GuardAgainstInvalidDescription(string description)
-```
-
-- **Descripción**: Valida que la descripción del holiday no exceda los 500 caracteres
-- **Parámetros**:
-  - `description`: Descripción del holiday
-- **Excepciones**: `CalendarHolidayDomainException`: Cuando la descripción es nula, vacía o excede los 500 caracteres
 
 ## Estado y Transiciones
 
@@ -221,6 +204,5 @@ var calendarHoliday = CalendarHoliday.Create(
     calendarId: CalendarId.From(Guid.Parse("00000000-0000-0000-0000-000000000000")),
     period: Period.From(DateTimeOffset.Now, DateTimeOffset.Now.AddDays(1)),
     weekDays: WeekDays.Weekdays,
-    name: "New name",
-    description: "New Description");
+    name: "New name");
 ```
