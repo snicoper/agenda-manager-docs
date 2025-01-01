@@ -54,16 +54,16 @@ El calendario gestiona distintas configuraciones que afectan al comportamiento d
 
 ## Propiedades
 
-| Propiedad     | Tipo                             | Descripción                                  |
-| ------------- | -------------------------------- | -------------------------------------------- |
-| `Id`          | `CalendarId`                     | Identificador único del calendario.          |
-| `SettingsId`  | `CalendarSettingsId`             | Identificador único de la configuración.     |
-| `settings`    | `CalendarSettings`               | Configuraciones del calendario.              |
-| `Name`        | `string`                         | Nombre del calendario.                       |
-| `Description` | `string`                         | Descripción del calendario.                  |
-| `IsActive`    | `bool`                           | Indica si el calendario está activo.         |
-| `Weekdays`    | `Weekdays`                       | Días de la semana del holiday                |
-| `Holidays`    | `IReadOnlyList<CalendarHoliday>` | Lista de vacaciones asociadas al calendario. |
+| Propiedad       | Tipo                             | Descripción                                     |
+| --------------- | -------------------------------- | ----------------------------------------------- |
+| `Id`            | `CalendarId`                     | Identificador único del calendario.             |
+| `SettingsId`    | `CalendarSettingsId`             | Identificador único de la configuración.        |
+| `settings`      | `CalendarSettings`               | Configuraciones del calendario.                 |
+| `Name`          | `string`                         | Nombre del calendario.                          |
+| `Description`   | `string`                         | Descripción del calendario.                     |
+| `IsActive`      | `bool`                           | Indica si el calendario está activo.            |
+| `AvailableDays` | `Weekdays`                       | Días de la semana disponibles en el calendario. |
+| `Holidays`      | `IReadOnlyList<CalendarHoliday>` | Lista de vacaciones asociadas al calendario.    |
 
 ## Invariantes
 
@@ -72,7 +72,7 @@ El calendario gestiona distintas configuraciones que afectan al comportamiento d
 - `Description` no puede ser nulo y debe tener entre 1 y 500 caracteres.
 - `IsActive` debe ser `true` o `false`.
 - `Holidays` no puede ser nulo.
-- `Weekdays` no puede ser nulo.
+- `AvailableDays` no puede ser nulo y tiene que tener un valor valido.
 - `CalendarSettings` no puede ser nulo y debe ser un `CalendarSettings` asociado **one-to-one**.
 
 ## Reglas de Negocio
@@ -87,6 +87,15 @@ El calendario gestiona distintas configuraciones que afectan al comportamiento d
   - Un holiday debe pertenecer a un único calendario
   - No puede haber holidays duplicados (misma fecha) en un calendario
   - Los holidays se eliminan en cascada al eliminar el calendario
+
+- **Modificación de días disponibles**:
+
+  - Si es un día substraído de los días disponibles, no será necesario validar citas futuras.
+  - Si es un día añadido a los días disponibles, se deberá validar que no haya citas futuras en ese día en base a `CalendarSettings.HolidayConflictStrategy`.
+  - Deberá actuar en consecuencia en base a la configuración de `CalendarSettings.HolidayConflictStrategy`:
+    - `Reject`: Impide la modificación si existen citas solapadas.
+    - `Cancel`: Cancela las citas solapadas y permite la modificación.
+    - `Allow`: Permite la modificación manteniendo las citas existentes.
 
 - **Estado del CalendarSettings**:
 
@@ -132,21 +141,6 @@ public bool IsAvailableDay(DayOfWeek day)
 - **Parámetros**:
   - `day`: Día de la semana.
 - **Retorno**: `true` si el día está disponible, `false` en caso contrario.
-
-### UpdateAvailableDays
-
-```csharp
-public void UpdateAvailableDays(WeekDays availableDays)
-```
-
-- **Descripción**: Actualiza los días de la semana disponibles en el calendario.
-- **Parámetros**:
-  - `availableDays`: Días de la semana disponibles.
-- **Eventos**:
-  - `CalendarAvailableDaysUpdatedDomainEvent(Id)`
-  - **Descripción**: Lanza el evento al actualizar los días de la semana disponibles en el calendario.
-  - **Parámetros**:
-    - `Id`: El identificador del calendario.
 
 ### Activate
 
@@ -257,6 +251,21 @@ internal void Update(string name, string description)
   - **Parámetros**:
     - `Id`: Identificador único del calendario.
 
+### UpdateAvailableDays
+
+```csharp
+internal void UpdateAvailableDays(WeekDays availableDays)
+```
+
+- **Descripción**: Actualiza los días de la semana disponibles en el calendario.
+- **Parámetros**:
+  - `availableDays`: Días de la semana disponibles.
+- **Eventos**:
+  - `CalendarAvailableDaysUpdatedDomainEvent(Id)`
+  - **Descripción**: Lanza el evento al actualizar los días de la semana disponibles en el calendario.
+  - **Parámetros**:
+    - `Id`: El identificador del calendario.
+
 ### GuardAgainstInvalidName
 
 ```csharp
@@ -359,6 +368,7 @@ La clase `Calendar` tiene diferentes estados que dependen de ciertas condiciones
   - **Description**: The calendar cannot be deleted because it has services.
 
 - **Identifier**: `CannotDeleteCalendarWithResources` Se lanza cuando se intenta eliminar un calendario que tiene recursos.
+
   - **Code**: `CalendarErrors.CannotDeleteCalendarWithResources`
   - **Description**: The calendar cannot be deleted because it has resources.
 
