@@ -185,6 +185,18 @@ private static void GuardAgainstInvalidName(string name)
   - **Code**: `CalendarHolidayErrors.HolidaysOverlap`
   - **Description**: Cannot create a holiday that overlaps with existing holidays.
 
+### Validation
+
+- **Identifier**: `NameAlreadyExists` Se lanza cuando el nombre del holiday ya existe en el calendario
+  - **Code**: `Name`
+  - **Description**: A holiday with the same name already exists in the calendar.
+
+### NotFound
+
+- **Identifier**: `CalendarHolidayNotFound` Se lanza cuando no se encuentra un holiday con el identificador proporcionado
+  - **Code**: `CalendarHolidayErrors.CalendarHolidayNotFound`
+  - **Description**: The requested holiday was not found in the calendar.
+
 ## Comentarios adicionales
 
 Para crear o actualizar un nuevo `CalendarHoliday`, require de `CalendarManager` para la creación de un nuevo `CalendarHoliday`.

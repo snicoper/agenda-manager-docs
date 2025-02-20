@@ -63,7 +63,7 @@ El agregado root `Resource` representa un recurso en el sistema de gestión de a
   - `UserId` puede ser `null` o no, pero si no es `null` debe ser un valor válido
   - `CalendarId` no puede ser `null` en ningún momento
   - `TypeId` no puede ser `null` en ningún momento
-  - `Name` no puede ser `null` o vacío en ningún momento, no debe exceder los 50 caracteres
+  - `Name` no puede ser `null` o vacío en ningún momento, no debe exceder los 50 caracteres y debe ser único en el calendario asociado.
   - `Description` no puede ser `null` o vacío en ningún momento, no debe exceder los 500 caracteres
   - `DeactivationReason` puede ser null, pero cuando se proporciona no debe estar vacío y no debe exceder los 250 caracteres
   - `ColorScheme` no puede ser `null` en ningún momento
@@ -298,6 +298,10 @@ private static void GuardAgainstInvalidDescription(string description)
 - **Identifier**: `ResourceNotAvailable` Se lanza cuando un recurso no está disponible.
   - **Code**: `ResourceErrors.ResourceNotAvailable`
   - **Description**: The resource is not available.
+
+- **CannotDelete**: `CannotDelete` Se lanza cuando no se puede eliminar un recurso.
+  - **Code**: `ResourceErrors.CannotDelete`
+  - **Description**: The resource cannot be deleted.
 
 ## Comentarios adicionales
 

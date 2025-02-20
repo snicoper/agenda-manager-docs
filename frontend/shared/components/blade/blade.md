@@ -190,7 +190,21 @@ export interface EditRoleDataBlade {
 @Component({...})
 export class EditRoleBladeComponent {
   // Acceder a la data:
-  this.bladeService.bladeState().options.data?.id;
+  private readonly bladeService = inject(BladeService);
+
+  id!: string;
+  name!: string;
+
+  ngOnInit(): void {
+    const data = this.bladeService.bladeState.options().data as EditRoleDataBlade;
+
+    if (!data?.id || !data?.name) {
+      throw new Error('id or name is required for EditRoleDataBlade');
+    }
+
+    this.id = data.id;
+    this.name = data.name;
+  }
 }
 ```
 
