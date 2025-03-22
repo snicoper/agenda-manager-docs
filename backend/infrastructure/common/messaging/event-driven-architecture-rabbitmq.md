@@ -1,131 +1,96 @@
-# 🧠 Event-Driven Architecture con RabbitMQ y Outbox
+# Event-Driven Architecture - RabbitMQ + Outbox Pattern
 
-Este documento resume el flujo completo de eventos implementado en **Agenda Manager**, combinando todo el trabajo realizado durante los últimos días. Se trata de una arquitectura robusta basada en **Transactional Outbox + RabbitMQ + MediatR**, diseñada para tolerancia a fallos, trazabilidad y escalabilidad real.
+## 💡 ¿Qué se ha implementado?
 
----
+Este sistema utiliza arquitectura orientada a eventos para desacoplar los cambios de dominio de sus efectos secundarios. Se ha incorporado RabbitMQ junto al patrón Transactional Outbox para garantizar entrega fiable de eventos.
 
-## 📦 Flujo General del Sistema
+### 🔥 Objetivo
 
-1. **Dominio lanza eventos (`IDomainEvent`)**
-   - Se agregan a los agregados raíz durante la lógica de dominio.
-
-2. **Interceptor `PersistDomainEventsToOutbox`**
-   - Extrae los eventos del `DbContext` y los guarda como `OutboxMessage` (serializados con Newtonsoft).
-
-3. **HostedService `OutboxMessageProcessorHostedService`**
-   - Lee periódicamente los eventos `Pending` en Outbox.
-   - Publica los eventos al `Exchange` de RabbitMQ mediante `IRabbitMqClient`.
-   - Marca cada mensaje como `Processed` o `Failed`.
-
-4. **RabbitMQ Exchange y Queue**
-   - El mensaje se enruta usando el `routingKey` (nombre del evento) hacia la cola `agenda.event.queue`.
-
-5. **HostedService `RabbitMqConsumerHostedService`**
-   - Escucha la cola y recibe mensajes publicados.
-   - Llama a `IntegrationEventDispatcher` para procesarlos.
-
-6. **`IntegrationEventDispatcher`**
-   - Obtiene el tipo de evento desde `routingKey`.
-   - Deserializa el payload usando Newtonsoft.
-   - Invoca el handler correcto a través de `IMediator.Publish`.
-
-7. **Handlers de aplicación (`INotificationHandler<T>`)**
-   - Ejecutan la lógica correspondiente al evento.
+Desacoplar el dominio de la infraestructura, ganar resiliencia, trazabilidad y tolerancia a fallos, evitando dependencias directas al publicar eventos.
 
 ---
 
-## 🏗 Diagrama de flujo
+## ⚙️ ¿Cómo funciona?
 
-```
-DomainEvent  →  OutboxMessage
-                ↓
-     PersistDomainEventsToOutbox (Interceptor)
-                ↓
-     OutboxMessageProcessorHostedService
-                ↓
-         RabbitMQ Exchange
-                ↓
-           RabbitMQ Queue
-                ↓
-     RabbitMqConsumerHostedService
-                ↓
-     IntegrationEventDispatcher
-                ↓
-     INotificationHandler<T>
+1. **Un Aggregate lanza un DomainEvent.**
+2. **El interceptor de persistencia convierte ese evento en un `OutboxMessage`.**
+3. **Se guarda el `OutboxMessage` junto a los cambios de EF Core (en la misma transacción).**
+4. **Un HostedService (`OutboxMessageProcessor`) lee periódicamente los mensajes `Pending` y los publica a RabbitMQ.**
+5. **El mensaje se marca como `Published`.**
+6. **Otro HostedService (`RabbitMqConsumerHostedService`) escucha RabbitMQ y reenvía los eventos a MediatR (via `IntegrationEventDispatcher`).**
+
+---
+
+## 🗃 Estructura del flujo
+
+```mermaid
+sequenceDiagram
+    participant Aggregate
+    participant DbContext
+    participant Outbox
+    participant OutboxProcessor
+    participant RabbitMQ
+    participant Consumer
+    participant MediatR Handler
+
+    Aggregate->>DbContext: Add DomainEvent
+    DbContext->>Outbox: Guardar OutboxMessage
+    OutboxProcessor->>Outbox: Leer mensajes Pending
+    OutboxProcessor->>RabbitMQ: Publish event
+    OutboxProcessor->>Outbox: Marcar como Published
+    RabbitMQ->>Consumer: Recibe mensaje
+    Consumer->>MediatR Handler: Dispatch event
 ```
 
 ---
 
-## 🛠 Componentes Técnicos Importantes
+## 📁 Archivos clave
 
-- `OutboxMessages` tiene estados (`Pending`, `Processed`, `Failed`) → trazabilidad
-- `UserTokenCreatedDomainEvent` y similares son eventos ligeros (solo contienen `Id` y datos mínimos)
-- `XxxxId` son ValueObjects con `internal` constructor + `[JsonConstructor]` para evitar problemas de deserialización
-
-Ejemplo:
-
-```csharp
-internal record UserTokenCreatedDomainEvent(UserTokenId UserTokenId) : IDomainEvent;
-```
+- `OutboxMessage.cs`: Aggregate del mensaje a publicar.
+- `OutboxMessageProcessorHostedService`: Publica eventos desde Outbox.
+- `RabbitMqConsumerHostedService`: Escucha eventos de Rabbit y los reenvía.
+- `IntegrationEventDispatcher`: Usa MediatR para ejecutar los handlers de eventos.
+- `RabbitMqClient`: Cliente de publicación a RabbitMQ.
+- `PersistDomainEventsToOutboxInterceptor`: Interceptor que guarda los eventos de dominio en Outbox.
 
 ---
 
-## 📁 Configuración básica
+## ✅ Ejemplo práctico
 
-### `appsettings.json`
+Cuando un usuario solicita recuperar contraseña:
 
-```json
-"RabbitMq": {
-  "Host": "localhost",
-  "Port": 5672,
-  "User": "guest",
-  "Password": "guest",
-  "Exchange": "agenda.exchange",
-  "QueueName": "agenda.event.queue"
-}
-```
+1. Se lanza `UserTokenCreatedDomainEvent`.
+2. Se guarda automáticamente en `OutboxMessages`.
+3. El `OutboxMessageProcessor` lo publica en RabbitMQ.
+4. `RabbitMqConsumerHostedService` lo recibe y lo despacha a un handler que envía el email.
 
 ---
 
-## 📈 Trazabilidad y auditoría
+## 🔍 ¿Por qué el patrón Outbox?
 
-- RabbitMQ **no guarda histórico de eventos ya procesados**
-- El sistema usa `OutboxMessages` como fuente de auditoría
-- Esto permite ver qué evento falló, cuál está pendiente o procesado
-
----
-
-## ✅ Ventajas del nuevo enfoque
-
-- Alta tolerancia a fallos
-- Flujo desacoplado y asincrónico
-- Reintentos posibles
-- Trazabilidad centralizada
-- Facilidad para escalar y distribuir responsabilidades
+- Se asegura de que el evento **solo se publique si el commit del dominio se ha realizado con éxito**.
+- **Evita mensajes huérfanos o inconsistencias**.
+- Permite añadir lógica de reintentos, fallos, trazabilidad, etc.
 
 ---
 
-## 💡 Lecciones aprendidas
+## 📌 Notas
 
-- El patrón Outbox resuelve elegantemente la asincronía
-- Desacoplar los handlers del flujo directo mejora el mantenimiento
-- Rabbit es un pipe, no un histórico: Outbox cumple ese rol
-
----
-
-## 📍 Mejoras futuras (to-do)
-
-- Retries con delay
-- DLQ (Dead Letter Queue) para fallos críticos
-- Testear más a fondo flujos edge-case
-- Dividir colas por tipo de evento
-- Monitorización automática del estado de las colas
+- Todos los eventos (incluso internos) se pasan por Outbox, no hay short-circuits ni bypass.
+- Se puede extender fácilmente para enviar a múltiples sistemas (otro Rabbit, Kafka, Email, etc).
+- Permite auditar TODO sin acoplar código.
 
 ---
 
-## 🏁 Resultado Final
+## 🚧 Tests funcionales
 
-Sistema robusto, resiliente y documentado.
-Diseñado para aguantar escenarios reales y crecer sin comprometer la arquitectura limpia.
+- Se incluye test completo del flujo `ForgotPassword → Outbox → Published` para validar todo el circuito.
+- Se puede usar `WaitForPublishedOutboxMessage()` en integración para asegurar que el evento fue procesado correctamente.
 
-Sí, el sistema ha pasado de MVP optimista a infraestructura profesional. 🎯
+---
+
+## 📎 Futuras mejoras
+
+- Añadir Dead Letter Queue
+- Mejorar reintentos progresivos
+- Dashboard de eventos fallidos
